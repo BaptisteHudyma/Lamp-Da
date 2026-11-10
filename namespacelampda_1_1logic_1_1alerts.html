@@ -121,6 +121,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__OtgFailed.html">Alert_OtgFailed</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This alert is raised when the output power fails to start. It can happen with logic bugs, or if the output rail is shorted.  <a href="structlampda_1_1logic_1_1alerts_1_1Alert__OtgFailed.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__OtgOverLimits.html">Alert_OtgOverLimits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This alert is raised when the output power goes out of the limits : overcurrent or overvoltage. Clear on total reboot.  <a href="structlampda_1_1logic_1_1alerts_1_1Alert__OtgOverLimits.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SkippedCleanSleep.html">Alert_SkippedCleanSleep</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This alert is raised when the system starts without sleeping cleanly first. It appears after updates, crashes, power failures, ...  <a href="structlampda_1_1logic_1_1alerts_1_1Alert__SkippedCleanSleep.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,10 +154,13 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html">AlertManager_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle the whole alerts logic. Use this to raise and clear alerts, and make decisions based on those alerts. Alerts can be raised and cleared on their own.  <a href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1RaiseTimeLock.html">RaiseTimeLock</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hold _raiseTimeMutex for the scope.  <a href="structlampda_1_1logic_1_1alerts_1_1RaiseTimeLock.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memItemLeft" align="right" valign="top"><a id="a13b290ef7ec43fd80aa08e37a53b2bfa" name="a13b290ef7ec43fd80aa08e37a53b2bfa"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a> : uint32_t { <br />
+<tr class="memitem:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a> : uint32_t { <br />
 &#160;&#160;<b>MAIN_LOOP_FREEZE</b> = 1 &lt;&lt; 0
 , <b>BATTERY_READINGS_INCOHERENT</b> = 1 &lt;&lt; 1
 , <b>BATTERY_CRITICAL</b> = 1 &lt;&lt; 2
@@ -178,9 +184,10 @@ Enumerations</h2></td></tr>
 &#160;&#160;<b>USB_PORT_SHORT</b> = 1 &lt;&lt; 16
 , <b>BATTERY_MISSING</b> = 1 &lt;&lt; 17
 , <b>CHARGER_ERROR</b> = 1 &lt;&lt; 18
+, <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfaa507753f75326ba13c85061de5853b82a">OTG_OVER_LIMITS</a> = 1 &lt;&lt; 19
 <br />
  }</td></tr>
-<tr class="memdesc:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert types : 31 errors max. <br /></td></tr>
+<tr class="memdesc:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert types : 31 errors max.  <a href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">More...</a><br /></td></tr>
 <tr class="separator:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -193,6 +200,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_battery_alert_read
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>AlertsToText</b> (const <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a> type)</td></tr>
 <tr class="memdesc:ac684473bd8c18efff629535f280db895"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert alerts enums to text. <br /></td></tr>
 <tr class="separator:ac684473bd8c18efff629535f280db895"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcf2345db9c06c3da37769587567bab6"><td class="memItemLeft" align="right" valign="top"><a id="adcf2345db9c06c3da37769587567bab6" name="adcf2345db9c06c3da37769587567bab6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_usb_port_fault</b> ()</td></tr>
+<tr class="memdesc:adcf2345db9c06c3da37769587567bab6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a fault of the USB port protection. Safe to call from an interrupt: it only sets a flag. The USB_PORT_SHORT alert is raised (or refreshed) by the next <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a8657bd3e3917e26f54ac742bd6966fa7" title="Raise the alerts signaled from interrupts since the last call. Called by the alerts loop and the powe...">process_interrupt_signals()</a> call. <br /></td></tr>
+<tr class="separator:adcf2345db9c06c3da37769587567bab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8657bd3e3917e26f54ac742bd6966fa7"><td class="memItemLeft" align="right" valign="top"><a id="a8657bd3e3917e26f54ac742bd6966fa7" name="a8657bd3e3917e26f54ac742bd6966fa7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>process_interrupt_signals</b> ()</td></tr>
+<tr class="memdesc:a8657bd3e3917e26f54ac742bd6966fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raise the alerts signaled from interrupts since the last call. Called by the alerts loop and the power thread. <br /></td></tr>
+<tr class="separator:a8657bd3e3917e26f54ac742bd6966fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af816c73cf7c27aa3c2e3632fddd5e700"><td class="memItemLeft" align="right" valign="top"><a id="af816c73cf7c27aa3c2e3632fddd5e700" name="af816c73cf7c27aa3c2e3632fddd5e700"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update_alerts</b> ()</td></tr>
 <tr class="separator:af816c73cf7c27aa3c2e3632fddd5e700"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,6 +215,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>update_alerts</b> ()<
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_wake_up_from_charger</b> ()</td></tr>
 <tr class="memdesc:a5303ff306969b36c085425eb26a5838b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal slot that the system just powered up from charger. <br /></td></tr>
 <tr class="separator:a5303ff306969b36c085425eb26a5838b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a292761867da97dc294438739d068096a"><td class="memItemLeft" align="right" valign="top"><a id="a292761867da97dc294438739d068096a" name="a292761867da97dc294438739d068096a"></a>
+<a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_alerts_max_brightness</b> ()</td></tr>
+<tr class="memdesc:a292761867da97dc294438739d068096a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the max output brightness allowed by the raised alerts (the lowest of their limits) <br /></td></tr>
+<tr class="separator:a292761867da97dc294438739d068096a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6f8e270ad87c32139571d749506da3a"><td class="memItemLeft" align="right" valign="top"><a id="ab6f8e270ad87c32139571d749506da3a" name="ab6f8e270ad87c32139571d749506da3a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>handle_all</b> (const bool shouldIgnoreAlerts)</td></tr>
 <tr class="memdesc:ab6f8e270ad87c32139571d749506da3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the behavior for all alerts. Must be called often <br /></td></tr>
@@ -218,6 +237,14 @@ Variables</h2></td></tr>
 <tr class="memitem:a628369d30766b929ca366137ee67919e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html">AlertManager_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a628369d30766b929ca366137ee67919e">manager</a></td></tr>
 <tr class="memdesc:a628369d30766b929ca366137ee67919e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instanciation of the AlertManager.  <br /></td></tr>
 <tr class="separator:a628369d30766b929ca366137ee67919e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a801d12921cc0feabb1f090e58ae6a877"><td class="memItemLeft" align="right" valign="top"><a id="a801d12921cc0feabb1f090e58ae6a877" name="a801d12921cc0feabb1f090e58ae6a877"></a>
+static <a class="el" href="structlampda_1_1hal_1_1mutex_1_1hal__mutex.html">hal::mutex::hal_mutex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_raiseTimeMutex</b></td></tr>
+<tr class="memdesc:a801d12921cc0feabb1f090e58ae6a877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Guards the raise times of all alerts (<a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a7e56280bf66ac2966405d8eefaf58fe1" title="Store the latest time at which this alert raise() was called, 0 if not set. Refreshed by raise() from...">AlertBase::raisedTime</a>): refreshed by raise() from any thread (power thread, BLE, ...), while the main loop takes its timeout decisions on them. The elapsed times are computed under the lock, so a refresh can never be seen as "in the future" of the decision. Not recursive. <br /></td></tr>
+<tr class="separator:a801d12921cc0feabb1f090e58ae6a877"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79260357a755a7e3c2c9e7cf6c180fb6"><td class="memItemLeft" align="right" valign="top"><a id="a79260357a755a7e3c2c9e7cf6c180fb6" name="a79260357a755a7e3c2c9e7cf6c180fb6"></a>
+static const bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isRaiseTimeMutexInit</b> = (hal::mutex::hal_mutex_init(&amp;<a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a801d12921cc0feabb1f090e58ae6a877">_raiseTimeMutex</a>), true)</td></tr>
+<tr class="memdesc:a79260357a755a7e3c2c9e7cf6c180fb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialized at program start: alerts can be raised before the main setup. <br /></td></tr>
+<tr class="separator:a79260357a755a7e3c2c9e7cf6c180fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36907b2779784580d933a4fe2c65b902"><td class="memItemLeft" align="right" valign="top"><a id="a36907b2779784580d933a4fe2c65b902" name="a36907b2779784580d933a4fe2c65b902"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>_request_shutdown</b> = false</td></tr>
 <tr class="memdesc:a36907b2779784580d933a4fe2c65b902"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set to true if an alert requested an emmergency shutdown. <br /></td></tr>
@@ -226,48 +253,149 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>_request_shutdown</b>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>_startupChargerTime</b> = 0</td></tr>
 <tr class="memdesc:a45b16b8bcdb077ab0d02552e339405fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stay at zero in normal operation. Set to the real startup time to ignore the battery alerts while the system starts. <br /></td></tr>
 <tr class="separator:a45b16b8bcdb077ab0d02552e339405fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade7bd05b0c204010f00e797d5fe8cbae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html">AlertBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#ade7bd05b0c204010f00e797d5fe8cbae">allAlerts</a> []</td></tr>
-<tr class="memdesc:ade7bd05b0c204010f00e797d5fe8cbae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alerts must be sorted by importance, only the first activated one will be shown.  <br /></td></tr>
-<tr class="separator:ade7bd05b0c204010f00e797d5fe8cbae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a355e2a8b1c13c2d6cdfe0ca9fe1f9de7"><td class="memItemLeft" align="right" valign="top"><a id="a355e2a8b1c13c2d6cdfe0ca9fe1f9de7" name="a355e2a8b1c13c2d6cdfe0ca9fe1f9de7"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SystemShutdownFailed.html">Alert_SystemShutdownFailed</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertSystemShutdownFailed</b> {}</td></tr>
+<tr class="separator:a355e2a8b1c13c2d6cdfe0ca9fe1f9de7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf6210798614b945439569583fd3e39a"><td class="memItemLeft" align="right" valign="top"><a id="acf6210798614b945439569583fd3e39a" name="acf6210798614b945439569583fd3e39a"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryMissing.html">Alert_BatteryMissing</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertBatteryMissing</b> {}</td></tr>
+<tr class="separator:acf6210798614b945439569583fd3e39a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca0b3dc1f5fe1f0009712b54c97a95f3"><td class="memItemLeft" align="right" valign="top"><a id="aca0b3dc1f5fe1f0009712b54c97a95f3" name="aca0b3dc1f5fe1f0009712b54c97a95f3"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__HardwareAlert.html">Alert_HardwareAlert</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertHardwareAlert</b> {}</td></tr>
+<tr class="separator:aca0b3dc1f5fe1f0009712b54c97a95f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6c1ec5da8e6886f7e305ea678f75ad6"><td class="memItemLeft" align="right" valign="top"><a id="ab6c1ec5da8e6886f7e305ea678f75ad6" name="ab6c1ec5da8e6886f7e305ea678f75ad6"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempCritical.html">Alert_TempCritical</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertTempCritical</b> {}</td></tr>
+<tr class="separator:ab6c1ec5da8e6886f7e305ea678f75ad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afccf1b52046a77144ab3c5eed723155e"><td class="memItemLeft" align="right" valign="top"><a id="afccf1b52046a77144ab3c5eed723155e" name="afccf1b52046a77144ab3c5eed723155e"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__UsbPortShort.html">Alert_UsbPortShort</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertUsbPortShort</b> {}</td></tr>
+<tr class="separator:afccf1b52046a77144ab3c5eed723155e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b44b140a0010cb5a082e57f2d51271"><td class="memItemLeft" align="right" valign="top"><a id="a49b44b140a0010cb5a082e57f2d51271" name="a49b44b140a0010cb5a082e57f2d51271"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SkippedCleanSleep.html">Alert_SkippedCleanSleep</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertSkippedCleanSleep</b> {}</td></tr>
+<tr class="separator:a49b44b140a0010cb5a082e57f2d51271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1fecc0ea64966b152589f4907bff547"><td class="memItemLeft" align="right" valign="top"><a id="ad1fecc0ea64966b152589f4907bff547" name="ad1fecc0ea64966b152589f4907bff547"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__OtgOverLimits.html">Alert_OtgOverLimits</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alert_OtgOverLimits</b> {}</td></tr>
+<tr class="separator:ad1fecc0ea64966b152589f4907bff547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa15a4332cb27f69c29999703a147c665"><td class="memItemLeft" align="right" valign="top"><a id="aa15a4332cb27f69c29999703a147c665" name="aa15a4332cb27f69c29999703a147c665"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryCritical.html">Alert_BatteryCritical</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertBatteryCritical</b> {}</td></tr>
+<tr class="separator:aa15a4332cb27f69c29999703a147c665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6734d8613b8b6c9f96c784d92751371c"><td class="memItemLeft" align="right" valign="top"><a id="a6734d8613b8b6c9f96c784d92751371c" name="a6734d8613b8b6c9f96c784d92751371c"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html">Alert_TempTooHigh</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertTempTooHigh</b> {}</td></tr>
+<tr class="separator:a6734d8613b8b6c9f96c784d92751371c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0c23fde8e9c30a80f111e0dc9a9eb67"><td class="memItemLeft" align="right" valign="top"><a id="ab0c23fde8e9c30a80f111e0dc9a9eb67" name="ab0c23fde8e9c30a80f111e0dc9a9eb67"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryReadingIncoherent.html">Alert_BatteryReadingIncoherent</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertBatteryReadingIncoherent</b> {}</td></tr>
+<tr class="separator:ab0c23fde8e9c30a80f111e0dc9a9eb67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f7f269cbf562e5f1ac8af03ec9a1f7b"><td class="memItemLeft" align="right" valign="top"><a id="a1f7f269cbf562e5f1ac8af03ec9a1f7b" name="a1f7f269cbf562e5f1ac8af03ec9a1f7b"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html">Alert_BatteryLow</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertBatteryLow</b> {}</td></tr>
+<tr class="separator:a1f7f269cbf562e5f1ac8af03ec9a1f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1839c634126666f80ef4ab3e6ede1ae4"><td class="memItemLeft" align="right" valign="top"><a id="a1839c634126666f80ef4ab3e6ede1ae4" name="a1839c634126666f80ef4ab3e6ede1ae4"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__OtgFailed.html">Alert_OtgFailed</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertOtgFailed</b> {}</td></tr>
+<tr class="separator:a1839c634126666f80ef4ab3e6ede1ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d9a0ec0c22dee4935ab039523b0b435"><td class="memItemLeft" align="right" valign="top"><a id="a1d9a0ec0c22dee4935ab039523b0b435" name="a1d9a0ec0c22dee4935ab039523b0b435"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SystemInErrorState.html">Alert_SystemInErrorState</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertSystemInErrorState</b> {}</td></tr>
+<tr class="separator:a1d9a0ec0c22dee4935ab039523b0b435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6507ab6d7f64c02d0a95d26bd327d41a"><td class="memItemLeft" align="right" valign="top"><a id="a6507ab6d7f64c02d0a95d26bd327d41a" name="a6507ab6d7f64c02d0a95d26bd327d41a"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SystemInLockout.html">Alert_SystemInLockout</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertSystemInLockout</b> {}</td></tr>
+<tr class="separator:a6507ab6d7f64c02d0a95d26bd327d41a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa251b495f751a8a7cae3a3ade80cbb32"><td class="memItemLeft" align="right" valign="top"><a id="aa251b495f751a8a7cae3a3ade80cbb32" name="aa251b495f751a8a7cae3a3ade80cbb32"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__LongLoopUpdate.html">Alert_LongLoopUpdate</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertLongLoopUpdate</b> {}</td></tr>
+<tr class="separator:aa251b495f751a8a7cae3a3ade80cbb32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04f56ab5dfb1eec1bd77070896658971"><td class="memItemLeft" align="right" valign="top"><a id="a04f56ab5dfb1eec1bd77070896658971" name="a04f56ab5dfb1eec1bd77070896658971"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BluetoothAdvertisement.html">Alert_BluetoothAdvertisement</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertBluetoothAdvertisement</b> {}</td></tr>
+<tr class="separator:a04f56ab5dfb1eec1bd77070896658971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48b4f04e81370c4594441ffb5a7a26f3"><td class="memItemLeft" align="right" valign="top"><a id="a48b4f04e81370c4594441ffb5a7a26f3" name="a48b4f04e81370c4594441ffb5a7a26f3"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__FavoriteSet.html">Alert_FavoriteSet</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertFavoriteSet</b> {}</td></tr>
+<tr class="separator:a48b4f04e81370c4594441ffb5a7a26f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad328012e310cacc9f0353b332bfb6396"><td class="memItemLeft" align="right" valign="top"><a id="ad328012e310cacc9f0353b332bfb6396" name="ad328012e310cacc9f0353b332bfb6396"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__SunsetTimerSet.html">Alert_SunsetTimerSet</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertSunsetTimerSet</b> {}</td></tr>
+<tr class="separator:ad328012e310cacc9f0353b332bfb6396"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cc4f17180d8342a43cad5b808e1dc02"><td class="memItemLeft" align="right" valign="top"><a id="a9cc4f17180d8342a43cad5b808e1dc02" name="a9cc4f17180d8342a43cad5b808e1dc02"></a>
+static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__ChargerError.html">Alert_ChargerError</a>&#160;</td><td class="memItemRight" valign="bottom"><b>alertChargerError</b> {}</td></tr>
+<tr class="separator:a9cc4f17180d8342a43cad5b808e1dc02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac67837fcece5ebd5233f5b5815391c1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html">AlertBase</a> *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#aac67837fcece5ebd5233f5b5815391c1">allAlerts</a> []</td></tr>
+<tr class="memdesc:aac67837fcece5ebd5233f5b5815391c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alerts must be sorted by importance, only the first activated one will be shown.  <br /></td></tr>
+<tr class="separator:aac67837fcece5ebd5233f5b5815391c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57398900178e58e1960238171e9667ec"><td class="memItemLeft" align="right" valign="top"><a id="a57398900178e58e1960238171e9667ec" name="a57398900178e58e1960238171e9667ec"></a>
+static std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_isUsbPortFaultSignaled</b> {false}</td></tr>
+<tr class="memdesc:a57398900178e58e1960238171e9667ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set by <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#adcf2345db9c06c3da37769587567bab6" title="Signal a fault of the USB port protection. Safe to call from an interrupt: it only sets a flag....">signal_usb_port_fault()</a>, from the USB fault interrupt. Consumed by <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a8657bd3e3917e26f54ac742bd6966fa7" title="Raise the alerts signaled from interrupts since the last call. Called by the alerts loop and the powe...">process_interrupt_signals()</a> <br /></td></tr>
+<tr class="separator:a57398900178e58e1960238171e9667ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the system alerts, that are displayed on the RGB indicator. </p>
-</div><h2 class="groupheader">Variable Documentation</h2>
-<a id="ade7bd05b0c204010f00e797d5fe8cbae" name="ade7bd05b0c204010f00e797d5fe8cbae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade7bd05b0c204010f00e797d5fe8cbae">&#9670;&#160;</a></span>allAlerts</h2>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a13b290ef7ec43fd80aa08e37a53b2bfa" name="a13b290ef7ec43fd80aa08e37a53b2bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13b290ef7ec43fd80aa08e37a53b2bfa">&#9670;&#160;</a></span>Type</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html">AlertBase</a>* lampda::logic::alerts::allAlerts[]</td>
+          <td class="memname">enum class <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">lampda::logic::alerts::Type</a> : uint32_t</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Alert types : 31 errors max. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a13b290ef7ec43fd80aa08e37a53b2bfaa507753f75326ba13c85061de5853b82a" name="a13b290ef7ec43fd80aa08e37a53b2bfaa507753f75326ba13c85061de5853b82a"></a>OTG_OVER_LIMITS&#160;</td><td class="fielddoc"><p>OTG has gone over the limits (current or voltage) </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="aac67837fcece5ebd5233f5b5815391c1" name="aac67837fcece5ebd5233f5b5815391c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac67837fcece5ebd5233f5b5815391c1">&#9670;&#160;</a></span>allAlerts</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html">AlertBase</a>* const lampda::logic::alerts::allAlerts[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">        <span class="keyword">new</span> Alert_SystemShutdownFailed,</div>
-<div class="line">        <span class="keyword">new</span> Alert_BatteryMissing, </div>
-<div class="line">        <span class="keyword">new</span> Alert_HardwareAlert,</div>
-<div class="line">        <span class="keyword">new</span> Alert_TempCritical,</div>
-<div class="line">        <span class="keyword">new</span> Alert_UsbPortShort,</div>
+<div class="line">        &amp;alertSystemShutdownFailed,</div>
+<div class="line">        &amp;alertBatteryMissing, </div>
+<div class="line">        &amp;alertHardwareAlert,</div>
+<div class="line">        &amp;alertTempCritical,</div>
+<div class="line">        &amp;alertUsbPortShort,</div>
 <div class="line">        </div>
-<div class="line">        <span class="keyword">new</span> Alert_SkippedCleanSleep,</div>
+<div class="line">        &amp;alertSkippedCleanSleep,</div>
 <div class="line">        </div>
-<div class="line">        <span class="keyword">new</span> Alert_BatteryCritical,</div>
-<div class="line">        <span class="keyword">new</span> Alert_TempTooHigh,</div>
-<div class="line">        <span class="keyword">new</span> Alert_BatteryReadingIncoherent,</div>
-<div class="line">        <span class="keyword">new</span> Alert_BatteryLow,</div>
+<div class="line">        &amp;alertBatteryCritical,</div>
+<div class="line">        &amp;alertTempTooHigh,</div>
+<div class="line">        &amp;alertBatteryReadingIncoherent,</div>
+<div class="line">        &amp;alertBatteryLow,</div>
 <div class="line">        </div>
-<div class="line">        <span class="keyword">new</span> Alert_OtgFailed,</div>
-<div class="line">        <span class="keyword">new</span> Alert_SystemInErrorState,</div>
-<div class="line">        <span class="keyword">new</span> Alert_SystemInLockout,</div>
-<div class="line">        </div>
-<div class="line">        <span class="keyword">new</span> Alert_LongLoopUpdate,</div>
-<div class="line">        <span class="keyword">new</span> Alert_BluetoothAdvertisement,</div>
-<div class="line">        <span class="keyword">new</span> Alert_FavoriteSet,</div>
-<div class="line">        <span class="keyword">new</span> Alert_SunsetTimerSet,</div>
+<div class="line">        &amp;alert_OtgOverLimits,</div>
+<div class="line">        &amp;alertOtgFailed,</div>
+<div class="line">        &amp;alertSystemInErrorState,</div>
+<div class="line">        &amp;alertSystemInLockout,</div>
 <div class="line"> </div>
-<div class="line">        <span class="keyword">new</span> Alert_ChargerError}</div>
+<div class="line">        </div>
+<div class="line">        &amp;alertLongLoopUpdate,</div>
+<div class="line">        &amp;alertBluetoothAdvertisement,</div>
+<div class="line">        &amp;alertFavoriteSet,</div>
+<div class="line">        &amp;alertSunsetTimerSet,</div>
+<div class="line"> </div>
+<div class="line">        &amp;alertChargerError,</div>
+<div class="line">}</div>
 </div><!-- fragment -->
 <p>Alerts must be sorted by importance, only the first activated one will be shown. </p>
 

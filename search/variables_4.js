@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['data_0',['data',['../unionlampda_1_1bsp_1_1filesystem_1_1KeyValToByteArray.html#ad6c329f7b598fd5339d52b97e4c8f685',1,'lampda::bsp::filesystem::KeyValToByteArray::data()'],['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#a5ba3cee2fa389f0e12fcd806d5eb5d5a',1,'lampda::component::microphone::SoundStruct::data()'],['../structlampda_1_1hal_1_1microphone_1_1PdmData.html#a03891d4260b52d2084bf00626c0e70b8',1,'lampda::hal::microphone::PdmData::data()'],['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ad83752ab2eba8409c065d97cfb230a6c',1,'lampda::modes::audio::SoundEventTy::data()']]],
-  ['dataautogained_1',['dataAutoGained',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a49b8c1e2cbce679a2129d8a0eb20fdb6',1,'lampda::modes::audio::SoundEventTy']]],
-  ['dayoftheweek_2',['dayOfTheWeek',['../structlampda_1_1component_1_1time_1_1RealTime.html#a449d7c1164cb6a1829ce4040f2798dbf',1,'lampda::component::time::RealTime']]],
-  ['debug_5faccessory_3',['debug_accessory',['../structtcpm__drv.html#a6364fc5199a8fa7151b7995427b4bdf4',1,'tcpm_drv']]],
-  ['debug_5fdetach_4',['debug_detach',['../structtcpm__drv.html#ac4311e425ddfa12a496f4101b5c33430',1,'tcpm_drv']]],
-  ['decay_5',['decay',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#abe3d29d28a307480beb829b0dfe42da2',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['data_0',['data',['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#a5ba3cee2fa389f0e12fcd806d5eb5d5a',1,'lampda::component::microphone::SoundStruct::data()'],['../structlampda_1_1hal_1_1microphone_1_1PdmData.html#a03891d4260b52d2084bf00626c0e70b8',1,'lampda::hal::microphone::PdmData::data()'],['../unionlampda_1_1bsp_1_1filesystem_1_1KeyValToByteArray.html#ad6c329f7b598fd5339d52b97e4c8f685',1,'lampda::bsp::filesystem::KeyValToByteArray::data()']]],
+  ['dayoftheweek_1',['dayOfTheWeek',['../structlampda_1_1component_1_1time_1_1RealTime.html#a449d7c1164cb6a1829ce4040f2798dbf',1,'lampda::component::time::RealTime']]],
+  ['debug_5faccessory_2',['debug_accessory',['../structtcpm__drv.html#a6364fc5199a8fa7151b7995427b4bdf4',1,'tcpm_drv']]],
+  ['debug_5fdetach_3',['debug_detach',['../structtcpm__drv.html#ac4311e425ddfa12a496f4101b5c33430',1,'tcpm_drv']]],
+  ['decay_4',['decay',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#abe3d29d28a307480beb829b0dfe42da2',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
+  ['dedupe_5',['dedupe',['../structlampda_1_1logic_1_1user__signals_1_1detail_1_1Slot.html#a2f964370690025f36d96bcfd2ec90ca6',1,'lampda::logic::user_signals::detail::Slot']]],
   ['defaultclearstriponmodechange_6',['defaultClearStripOnModeChange',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#a65e3aedc2c004327c17567b88e0f804b',1,'lampda::modes::DefaultManagerConfig']]],
   ['defaultcustomrampanimchoice_7',['defaultCustomRampAnimChoice',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#a74cd418b0513911aa6555080d7caa1f1',1,'lampda::modes::DefaultManagerConfig']]],
   ['defaultcustomrampanimeffect_8',['defaultCustomRampAnimEffect',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#afdc1f5d1e6c58ba4b8e5158b289f6578',1,'lampda::modes::DefaultManagerConfig']]],
@@ -15,10 +15,14 @@ var searchData=
   ['defaultfavorites_5findexable_12',['defaultFavorites_indexable',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a19478eaea3f640671a75c3fea731cd36',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['defaultfavorites_5fsimple_13',['defaultFavorites_simple',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#a9706bae7d984a16202d429304040c7f9',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['defaultrampsaturates_14',['defaultRampSaturates',['../structlampda_1_1modes_1_1DefaultManagerConfig.html#afb60af525ccddacc7fd5f682d3ab2f64',1,'lampda::modes::DefaultManagerConfig']]],
-  ['delta_15',['delta',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ac9057063562869f8842dcc403a59a98d',1,'lampda::modes::audio::SoundEventTy']]],
-  ['description_16',['description',['../structlampda_1_1logic_1_1cli_1_1Command.html#a33aaf89f4185baadb9167ca28a4597b9',1,'lampda::logic::cli::Command']]],
-  ['desiredoutput_17',['desiredoutput',['../namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87',1,'lampda::component::microphone']]],
-  ['drp_5ftoggle_18',['drp_toggle',['../structtcpm__drv.html#ac65618e00dc3d5620f0c7b1de2e9dfba',1,'tcpm_drv']]],
-  ['dstbufidx_19',['dstBufIdx',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#aaabadd5a17093aeedf54fcc90e0edd6d',1,'lampda::modes::draw::grid::LineRuleConfig']]],
-  ['dump_5fregisters_20',['dump_registers',['../structtcpm__drv.html#a4962a6eebb64125f21f695ef898ae0d6',1,'tcpm_drv']]]
+  ['defaultsensitivity_15',['defaultSensitivity',['../namespacelampda_1_1component_1_1microphone.html#a60cf7af4bf877dff9e9c6e8f483e6196',1,'lampda::component::microphone']]],
+  ['delta_16',['delta',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ac9057063562869f8842dcc403a59a98d',1,'lampda::modes::audio::SoundEventTy']]],
+  ['description_17',['description',['../structlampda_1_1logic_1_1cli_1_1Command.html#a33aaf89f4185baadb9167ca28a4597b9',1,'lampda::logic::cli::Command']]],
+  ['descriptor_18',['descriptor',['../group__HAL__BLE__GAP__ADDR__TYPES.html#gafb1198c3532398f4dfc717ff4c3298a6',1,'lampda::hal::ble::hal_ble_characteristic_t']]],
+  ['desiredoutput_19',['desiredoutput',['../namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87',1,'lampda::component::microphone']]],
+  ['dropuntillineend_20',['dropUntilLineEnd',['../structlampda_1_1bsp_1_1____private_1_1tx__line__state__t.html#ad38bb89d5b527e091ac4c2351a2117d4',1,'lampda::bsp::__private::tx_line_state_t']]],
+  ['drp_5ftoggle_21',['drp_toggle',['../structtcpm__drv.html#ac65618e00dc3d5620f0c7b1de2e9dfba',1,'tcpm_drv']]],
+  ['dstbufidx_22',['dstBufIdx',['../structlampda_1_1modes_1_1draw_1_1grid_1_1LineRuleConfig.html#aaabadd5a17093aeedf54fcc90e0edd6d',1,'lampda::modes::draw::grid::LineRuleConfig']]],
+  ['dump_5fregisters_23',['dump_registers',['../structtcpm__drv.html#a4962a6eebb64125f21f695ef898ae0d6',1,'tcpm_drv']]],
+  ['duration_5fms_24',['duration_ms',['../structlampda_1_1logic_1_1power_1_1TemporaryOutput.html#a8602c86660c3ea88fb7d8b7777440ac7',1,'lampda::logic::power::TemporaryOutput']]]
 ];

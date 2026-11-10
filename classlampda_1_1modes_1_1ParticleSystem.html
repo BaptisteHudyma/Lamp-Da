@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.6"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lamp-Da: lampda::modes::ParticleSystem Class Reference</title>
+<title>Lamp-Da: lampda::modes::ParticleSystem&lt; MaxParticuleCount &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -78,74 +78,98 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classlampda_1_1modes_1_1ParticleSystem-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">lampda::modes::ParticleSystem Class Reference</div></div>
+  <div class="headertitle"><div class="title">lampda::modes::ParticleSystem&lt; MaxParticuleCount &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Define a particle system ALL PARTICLE SYSTEM SHARE THE SAME PÄRTICLE SUBSET.  
+<p>Define a particle system ALL PARTICLE SYSTEM SHARE THE SAME PARTICLE SUBSET.  
  <a href="classlampda_1_1modes_1_1ParticleSystem.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="particle__system_8hpp_source.html">particle_system.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae30d1973a1c67cc70977feffb6959068"><td class="memItemLeft" align="right" valign="top"><a id="ae30d1973a1c67cc70977feffb6959068" name="ae30d1973a1c67cc70977feffb6959068"></a>
+<tr class="memitem:a6012b9c8563ab6a874f78b8a8164b386"><td class="memItemLeft" align="right" valign="top"><a id="a6012b9c8563ab6a874f78b8a8164b386" name="a6012b9c8563ab6a874f78b8a8164b386"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ParticleSystem</b> (const <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">ParticleSystem</a> &amp;)=delete</td></tr>
+<tr class="separator:a6012b9c8563ab6a874f78b8a8164b386"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e669e1b81a8d26d1367c3f5e401bf6a"><td class="memItemLeft" align="right" valign="top"><a id="a9e669e1b81a8d26d1367c3f5e401bf6a" name="a9e669e1b81a8d26d1367c3f5e401bf6a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
-<tr class="memdesc:ae30d1973a1c67cc70977feffb6959068"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset system to zero count <br /></td></tr>
-<tr class="separator:ae30d1973a1c67cc70977feffb6959068"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab84dc076dfe71d77be2c67ff10660a00"><td class="memItemLeft" align="right" valign="top"><a id="ab84dc076dfe71d77be2c67ff10660a00" name="ab84dc076dfe71d77be2c67ff10660a00"></a>
+<tr class="memdesc:a9e669e1b81a8d26d1367c3f5e401bf6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset system to zero count <br /></td></tr>
+<tr class="separator:a9e669e1b81a8d26d1367c3f5e401bf6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af46b9dae5f31dba90961a75db44e9caf"><td class="memItemLeft" align="right" valign="top"><a id="af46b9dae5f31dba90961a75db44e9caf" name="af46b9dae5f31dba90961a75db44e9caf"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_max_particle_count</b> (const uint16_t _particleCount)</td></tr>
-<tr class="memdesc:ab84dc076dfe71d77be2c67ff10660a00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call when you want to change the particle count of the simulation Can be called once when starting the particle system. <br /></td></tr>
-<tr class="separator:ab84dc076dfe71d77be2c67ff10660a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1354fc64f4ccd364c0f9bcbfb929a82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#ad1354fc64f4ccd364c0f9bcbfb929a82">init_particules</a> (const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</td></tr>
-<tr class="memdesc:ad1354fc64f4ccd364c0f9bcbfb929a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function.  <br /></td></tr>
-<tr class="separator:ad1354fc64f4ccd364c0f9bcbfb929a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4475680e9cab8b3fa4f313e22fd690b7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a4475680e9cab8b3fa4f313e22fd690b7">init_deferred_particules</a> (uint8_t maxParticlesToPop, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</td></tr>
-<tr class="memdesc:a4475680e9cab8b3fa4f313e22fd690b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function, in a timed defered way.  <br /></td></tr>
-<tr class="separator:a4475680e9cab8b3fa4f313e22fd690b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">iterate_no_collisions</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</td></tr>
-<tr class="memdesc:a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the particle simulation, ignoring collisions.  <br /></td></tr>
-<tr class="separator:a81a51ec20f7c7b4de2fbb9cf85c4d1ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc872bfc33c23e6732d1b8465884e3af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#afc872bfc33c23e6732d1b8465884e3af">iterate_with_collisions</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</td></tr>
-<tr class="memdesc:afc872bfc33c23e6732d1b8465884e3af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the particle simulation, taking collisions in account.  <br /></td></tr>
-<tr class="separator:afc872bfc33c23e6732d1b8465884e3af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc4af1ddffa8cdc346e0274940bb2eb2"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#abc4af1ddffa8cdc346e0274940bb2eb2">depop_particules</a> (const std::function&lt; bool(const <a class="el" href="structlampda_1_1modes_1_1Particle.html">Particle</a> &amp;)&gt; &amp;shouldDepopFunction)</td></tr>
-<tr class="memdesc:abc4af1ddffa8cdc346e0274940bb2eb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter particles depending on condition.  <br /></td></tr>
-<tr class="separator:abc4af1ddffa8cdc346e0274940bb2eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67fb068c9392c475a541b0d7d0bdbeb3"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a67fb068c9392c475a541b0d7d0bdbeb3">show</a> (const std::function&lt; uint32_t(int16_t, const <a class="el" href="structlampda_1_1modes_1_1Particle.html">Particle</a> &amp;)&gt; sample_color, <a class="el" href="namespacelampda_1_1modes.html#a004b9060d738add7848e7e12f6a534a0">LampTy</a> &amp;lamp)</td></tr>
-<tr class="memdesc:a67fb068c9392c475a541b0d7d0bdbeb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display this particle system.  <br /></td></tr>
-<tr class="separator:a67fb068c9392c475a541b0d7d0bdbeb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a384058d94fc1f557b3169b5fe7f32d4a"><td class="memItemLeft" align="right" valign="top"><a id="a384058d94fc1f557b3169b5fe7f32d4a" name="a384058d94fc1f557b3169b5fe7f32d4a"></a>
+<tr class="memdesc:af46b9dae5f31dba90961a75db44e9caf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call when you want to change the particle count of the simulation Can be called once when starting the particle system. <br /></td></tr>
+<tr class="separator:af46b9dae5f31dba90961a75db44e9caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a2277de9e7cd7fd52854f03029dbae9"><td class="memTemplParams" colspan="2">template&lt;typename PositionGeneratorFunction &gt; </td></tr>
+<tr class="memitem:a1a2277de9e7cd7fd52854f03029dbae9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a1a2277de9e7cd7fd52854f03029dbae9">init_particules</a> (const PositionGeneratorFunction &amp;positionGeneratorFunction, const uint32_t color=<a class="el" href="namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba7093234e9bd942a79336133614685fa3">colors::HTMLColorCode::White</a>)</td></tr>
+<tr class="memdesc:a1a2277de9e7cd7fd52854f03029dbae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function.  <br /></td></tr>
+<tr class="separator:a1a2277de9e7cd7fd52854f03029dbae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f59d8dfaf049c02f43943365a7dbe0d"><td class="memTemplParams" colspan="2">template&lt;typename PositionGeneratorFunction &gt; </td></tr>
+<tr class="memitem:a7f59d8dfaf049c02f43943365a7dbe0d"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a7f59d8dfaf049c02f43943365a7dbe0d">init_deferred_particules</a> (uint8_t maxParticlesToPop, const PositionGeneratorFunction &amp;positionGeneratorFunction)</td></tr>
+<tr class="memdesc:a7f59d8dfaf049c02f43943365a7dbe0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function, in a timed defered way.  <br /></td></tr>
+<tr class="separator:a7f59d8dfaf049c02f43943365a7dbe0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cfcbe439421ece46dc27b7339c3dfa8"><td class="memTemplParams" colspan="2">template&lt;typename PositionGeneratorFunction , typename ColorGeneratorFunction &gt; </td></tr>
+<tr class="memitem:a7cfcbe439421ece46dc27b7339c3dfa8"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a7cfcbe439421ece46dc27b7339c3dfa8">init_deferred_particules</a> (uint8_t maxParticlesToPop, const PositionGeneratorFunction &amp;positionGeneratorFunction, const ColorGeneratorFunction &amp;colorGeneratorFunction)</td></tr>
+<tr class="memdesc:a7cfcbe439421ece46dc27b7339c3dfa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Init the particles from a initialization function, in a timed defered way.  <br /></td></tr>
+<tr class="separator:a7cfcbe439421ece46dc27b7339c3dfa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a5a5d0809e8cf191e100b460a9df5ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a1a5a5d0809e8cf191e100b460a9df5ee">iterate_no_collisions</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true)</td></tr>
+<tr class="memdesc:a1a5a5d0809e8cf191e100b460a9df5ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the particle simulation, ignoring collisions.  <br /></td></tr>
+<tr class="separator:a1a5a5d0809e8cf191e100b460a9df5ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bf51b12eb13fe5c3e7d9c45c215a0ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a3bf51b12eb13fe5c3e7d9c45c215a0ba">iterate_with_collisions</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian, const float deltaTime_s, const bool shouldContrain=true, const float viscosity=sandViscosity)</td></tr>
+<tr class="memdesc:a3bf51b12eb13fe5c3e7d9c45c215a0ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the particle simulation, taking collisions in account. A led holds one particle, and a blocked particle flows around the obstacle. Resting particles update less often.  <br /></td></tr>
+<tr class="separator:a3bf51b12eb13fe5c3e7d9c45c215a0ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a677d46bba7888b8a8be62b9c25365bbf"><td class="memTemplParams" colspan="2">template&lt;typename ShouldDepopFunction &gt; </td></tr>
+<tr class="memitem:a677d46bba7888b8a8be62b9c25365bbf"><td class="memTemplItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a677d46bba7888b8a8be62b9c25365bbf">depop_particules</a> (const ShouldDepopFunction &amp;shouldDepopFunction)</td></tr>
+<tr class="memdesc:a677d46bba7888b8a8be62b9c25365bbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter particles depending on condition.  <br /></td></tr>
+<tr class="separator:a677d46bba7888b8a8be62b9c25365bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54b1aada58dd15305638993a530ad7eb"><td class="memTemplParams" colspan="2">template&lt;typename ShouldDepopFunction &gt; </td></tr>
+<tr class="memitem:a54b1aada58dd15305638993a530ad7eb"><td class="memTemplItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a54b1aada58dd15305638993a530ad7eb">depop_particules_indexed</a> (const ShouldDepopFunction &amp;shouldDepopFunction)</td></tr>
+<tr class="memdesc:a54b1aada58dd15305638993a530ad7eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as depop_particules, but the predicate also receives the particle slot index.  <br /></td></tr>
+<tr class="separator:a54b1aada58dd15305638993a530ad7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebdf71cd00f64170e79f985e52387bf3"><td class="memTemplParams" colspan="2">template&lt;typename SampleColorFunction &gt; </td></tr>
+<tr class="memitem:aebdf71cd00f64170e79f985e52387bf3"><td class="memTemplItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#aebdf71cd00f64170e79f985e52387bf3">show</a> (const SampleColorFunction &amp;sample_color, <a class="el" href="namespacelampda_1_1modes.html#a004b9060d738add7848e7e12f6a534a0">LampTy</a> &amp;lamp, const bool forceDisplay=false) const</td></tr>
+<tr class="memdesc:aebdf71cd00f64170e79f985e52387bf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display this particle system.  <br /></td></tr>
+<tr class="separator:aebdf71cd00f64170e79f985e52387bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3d1e3bce4aad2eeca4cb88be0afdee"><td class="memItemLeft" align="right" valign="top"><a id="a5c3d1e3bce4aad2eeca4cb88be0afdee" name="a5c3d1e3bce4aad2eeca4cb88be0afdee"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>show</b> (<a class="el" href="namespacelampda_1_1modes.html#a004b9060d738add7848e7e12f6a534a0">LampTy</a> &amp;lamp, const bool forceDisplay=false) const</td></tr>
+<tr class="separator:a5c3d1e3bce4aad2eeca4cb88be0afdee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a334eadcb9c23824e0fd797c83ab8afa1"><td class="memItemLeft" align="right" valign="top"><a id="a334eadcb9c23824e0fd797c83ab8afa1" name="a334eadcb9c23824e0fd797c83ab8afa1"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_number_of_active</b> () const</td></tr>
-<tr class="memdesc:a384058d94fc1f557b3169b5fe7f32d4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of active particles. <br /></td></tr>
-<tr class="separator:a384058d94fc1f557b3169b5fe7f32d4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:a334eadcb9c23824e0fd797c83ab8afa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of active particles. <br /></td></tr>
+<tr class="separator:a334eadcb9c23824e0fd797c83ab8afa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a71e5bac1b3d6d2aae2764ef95b0c721e"><td class="memItemLeft" align="right" valign="top"><a id="a71e5bac1b3d6d2aae2764ef95b0c721e" name="a71e5bac1b3d6d2aae2764ef95b0c721e"></a>
+<tr class="memitem:aa249369cc27ff338140e3f3ba7fa4773"><td class="memItemLeft" align="right" valign="top"><a id="aa249369cc27ff338140e3f3ba7fa4773" name="aa249369cc27ff338140e3f3ba7fa4773"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b> (const int16_t pos) const</td></tr>
-<tr class="memdesc:a71e5bac1b3d6d2aae2764ef95b0c721e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if the position is already occupied. <br /></td></tr>
-<tr class="separator:a71e5bac1b3d6d2aae2764ef95b0c721e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3691360ca656d4e01cdc7e42282cf997"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a3691360ca656d4e01cdc7e42282cf997">spawn_particule</a> (const size_t index, const std::function&lt; int16_t(size_t)&gt; &amp;positionGeneratorFunction)</td></tr>
-<tr class="memdesc:a3691360ca656d4e01cdc7e42282cf997"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn a particle.  <br /></td></tr>
-<tr class="separator:a3691360ca656d4e01cdc7e42282cf997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:aa249369cc27ff338140e3f3ba7fa4773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if the position is already occupied. <br /></td></tr>
+<tr class="separator:aa249369cc27ff338140e3f3ba7fa4773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8239a41f0f7566d903d5e111dc9525b8"><td class="memTemplParams" colspan="2">template&lt;typename PositiongeneratorFunction &gt; </td></tr>
+<tr class="memitem:a8239a41f0f7566d903d5e111dc9525b8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html#a8239a41f0f7566d903d5e111dc9525b8">spawn_particule</a> (const size_t index, const PositiongeneratorFunction &amp;positionGeneratorFunction, const uint32_t color)</td></tr>
+<tr class="memdesc:a8239a41f0f7566d903d5e111dc9525b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn a particle.  <br /></td></tr>
+<tr class="separator:a8239a41f0f7566d903d5e111dc9525b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Define a particle system ALL PARTICLE SYSTEM SHARE THE SAME PÄRTICLE SUBSET. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;size_t MaxParticuleCount&gt;<br />
+class lampda::modes::ParticleSystem&lt; MaxParticuleCount &gt;</div><p>Define a particle system ALL PARTICLE SYSTEM SHARE THE SAME PARTICLE SUBSET. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="abc4af1ddffa8cdc346e0274940bb2eb2" name="abc4af1ddffa8cdc346e0274940bb2eb2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc4af1ddffa8cdc346e0274940bb2eb2">&#9670;&#160;</a></span>depop_particules()</h2>
+<a id="a677d46bba7888b8a8be62b9c25365bbf" name="a677d46bba7888b8a8be62b9c25365bbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a677d46bba7888b8a8be62b9c25365bbf">&#9670;&#160;</a></span>depop_particules()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
+<div class="memtemplate">
+template&lt;typename ShouldDepopFunction &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t lampda::modes::ParticleSystem::depop_particules </td>
+          <td class="memname">uint16_t <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::depop_particules </td>
           <td>(</td>
-          <td class="paramtype">const std::function&lt; bool(const <a class="el" href="structlampda_1_1modes_1_1Particle.html">Particle</a> &amp;)&gt; &amp;&#160;</td>
+          <td class="paramtype">const ShouldDepopFunction &amp;&#160;</td>
           <td class="paramname"><em>shouldDepopFunction</em></td><td>)</td>
           <td></td>
         </tr>
@@ -168,17 +192,54 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
 
 </div>
 </div>
-<a id="a4475680e9cab8b3fa4f313e22fd690b7" name="a4475680e9cab8b3fa4f313e22fd690b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4475680e9cab8b3fa4f313e22fd690b7">&#9670;&#160;</a></span>init_deferred_particules()</h2>
+<a id="a54b1aada58dd15305638993a530ad7eb" name="a54b1aada58dd15305638993a530ad7eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54b1aada58dd15305638993a530ad7eb">&#9670;&#160;</a></span>depop_particules_indexed()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
+<div class="memtemplate">
+template&lt;typename ShouldDepopFunction &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool lampda::modes::ParticleSystem::init_deferred_particules </td>
+          <td class="memname">uint16_t <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::depop_particules_indexed </td>
+          <td>(</td>
+          <td class="paramtype">const ShouldDepopFunction &amp;&#160;</td>
+          <td class="paramname"><em>shouldDepopFunction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Same as depop_particules, but the predicate also receives the particle slot index. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of particles left in the simulation. </dd></dl>
+
+</div>
+</div>
+<a id="a7f59d8dfaf049c02f43943365a7dbe0d" name="a7f59d8dfaf049c02f43943365a7dbe0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f59d8dfaf049c02f43943365a7dbe0d">&#9670;&#160;</a></span>init_deferred_particules() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
+<div class="memtemplate">
+template&lt;typename PositionGeneratorFunction &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::init_deferred_particules </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>maxParticlesToPop</em>, </td>
@@ -186,7 +247,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; int16_t(size_t)&gt; &amp;&#160;</td>
+          <td class="paramtype">const PositionGeneratorFunction &amp;&#160;</td>
           <td class="paramname"><em>positionGeneratorFunction</em>&#160;</td>
         </tr>
         <tr>
@@ -213,21 +274,91 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
 
 </div>
 </div>
-<a id="ad1354fc64f4ccd364c0f9bcbfb929a82" name="ad1354fc64f4ccd364c0f9bcbfb929a82"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad1354fc64f4ccd364c0f9bcbfb929a82">&#9670;&#160;</a></span>init_particules()</h2>
+<a id="a7cfcbe439421ece46dc27b7339c3dfa8" name="a7cfcbe439421ece46dc27b7339c3dfa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cfcbe439421ece46dc27b7339c3dfa8">&#9670;&#160;</a></span>init_deferred_particules() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
+<div class="memtemplate">
+template&lt;typename PositionGeneratorFunction , typename ColorGeneratorFunction &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::modes::ParticleSystem::init_particules </td>
+          <td class="memname">bool <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::init_deferred_particules </td>
           <td>(</td>
-          <td class="paramtype">const std::function&lt; int16_t(size_t)&gt; &amp;&#160;</td>
-          <td class="paramname"><em>positionGeneratorFunction</em></td><td>)</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>maxParticlesToPop</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const PositionGeneratorFunction &amp;&#160;</td>
+          <td class="paramname"><em>positionGeneratorFunction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ColorGeneratorFunction &amp;&#160;</td>
+          <td class="paramname"><em>colorGeneratorFunction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Init the particles from a initialization function, in a timed defered way. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">maxParticlesToPop</td><td>Maximum particles to spawn at this call </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">positionGeneratorFunction</td><td>Function that takes an index and return a led strip index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorGeneratorFunction</td><td>Function that takes an index and return a color of the particle at this index </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1a2277de9e7cd7fd52854f03029dbae9" name="a1a2277de9e7cd7fd52854f03029dbae9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a2277de9e7cd7fd52854f03029dbae9">&#9670;&#160;</a></span>init_particules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
+<div class="memtemplate">
+template&lt;typename PositionGeneratorFunction &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::init_particules </td>
+          <td>(</td>
+          <td class="paramtype">const PositionGeneratorFunction &amp;&#160;</td>
+          <td class="paramname"><em>positionGeneratorFunction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>color</em> = <code><a class="el" href="namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba7093234e9bd942a79336133614685fa3">colors::HTMLColorCode::White</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -247,17 +378,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
 
 </div>
 </div>
-<a id="a81a51ec20f7c7b4de2fbb9cf85c4d1ae" name="a81a51ec20f7c7b4de2fbb9cf85c4d1ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81a51ec20f7c7b4de2fbb9cf85c4d1ae">&#9670;&#160;</a></span>iterate_no_collisions()</h2>
+<a id="a1a5a5d0809e8cf191e100b460a9df5ee" name="a1a5a5d0809e8cf191e100b460a9df5ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a5a5d0809e8cf191e100b460a9df5ee">&#9670;&#160;</a></span>iterate_no_collisions()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::modes::ParticleSystem::iterate_no_collisions </td>
+          <td class="memname">void <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::iterate_no_collisions </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;&#160;</td>
           <td class="paramname"><em>accelerationCartesian</em>, </td>
@@ -299,17 +432,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
 
 </div>
 </div>
-<a id="afc872bfc33c23e6732d1b8465884e3af" name="afc872bfc33c23e6732d1b8465884e3af"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc872bfc33c23e6732d1b8465884e3af">&#9670;&#160;</a></span>iterate_with_collisions()</h2>
+<a id="a3bf51b12eb13fe5c3e7d9c45c215a0ba" name="a3bf51b12eb13fe5c3e7d9c45c215a0ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bf51b12eb13fe5c3e7d9c45c215a0ba">&#9670;&#160;</a></span>iterate_with_collisions()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::modes::ParticleSystem::iterate_with_collisions </td>
+          <td class="memname">void <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::iterate_with_collisions </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;&#160;</td>
           <td class="paramname"><em>accelerationCartesian</em>, </td>
@@ -324,7 +459,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>shouldContrain</em> = <code>true</code>&#160;</td>
+          <td class="paramname"><em>shouldContrain</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>viscosity</em> = <code>sandViscosity</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -339,43 +480,54 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
 </table>
 </div><div class="memdoc">
 
-<p>Advance the particle simulation, taking collisions in account. </p>
+<p>Advance the particle simulation, taking collisions in account. A led holds one particle, and a blocked particle flows around the obstacle. Resting particles update less often. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">accelerationCartesian</td><td>3d acceleration vector to apply to particles </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">deltaTime_s</td><td>Time since last update, in seconds </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">shouldContrain</td><td>If true, will constrain the particles to the lamp body. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">viscosity</td><td>From 0 (liquid, levels itself) to 1 (sand, forms piles) </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a67fb068c9392c475a541b0d7d0bdbeb3" name="a67fb068c9392c475a541b0d7d0bdbeb3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67fb068c9392c475a541b0d7d0bdbeb3">&#9670;&#160;</a></span>show()</h2>
+<a id="aebdf71cd00f64170e79f985e52387bf3" name="aebdf71cd00f64170e79f985e52387bf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebdf71cd00f64170e79f985e52387bf3">&#9670;&#160;</a></span>show()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
+<div class="memtemplate">
+template&lt;typename SampleColorFunction &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t lampda::modes::ParticleSystem::show </td>
+          <td class="memname">uint16_t <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::show </td>
           <td>(</td>
-          <td class="paramtype">const std::function&lt; uint32_t(int16_t, const <a class="el" href="structlampda_1_1modes_1_1Particle.html">Particle</a> &amp;)&gt;&#160;</td>
+          <td class="paramtype">const SampleColorFunction &amp;&#160;</td>
           <td class="paramname"><em>sample_color</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespacelampda_1_1modes.html#a004b9060d738add7848e7e12f6a534a0">LampTy</a> &amp;&#160;</td>
-          <td class="paramname"><em>lamp</em>&#160;</td>
+          <td class="paramname"><em>lamp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>forceDisplay</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -396,17 +548,21 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
 
 </div>
 </div>
-<a id="a3691360ca656d4e01cdc7e42282cf997" name="a3691360ca656d4e01cdc7e42282cf997"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3691360ca656d4e01cdc7e42282cf997">&#9670;&#160;</a></span>spawn_particule()</h2>
+<a id="a8239a41f0f7566d903d5e111dc9525b8" name="a8239a41f0f7566d903d5e111dc9525b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8239a41f0f7566d903d5e111dc9525b8">&#9670;&#160;</a></span>spawn_particule()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;size_t MaxParticuleCount&gt; </div>
+<div class="memtemplate">
+template&lt;typename PositiongeneratorFunction &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void lampda::modes::ParticleSystem::spawn_particule </td>
+          <td class="memname">void <a class="el" href="classlampda_1_1modes_1_1ParticleSystem.html">lampda::modes::ParticleSystem</a>&lt; MaxParticuleCount &gt;::spawn_particule </td>
           <td>(</td>
           <td class="paramtype">const size_t&#160;</td>
           <td class="paramname"><em>index</em>, </td>
@@ -414,8 +570,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_position_taken</b>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::function&lt; int16_t(size_t)&gt; &amp;&#160;</td>
-          <td class="paramname"><em>positionGeneratorFunction</em>&#160;</td>
+          <td class="paramtype">const PositiongeneratorFunction &amp;&#160;</td>
+          <td class="paramname"><em>positionGeneratorFunction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

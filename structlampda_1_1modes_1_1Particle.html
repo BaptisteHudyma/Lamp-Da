@@ -76,6 +76,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structlampda_1_1modes_1_1Particle-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">lampda::modes::Particle Struct Reference</div></div>
@@ -89,10 +90,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5679d11df24217f16759160e1a9f6b70"><td class="memItemLeft" align="right" valign="top"><a id="a5679d11df24217f16759160e1a9f6b70" name="a5679d11df24217f16759160e1a9f6b70"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> ()</td></tr>
-<tr class="memdesc:a5679d11df24217f16759160e1a9f6b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default particle init. <br /></td></tr>
-<tr class="separator:a5679d11df24217f16759160e1a9f6b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abac28c1e1fd63500659e7760e15105e2"><td class="memItemLeft" align="right" valign="top"><a id="abac28c1e1fd63500659e7760e15105e2" name="abac28c1e1fd63500659e7760e15105e2"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> ()=default</td></tr>
+<tr class="memdesc:abac28c1e1fd63500659e7760e15105e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default particle init. <br /></td></tr>
+<tr class="separator:abac28c1e1fd63500659e7760e15105e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f605f4f94f661e87b1b6935f264506c"><td class="memItemLeft" align="right" valign="top"><a id="a6f605f4f94f661e87b1b6935f264506c" name="a6f605f4f94f661e87b1b6935f264506c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const <a class="el" href="structlampda_1_1modes_1_1Particle.html">Particle</a> &amp;other)=default</td></tr>
+<tr class="memdesc:a6f605f4f94f661e87b1b6935f264506c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor for a particle. <br /></td></tr>
+<tr class="separator:a6f605f4f94f661e87b1b6935f264506c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0860c27a01954b45f2ee23a3e76d8b51"><td class="memItemLeft" align="right" valign="top"><a id="a0860c27a01954b45f2ee23a3e76d8b51" name="a0860c27a01954b45f2ee23a3e76d8b51"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;positionCartesian)</td></tr>
 <tr class="memdesc:a0860c27a01954b45f2ee23a3e76d8b51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="structlampda_1_1modes_1_1Particle.html" title="Define a particle in 3D space. it has a position and speed.">Particle</a> from a 3D cartesian position. <br /></td></tr>
@@ -101,13 +106,12 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const float positionTheta_rad, const float positionZ_mm)</td></tr>
 <tr class="memdesc:ae736d6386378a2eaba1dc96f5a4204a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a particle from an angle and height. <br /></td></tr>
 <tr class="separator:ae736d6386378a2eaba1dc96f5a4204a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f605f4f94f661e87b1b6935f264506c"><td class="memItemLeft" align="right" valign="top"><a id="a6f605f4f94f661e87b1b6935f264506c" name="a6f605f4f94f661e87b1b6935f264506c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Particle</b> (const <a class="el" href="structlampda_1_1modes_1_1Particle.html">Particle</a> &amp;other)=default</td></tr>
-<tr class="memdesc:a6f605f4f94f661e87b1b6935f264506c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor for a particle. <br /></td></tr>
-<tr class="separator:a6f605f4f94f661e87b1b6935f264506c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35b9910e1dbcd5b9ee1f6e223dd307cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1Particle.html#a35b9910e1dbcd5b9ee1f6e223dd307cc">compute_speed_increment</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s) const</td></tr>
 <tr class="memdesc:a35b9910e1dbcd5b9ee1f6e223dd307cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the speed increment in the constraint lamp body.  <br /></td></tr>
 <tr class="separator:a35b9910e1dbcd5b9ee1f6e223dd307cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43bddb8906a5684c3297d6ea6f7a4d84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1Particle.html#a43bddb8906a5684c3297d6ea6f7a4d84">update_speed</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s)</td></tr>
+<tr class="memdesc:a43bddb8906a5684c3297d6ea6f7a4d84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dampen the speed and apply a cartesian acceleration to it, without moving the particle.  <br /></td></tr>
+<tr class="separator:a43bddb8906a5684c3297d6ea6f7a4d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3384b86e7122b8c1471f68d700ba504b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1Particle.html#a3384b86e7122b8c1471f68d700ba504b">apply_acceleration</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian_m, const float deltaTime_s, const bool shouldContrain=true)</td></tr>
 <tr class="memdesc:a3384b86e7122b8c1471f68d700ba504b"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply a cartesian acceleration to this particulate  <br /></td></tr>
 <tr class="separator:a3384b86e7122b8c1471f68d700ba504b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -122,31 +126,58 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>constraint_into_lamp_
 void&#160;</td><td class="memItemRight" valign="bottom"><b>dampen_speed</b> (const float dampenFactor)</td></tr>
 <tr class="memdesc:ab933b6c5ff6f95aedd9bae4176193653"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bleed off some speed. Simulate a dampening factor (like friction loss) <br /></td></tr>
 <tr class="separator:ab933b6c5ff6f95aedd9bae4176193653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eaab43f17054909c118a2b5ec2868c8"><td class="memItemLeft" align="right" valign="top"><a id="a0eaab43f17054909c118a2b5ec2868c8" name="a0eaab43f17054909c118a2b5ec2868c8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_color</b> (const uint32_t color)</td></tr>
+<tr class="separator:a0eaab43f17054909c118a2b5ec2868c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ab64af4abf07203c5bfa85035985249"><td class="memItemLeft" align="right" valign="top"><a id="a3ab64af4abf07203c5bfa85035985249" name="a3ab64af4abf07203c5bfa85035985249"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_color</b> () const</td></tr>
+<tr class="separator:a3ab64af4abf07203c5bfa85035985249"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4123f5319b51158eadce4e9c2f78d01a"><td class="memItemLeft" align="right" valign="top"><a id="a4123f5319b51158eadce4e9c2f78d01a" name="a4123f5319b51158eadce4e9c2f78d01a"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_lamp_index</b> () const</td></tr>
 <tr class="memdesc:a4123f5319b51158eadce4e9c2f78d01a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert this particle coordinates to a constraint lamp index. <br /></td></tr>
 <tr class="separator:a4123f5319b51158eadce4e9c2f78d01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46c1cffa2c3f004185e58a58f8c4319d"><td class="memItemLeft" align="right" valign="top"><a id="a46c1cffa2c3f004185e58a58f8c4319d" name="a46c1cffa2c3f004185e58a58f8c4319d"></a>
 int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_lamp_index_no_bounds</b> () const</td></tr>
-<tr class="memdesc:a46c1cffa2c3f004185e58a58f8c4319d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert this particle coordinates to an unconstraint lamp index. <br /></td></tr>
+<tr class="memdesc:a46c1cffa2c3f004185e58a58f8c4319d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert this particle coordinates to an unconstraint lamp index: the nearest led of the helix. <br /></td></tr>
 <tr class="separator:a46c1cffa2c3f004185e58a58f8c4319d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2c48ac0018a7934b9b1e31ebc92e1c6"><td class="memItemLeft" align="right" valign="top"><a id="af2c48ac0018a7934b9b1e31ebc92e1c6" name="af2c48ac0018a7934b9b1e31ebc92e1c6"></a>
+int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>led_index_at_offset</b> (const <a class="el" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a> &amp;offset_mm) const</td></tr>
+<tr class="memdesc:af2c48ac0018a7934b9b1e31ebc92e1c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the led under this particle, once moved by an offset on the cylinder surface (in mm). <br /></td></tr>
+<tr class="separator:af2c48ac0018a7934b9b1e31ebc92e1c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c30dd8dce6d76282cd34a4124c6536"><td class="memItemLeft" align="right" valign="top"><a id="a92c30dd8dce6d76282cd34a4124c6536" name="a92c30dd8dce6d76282cd34a4124c6536"></a>
+<a class="el" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_surface_speed</b> () const</td></tr>
+<tr class="memdesc:a92c30dd8dce6d76282cd34a4124c6536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the speed on the cylinder surface, in mm/s (around the tube, along the height) <br /></td></tr>
+<tr class="separator:a92c30dd8dce6d76282cd34a4124c6536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15548bc38469ebcd2855532387de4cc6"><td class="memItemLeft" align="right" valign="top"><a id="a15548bc38469ebcd2855532387de4cc6" name="a15548bc38469ebcd2855532387de4cc6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>move_by</b> (const <a class="el" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a> &amp;offset_mm, const int16_t ledIndex)</td></tr>
+<tr class="memdesc:a15548bc38469ebcd2855532387de4cc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move this particle on the cylinder surface, to a led already computed from this offset. <br /></td></tr>
+<tr class="separator:a15548bc38469ebcd2855532387de4cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a63e6187370f28d374851d139b41f4aab"><td class="memItemLeft" align="right" valign="top">static int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1Particle.html#a63e6187370f28d374851d139b41f4aab">led_index_at</a> (const float positionTheta_rad, const float positionZ_mm)</td></tr>
+<tr class="memdesc:a63e6187370f28d374851d139b41f4aab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the led nearest to a position, following the real helix of the strip. A led height depends on its angle: choosing the turn from the height alone would be up to a full row wrong.  <br /></td></tr>
+<tr class="separator:a63e6187370f28d374851d139b41f4aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada03642584ffcf9b1fa82b761732b768"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1Particle.html#ada03642584ffcf9b1fa82b761732b768">potential_at_led</a> (const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;accelerationCartesian_m, const int16_t ledIndex)</td></tr>
+<tr class="memdesc:ada03642584ffcf9b1fa82b761732b768"><td class="mdescLeft">&#160;</td><td class="mdescRight">Potential energy of a led under an acceleration, consistent with the acceleration of a particle.  <br /></td></tr>
+<tr class="separator:ada03642584ffcf9b1fa82b761732b768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a6c4e2e7b92c33a5018cc325c10999a2a"><td class="memItemLeft" align="right" valign="top"><a id="a6c4e2e7b92c33a5018cc325c10999a2a" name="a6c4e2e7b92c33a5018cc325c10999a2a"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>thetaSpeed_radS</b></td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>thetaSpeed_radS</b> = 0.0f</td></tr>
 <tr class="memdesc:a6c4e2e7b92c33a5018cc325c10999a2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">angular speed, in radian/seconds <br /></td></tr>
 <tr class="separator:a6c4e2e7b92c33a5018cc325c10999a2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88afddc26110ce78b45c33abe24a9383"><td class="memItemLeft" align="right" valign="top"><a id="a88afddc26110ce78b45c33abe24a9383" name="a88afddc26110ce78b45c33abe24a9383"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>zSpeed_mS</b></td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>zSpeed_mS</b> = 0.0f</td></tr>
 <tr class="memdesc:a88afddc26110ce78b45c33abe24a9383"><td class="mdescLeft">&#160;</td><td class="mdescRight">linear speed, in meter/seconds <br /></td></tr>
 <tr class="separator:a88afddc26110ce78b45c33abe24a9383"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a187131775de9f8c31454b4a1ec865b28"><td class="memItemLeft" align="right" valign="top"><a id="a187131775de9f8c31454b4a1ec865b28" name="a187131775de9f8c31454b4a1ec865b28"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>theta_rad</b></td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>theta_rad</b> = 0.0f</td></tr>
 <tr class="memdesc:a187131775de9f8c31454b4a1ec865b28"><td class="mdescLeft">&#160;</td><td class="mdescRight">position, in radians <br /></td></tr>
 <tr class="separator:a187131775de9f8c31454b4a1ec865b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d0213d592a67ede3752299aa56c1937"><td class="memItemLeft" align="right" valign="top"><a id="a9d0213d592a67ede3752299aa56c1937" name="a9d0213d592a67ede3752299aa56c1937"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>z_mm</b></td></tr>
+float&#160;</td><td class="memItemRight" valign="bottom"><b>z_mm</b> = 0.0f</td></tr>
 <tr class="memdesc:a9d0213d592a67ede3752299aa56c1937"><td class="mdescLeft">&#160;</td><td class="mdescRight">height, in millimeters. <br /></td></tr>
 <tr class="separator:a9d0213d592a67ede3752299aa56c1937"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42d1c33e32498fb310e07a9dd6a27042"><td class="memItemLeft" align="right" valign="top"><a id="a42d1c33e32498fb310e07a9dd6a27042" name="a42d1c33e32498fb310e07a9dd6a27042"></a>
@@ -255,6 +286,98 @@ int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>_savedLampIndex</b
 
 </div>
 </div>
+<a id="a63e6187370f28d374851d139b41f4aab" name="a63e6187370f28d374851d139b41f4aab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63e6187370f28d374851d139b41f4aab">&#9670;&#160;</a></span>led_index_at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int16_t lampda::modes::Particle::led_index_at </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>positionTheta_rad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>positionZ_mm</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find the led nearest to a position, following the real helix of the strip. A led height depends on its angle: choosing the turn from the height alone would be up to a full row wrong. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">positionTheta_rad</td><td>Angle of the position, in radians. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">positionZ_mm</td><td>Height of the position, in millimeters. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The index of the led. It is not necessarly a valid index. </dd></dl>
+
+</div>
+</div>
+<a id="ada03642584ffcf9b1fa82b761732b768" name="ada03642584ffcf9b1fa82b761732b768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada03642584ffcf9b1fa82b761732b768">&#9670;&#160;</a></span>potential_at_led()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static float lampda::modes::Particle::potential_at_led </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;&#160;</td>
+          <td class="paramname"><em>accelerationCartesian_m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int16_t&#160;</td>
+          <td class="paramname"><em>ledIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Potential energy of a led under an acceleration, consistent with the acceleration of a particle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">accelerationCartesian_m</td><td>Acceleration applied at this update </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ledIndex</td><td>Index of the led. It can be out of the strip. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The potential (a particle is accelerated toward the leds with a lower one), in mm.m/s^2 </dd></dl>
+
+</div>
+</div>
 <a id="a589559ce3bc3b0d3a376220635eb2a66" name="a589559ce3bc3b0d3a376220635eb2a66"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a589559ce3bc3b0d3a376220635eb2a66">&#9670;&#160;</a></span>simulate_after_acceleration()</h2>
 
@@ -304,6 +427,52 @@ int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>_savedLampIndex</b
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a43bddb8906a5684c3297d6ea6f7a4d84" name="a43bddb8906a5684c3297d6ea6f7a4d84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43bddb8906a5684c3297d6ea6f7a4d84">&#9670;&#160;</a></span>update_speed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structlampda_1_1utils_1_1vec2d.html">utils::vec2d</a> lampda::modes::Particle::update_speed </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structlampda_1_1utils_1_1vec3d.html">utils::vec3d</a> &amp;&#160;</td>
+          <td class="paramname"><em>accelerationCartesian_m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>deltaTime_s</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Dampen the speed and apply a cartesian acceleration to it, without moving the particle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">accelerationCartesian_m</td><td>Acceleration applied at this update </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">deltaTime_s</td><td>Time since the latest update </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The speed gained at this update, on the cylinder surface, in mm/s (around the tube, along the height) </dd></dl>
 
 </div>
 </div>

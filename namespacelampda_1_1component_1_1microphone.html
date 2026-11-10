@@ -108,6 +108,19 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>decibel_B_scaling</b
 float&#160;</td><td class="memItemRight" valign="bottom"><b>decibel_C_scaling</b> (const float frequency)</td></tr>
 <tr class="memdesc:aa572be0205851525bfa052df30f92348"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scaling for the DecibelC model. <br /></td></tr>
 <tr class="separator:aa572be0205851525bfa052df30f92348"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6359c39b9e6897de118f025ebe61063e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a6359c39b9e6897de118f025ebe61063e">set_sensitivity</a> (const uint8_t sensitivity)</td></tr>
+<tr class="memdesc:a6359c39b9e6897de118f025ebe61063e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the microphone sensitivity, applied as a gain on the raw samples (FFT, sound level and auto gain input). The gain is logarithmic: 0 is minSensitivityGain, defaultSensitivity is no gain, maxSensitivity is maxSensitivityGain. Not saved: restored to defaultSensitivity on reboot.  <br /></td></tr>
+<tr class="separator:a6359c39b9e6897de118f025ebe61063e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147d34fcba11602e8fe2ec73a0664ac1"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a147d34fcba11602e8fe2ec73a0664ac1">get_sensitivity</a> ()</td></tr>
+<tr class="memdesc:a147d34fcba11602e8fe2ec73a0664ac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the microphone sensitivity.  <br /></td></tr>
+<tr class="separator:a147d34fcba11602e8fe2ec73a0664ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d896c4c77fe0a3e699c5dc21ee53e7d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a8d896c4c77fe0a3e699c5dc21ee53e7d">sensitivity_to_gain</a> (const uint8_t sensitivity)</td></tr>
+<tr class="memdesc:a8d896c4c77fe0a3e699c5dc21ee53e7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the gain applied to the raw samples for a sensitivity.  <br /></td></tr>
+<tr class="separator:a8d896c4c77fe0a3e699c5dc21ee53e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55d12f405e66aa8a6fd464da5deade6d"><td class="memItemLeft" align="right" valign="top"><a id="a55d12f405e66aa8a6fd464da5deade6d" name="a55d12f405e66aa8a6fd464da5deade6d"></a>
+int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>saturate_to_int16</b> (const float value)</td></tr>
+<tr class="memdesc:a55d12f405e66aa8a6fd464da5deade6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a gained sample to int16: an out of range float to integer conversion is undefined, so saturate first. <br /></td></tr>
+<tr class="separator:a55d12f405e66aa8a6fd464da5deade6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a124ac71fe69e87df5bbb760b3352d4e9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a124ac71fe69e87df5bbb760b3352d4e9">enable</a> ()</td></tr>
 <tr class="memdesc:a124ac71fe69e87df5bbb760b3352d4e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the microphone data analysis, if not already started.  <br /></td></tr>
 <tr class="separator:a124ac71fe69e87df5bbb760b3352d4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,6 +132,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>disable</b> ()</td></
 void&#160;</td><td class="memItemRight" valign="bottom"><b>disable_after_non_use</b> ()</td></tr>
 <tr class="memdesc:a8d492ad85caef5bea15b80a1fe68fc30"><td class="mdescLeft">&#160;</td><td class="mdescRight">disable microphone if last used a target time ago <br /></td></tr>
 <tr class="separator:a8d492ad85caef5bea15b80a1fe68fc30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d75e7c3427f86bb8cef894269125e7b"><td class="memItemLeft" align="right" valign="top"><a id="a7d75e7c3427f86bb8cef894269125e7b" name="a7d75e7c3427f86bb8cef894269125e7b"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>init_sound_struct</b> ()</td></tr>
+<tr class="memdesc:a7d75e7c3427f86bb8cef894269125e7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill the constant parts of the sound structure. <br /></td></tr>
+<tr class="separator:a7d75e7c3427f86bb8cef894269125e7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a923bd4bd82a2b28275662322cf12a3a2"><td class="memItemLeft" align="right" valign="top"><a id="a923bd4bd82a2b28275662322cf12a3a2" name="a923bd4bd82a2b28275662322cf12a3a2"></a>
 <a class="el" href="structlampda_1_1component_1_1microphone_1_1SoundStruct.html">SoundStruct</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>process_sound_data</b> (const <a class="el" href="structlampda_1_1hal_1_1microphone_1_1PdmData.html">hal::microphone::PdmData</a> &amp;data)</td></tr>
 <tr class="separator:a923bd4bd82a2b28275662322cf12a3a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,6 +148,10 @@ Variables</h2></td></tr>
 <tr class="memitem:ac3b65a9a005d15631dfaf15e319c1c80"><td class="memItemLeft" align="right" valign="top"><a id="ac3b65a9a005d15631dfaf15e319c1c80" name="ac3b65a9a005d15631dfaf15e319c1c80"></a>
 <a class="el" href="classlampda_1_1common_1_1fft_1_1FftAnalyzer.html">common::fft::FftAnalyzer</a>&lt; <a class="el" href="structlampda_1_1hal_1_1microphone_1_1PdmData.html#aa54b4369cbca2ca1b1022af17499149c">hal::microphone::PdmData::SAMPLE_SIZE</a>, <a class="el" href="structlampda_1_1component_1_1microphone_1_1SoundStruct.html#aecb9bc2b9d73969a1ad48f9855c75d61">SoundStruct::numberOfFFtChanels</a>, float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fftAnalyzer</b></td></tr>
 <tr class="separator:ac3b65a9a005d15631dfaf15e319c1c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae55378c62d29eebba1acefad3d191359"><td class="memItemLeft" align="right" valign="top"><a id="ae55378c62d29eebba1acefad3d191359" name="ae55378c62d29eebba1acefad3d191359"></a>
+volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>_sensitivity</b> = <a class="el" href="namespacelampda_1_1component_1_1microphone.html#a60cf7af4bf877dff9e9c6e8f483e6196">defaultSensitivity</a></td></tr>
+<tr class="memdesc:ae55378c62d29eebba1acefad3d191359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set by the inputs (main loop), read by the sound processing (user thread): a single byte write is atomic. <br /></td></tr>
+<tr class="separator:ae55378c62d29eebba1acefad3d191359"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72a366e35e4ea0fb32b120a3f0f46aa9"><td class="memItemLeft" align="right" valign="top"><a id="a72a366e35e4ea0fb32b120a3f0f46aa9" name="a72a366e35e4ea0fb32b120a3f0f46aa9"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isStarted</b> = false</td></tr>
 <tr class="separator:a72a366e35e4ea0fb32b120a3f0f46aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -140,6 +161,14 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastMicFunctionCa
 <tr class="memitem:a3e1edbd09f0fb28294bc94a8710eacd0"><td class="memItemLeft" align="right" valign="top"><a id="a3e1edbd09f0fb28294bc94a8710eacd0" name="a3e1edbd09f0fb28294bc94a8710eacd0"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>autoGain</b> = 1.0f</td></tr>
 <tr class="separator:a3e1edbd09f0fb28294bc94a8710eacd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33fd864193438bee594a127006aaf10e"><td class="memItemLeft" align="right" valign="top"><a id="a33fd864193438bee594a127006aaf10e" name="a33fd864193438bee594a127006aaf10e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasProcessedSample</b> = false</td></tr>
+<tr class="memdesc:a33fd864193438bee594a127006aaf10e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Has a sample been processed since the microphone started. <br /></td></tr>
+<tr class="separator:a33fd864193438bee594a127006aaf10e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ebf77188367c024a3fd2c1c455c7e83"><td class="memItemLeft" align="right" valign="top"><a id="a4ebf77188367c024a3fd2c1c455c7e83" name="a4ebf77188367c024a3fd2c1c455c7e83"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastProcessedSampleTime_us</b> = 0</td></tr>
+<tr class="memdesc:a4ebf77188367c024a3fd2c1c455c7e83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start time of the last processed sample: the platform can return the same sample many times. <br /></td></tr>
+<tr class="separator:a4ebf77188367c024a3fd2c1c455c7e83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9af4761b64e252d63f401923e942176"><td class="memItemLeft" align="right" valign="top"><a id="ab9af4761b64e252d63f401923e942176" name="ab9af4761b64e252d63f401923e942176"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>minAutoGain</b> = 0.0001f</td></tr>
 <tr class="separator:ab9af4761b64e252d63f401923e942176"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,6 +181,13 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>dis
 <tr class="memitem:a7c376c2d3103ad41033b7a14f2e6a914"><td class="memItemLeft" align="right" valign="top"><a id="a7c376c2d3103ad41033b7a14f2e6a914" name="a7c376c2d3103ad41033b7a14f2e6a914"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>desiredoutputRMS</b> = <a class="el" href="namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87">desiredoutput</a> * <a class="el" href="namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87">desiredoutput</a></td></tr>
 <tr class="separator:a7c376c2d3103ad41033b7a14f2e6a914"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1abe84f19d453d74507274a628cf702"><td class="memItemLeft" align="right" valign="top"><a id="ab1abe84f19d453d74507274a628cf702" name="ab1abe84f19d453d74507274a628cf702"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>inverseInt16Max</b> = 1.0f / static_cast&lt;float&gt;(INT16_MAX)</td></tr>
+<tr class="memdesc:ab1abe84f19d453d74507274a628cf702"><td class="mdescLeft">&#160;</td><td class="mdescRight">multiplications are faster than divisions on the target <br /></td></tr>
+<tr class="separator:ab1abe84f19d453d74507274a628cf702"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61bf3170132548339915877ee7f6c8ae"><td class="memItemLeft" align="right" valign="top"><a id="a61bf3170132548339915877ee7f6c8ae" name="a61bf3170132548339915877ee7f6c8ae"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>inverseDesiredoutputRMS</b> = 1.0f / desiredoutputRMS</td></tr>
+<tr class="separator:a61bf3170132548339915877ee7f6c8ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c055d0557e75d069270345463f2c9a8"><td class="memItemLeft" align="right" valign="top"><a id="a0c055d0557e75d069270345463f2c9a8" name="a0c055d0557e75d069270345463f2c9a8"></a>
 <a class="el" href="structlampda_1_1component_1_1microphone_1_1SoundStruct.html">SoundStruct</a>&#160;</td><td class="memItemRight" valign="bottom"><b>soundStruct</b></td></tr>
 <tr class="separator:a0c055d0557e75d069270345463f2c9a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,6 +207,22 @@ constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>desiredout
 constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>gainedSignalTarget</b> = INT16_MAX * <a class="el" href="namespacelampda_1_1component_1_1microphone.html#a0e7b7759bd326f028c2498c2ca956d87">desiredoutput</a></td></tr>
 <tr class="memdesc:a101022e31a4acd2a2620b16c4875ac41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Desired output of the auto gain (0-INT16_MAX) <br /></td></tr>
 <tr class="separator:a101022e31a4acd2a2620b16c4875ac41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60cf7af4bf877dff9e9c6e8f483e6196"><td class="memItemLeft" align="right" valign="top"><a id="a60cf7af4bf877dff9e9c6e8f483e6196" name="a60cf7af4bf877dff9e9c6e8f483e6196"></a>
+constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>defaultSensitivity</b> = 50</td></tr>
+<tr class="memdesc:a60cf7af4bf877dff9e9c6e8f483e6196"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default microphone sensitivity: no gain applied to the samples. <br /></td></tr>
+<tr class="separator:a60cf7af4bf877dff9e9c6e8f483e6196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4775a629386635d7c3b7f37681d4f38"><td class="memItemLeft" align="right" valign="top"><a id="ab4775a629386635d7c3b7f37681d4f38" name="ab4775a629386635d7c3b7f37681d4f38"></a>
+constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxSensitivity</b> = 100</td></tr>
+<tr class="memdesc:ab4775a629386635d7c3b7f37681d4f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum microphone sensitivity. <br /></td></tr>
+<tr class="separator:ab4775a629386635d7c3b7f37681d4f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d9dbcfcdfe447f9ef27c64955f416e1"><td class="memItemLeft" align="right" valign="top"><a id="a3d9dbcfcdfe447f9ef27c64955f416e1" name="a3d9dbcfcdfe447f9ef27c64955f416e1"></a>
+constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>minSensitivityGain</b> = 0.1f</td></tr>
+<tr class="memdesc:a3d9dbcfcdfe447f9ef27c64955f416e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain applied to the samples at the minimum sensitivity (0) <br /></td></tr>
+<tr class="separator:a3d9dbcfcdfe447f9ef27c64955f416e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a782adbc4b2084175cfa8a53e9f9eb592"><td class="memItemLeft" align="right" valign="top"><a id="a782adbc4b2084175cfa8a53e9f9eb592" name="a782adbc4b2084175cfa8a53e9f9eb592"></a>
+constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>maxSensitivityGain</b> = 10.0f</td></tr>
+<tr class="memdesc:a782adbc4b2084175cfa8a53e9f9eb592"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain applied to the samples at the maximum sensitivity (maxSensitivity) <br /></td></tr>
+<tr class="separator:a782adbc4b2084175cfa8a53e9f9eb592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the microphone physical interface. </p>
@@ -195,6 +247,26 @@ constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>gainedSi
 
 </div>
 </div>
+<a id="a147d34fcba11602e8fe2ec73a0664ac1" name="a147d34fcba11602e8fe2ec73a0664ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a147d34fcba11602e8fe2ec73a0664ac1">&#9670;&#160;</a></span>get_sensitivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t lampda::component::microphone::get_sensitivity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the microphone sensitivity. </p>
+<dl class="section return"><dt>Returns</dt><dd>The sensitivity, from 0 to maxSensitivity </dd></dl>
+
+</div>
+</div>
 <a id="a915c2efcd25dc7210e4475f55f0e2949" name="a915c2efcd25dc7210e4475f55f0e2949"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a915c2efcd25dc7210e4475f55f0e2949">&#9670;&#160;</a></span>get_sound_characteristics()</h2>
 
@@ -212,6 +284,59 @@ constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>gainedSi
 
 <p>Compute and process sound data. </p>
 <dl class="section return"><dt>Returns</dt><dd>the last sound data </dd></dl>
+
+</div>
+</div>
+<a id="a8d896c4c77fe0a3e699c5dc21ee53e7d" name="a8d896c4c77fe0a3e699c5dc21ee53e7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d896c4c77fe0a3e699c5dc21ee53e7d">&#9670;&#160;</a></span>sensitivity_to_gain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float lampda::component::microphone::sensitivity_to_gain </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>sensitivity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the gain applied to the raw samples for a sensitivity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sensitivity</td><td>Sensitivity, from 0 to maxSensitivity. Higher values are constrained to maxSensitivity </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The gain, from minSensitivityGain to maxSensitivityGain </dd></dl>
+
+</div>
+</div>
+<a id="a6359c39b9e6897de118f025ebe61063e" name="a6359c39b9e6897de118f025ebe61063e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6359c39b9e6897de118f025ebe61063e">&#9670;&#160;</a></span>set_sensitivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::component::microphone::set_sensitivity </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>sensitivity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the microphone sensitivity, applied as a gain on the raw samples (FFT, sound level and auto gain input). The gain is logarithmic: 0 is minSensitivityGain, defaultSensitivity is no gain, maxSensitivity is maxSensitivityGain. Not saved: restored to defaultSensitivity on reboot. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sensitivity</td><td>Sensitivity, from 0 to maxSensitivity. Higher values are constrained to maxSensitivity </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

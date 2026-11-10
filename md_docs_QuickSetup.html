@@ -78,7 +78,7 @@ $(function() {
 <div class="line">cd LampColorControler</div>
 <div class="line">git submodule update --init</div>
 </div><!-- fragment --><p>This project uses the Arduino SDK, you will need to install several dependencies before being able to build the project and upload your firmware.</p>
-<h1><a class="anchor" id="autotoc_md16"></a>
+<h1><a class="anchor" id="autotoc_md22"></a>
 Useful Linux packages</h1>
 <p>For reference, if you are on a <code>Debian/Linux (debian12,bookworm)</code> system, here is a list of packages that you may need to use this project:</p>
 <ul>
@@ -91,7 +91,7 @@ Useful Linux packages</h1>
 </li>
 </ul>
 <p>Depending on your setup (Ubuntu, WSL, Fedora, Archlinux, …) you may need to install other packages, such as <code>arduino-cli</code> or <code>arduino-ide</code> as described below.</p>
-<h1><a class="anchor" id="autotoc_md17"></a>
+<h1><a class="anchor" id="autotoc_md23"></a>
 Other depencies</h1>
 <p>You will need to:</p>
 <ul>
@@ -111,7 +111,10 @@ Other depencies</h1>
 <div class="fragment"><div class="line"># download+install all dependencies (~1.4Go) in $SRC_DIR/_build/arduino-cli/</div>
 <div class="line">cd LampColorControler</div>
 <div class="line">make safe-install</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md18"></a>
+</div><!-- fragment --><p>These targets install the versions pinned in <code>tools/ci/environment.mk</code>.</p>
+<p>You can also skip the local setup and build in the CI Docker image, which contains every dependency (see <a class="el" href="md_docs_CIImage.html">CIImage.md</a>):</p>
+<div class="fragment"><div class="line">make ci-image-shell</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md24"></a>
 Building the project</h1>
 <p>Once all dependencies are set up, you will be able to build the project as follows:</p>
 <div class="fragment"><div class="line"># build project assuming simple lamp type</div>
@@ -121,6 +124,10 @@ Building the project</h1>
 <div class="fragment"><div class="line"># build project assuming simple lamp type</div>
 <div class="line">cd LampColorControler</div>
 <div class="line">make indexable</div>
+</div><!-- fragment --><p>If you are working on the <code>indexable-hd</code> variant of the lamp, you can use:</p>
+<div class="fragment"><div class="line"># build project assuming simple lamp type</div>
+<div class="line">cd LampColorControler</div>
+<div class="line">make indexable-hd</div>
 </div><!-- fragment --><p>When changing lamp type or adding a new file to the sketch, use:</p>
 <div class="fragment"><div class="line">cd LampColorControler</div>
 <div class="line">make clean</div>
@@ -128,14 +135,14 @@ Building the project</h1>
 </div><!-- fragment --><p>You can also use the <code>clean-artifacts</code> recipe to remove only the output binaries, and to only rebuild what is necessary:</p>
 <div class="fragment"><div class="line"># remove build artifacts &amp; rebuild the project</div>
 <div class="line">cd LampColorControler</div>
-<div class="line">make clean-artifacts {simple,cct,indexable} # pick one</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md19"></a>
+<div class="line">make clean-artifacts {simple,cct,indexable,indexable-hd} # pick one</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md25"></a>
 Uploading to board</h1>
 <p>After plugging your board, you should be able to upload as follows:</p>
 <div class="fragment"><div class="line"># use upload-indexable if you are working with indexable</div>
 <div class="line">cd LampColorControler</div>
 <div class="line">make upload-simple</div>
-</div><!-- fragment --><p>Note that <code>upload-{simple,cct,indexable}</code> checks that you have build the associated <code>{simple,cct,indexable}</code> recipe, and that you may get an error message if you are mixing up the different versions.</p>
+</div><!-- fragment --><p>Note that <code>upload-{simple,cct,indexable,indexable-hd}</code> checks that you have build the associated <code>{simple,cct,indexable,indexable-hd}</code> recipe, and that you may get an error message if you are mixing up the different versions.</p>
 <p>You may need to configure the serial port of the board before uploading:</p>
 <div class="fragment"><div class="line"># by default LMBD_SERIAL_PORT is /dev/ttyACM0</div>
 <div class="line">cd LampColorControler</div>
@@ -149,7 +156,7 @@ Uploading to board</h1>
 <div class="line">cd LampColorControler</div>
 <div class="line">ln -s venv path/to/other/virtualenv</div>
 <div class="line">make clean-artifacts upload-indexable</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md20"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md26"></a>
 Building the documentation</h1>
 <p>To build the documentation, you must have <code>doxygen</code> installed:</p>
 <div class="fragment"><div class="line"># use &quot;make clean-doc doc&quot; to force documentation rebuild</div>
@@ -157,15 +164,17 @@ Building the documentation</h1>
 <div class="line">make doc</div>
 </div><!-- fragment --><p>You will be able to preview the documentation as follows:</p>
 <div class="fragment"><div class="line">$(BROWSER) ./docs/html/index.html</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md21"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md27"></a>
 Building the simulator</h1>
 <p>If you want simulate a view of an "indexable mode" animation and have the <a href="https://www.sfml-dev.org/">SFML</a> installed:</p>
 <div class="fragment"><div class="line">cd LampColorControler</div>
-<div class="line">make simulator</div>
+<div class="line">make simulator-indexable</div>
 <div class="line">./_build/simulator/indexable-simulator</div>
+</div><!-- fragment --><p>The simulator also handles the simple and indexable-hd type : </p><div class="fragment"><div class="line">make simulator-simple</div>
+<div class="line">make simulator-indexable-hd</div>
 </div><!-- fragment --><p>This may build the SFML library if <code>SFML 3.0.1</code> is not available locally, and it will fail if some of the required dependencies are missing.</p>
 <p>Note that the compiler used is <code>/usr/bin/c++</code> by default, and as we are using modern C++17 features as well as things like <code>-fconcepts</code> you will require an up-to-date local compiler &ndash; here "up-to-date" typically means something from 2020 :)</p>
-<h1><a class="anchor" id="autotoc_md22"></a>
+<h1><a class="anchor" id="autotoc_md28"></a>
 Cleaning up</h1>
 <p>There are several <code>clean-*</code> recipes available:</p>
 <div class="fragment"><div class="line"># &quot;quick&quot; clean recipes</div>

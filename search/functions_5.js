@@ -15,11 +15,13 @@ var searchData=
   ['enable_5ftilt_5fdetection_12',['enable_tilt_detection',['../classlampda_1_1bsp_1_1imu_1_1Wrapper.html#a2823c898a26e6ac5419793874190f3fb',1,'lampda::bsp::imu::Wrapper']]],
   ['enable_5fvbus_5fgate_13',['enable_vbus_gate',['../namespacelampda_1_1bsp_1_1powergates.html#a8f3232c7ab5c1a592df33af058bf02b8',1,'lampda::bsp::powergates']]],
   ['enable_5fvbus_5fgate_5fdirect_14',['enable_vbus_gate_DIRECT',['../namespacelampda_1_1bsp_1_1powergates.html#a2e9ef867fc97a54c280dbc1bff17ab54',1,'lampda::bsp::powergates']]],
-  ['enforce_5finternal_5fbrightness_5flimits_15',['enforce_internal_brightness_limits',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5ee901eec1ea481cb226366f1f165254',1,'lampda::modes::hardware::LampTy']]],
-  ['enqueue_16',['enqueue',['../structlampda_1_1common_1_1Queue.html#a2cf79d1afaf1549d2b240dc620db7fc2',1,'lampda::common::Queue']]],
-  ['enter_5fgroup_17',['enter_group',['../structlampda_1_1modes_1_1ContextTy.html#a26928fa653e23d803a2b22ab2a1b8c09',1,'lampda::modes::ContextTy']]],
-  ['enter_5fmode_18',['enter_mode',['../structlampda_1_1modes_1_1ContextTy.html#acff871b99b6ef452ac527e0b39d4aa9b',1,'lampda::modes::ContextTy']]],
-  ['enter_5fserial_5fdfu_19',['enter_serial_dfu',['../namespacelampda_1_1hal_1_1registers.html#ad346d945b3782a499033d5c449406278',1,'lampda::hal::registers']]],
-  ['execute_5floop_20',['execute_loop',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a2c18214f42810def6a093442f59f473a',1,'lampda::logic::alerts::AlertBase']]],
-  ['exponentialcurve_21',['ExponentialCurve',['../classlampda_1_1common_1_1curves_1_1ExponentialCurve.html#ac439a7668c924d70015a78340eb831a2',1,'lampda::common::curves::ExponentialCurve']]]
+  ['end_5fblackout_15',['end_blackout',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a63a04ea10e3c25d0d88c9f1c4725e36a',1,'lampda::modes::hardware::LampTy']]],
+  ['end_5fof_5ftimer_5fhandle_16',['end_of_timer_handle',['../classlampda_1_1logic_1_1SunriseTimer.html#a31d1e229a68f4a90c0384eed4229b43d',1,'lampda::logic::SunriseTimer::end_of_timer_handle()'],['../classlampda_1_1logic_1_1SunsetTimer.html#ab855a5cf405ef1dbe220e982fd85665b',1,'lampda::logic::SunsetTimer::end_of_timer_handle()'],['../classlampda_1_1logic_1_1SunTimerBase.html#ab3abf6a6788118e50e15872afc90207b',1,'lampda::logic::SunTimerBase::end_of_timer_handle()']]],
+  ['enforce_5finternal_5fbrightness_5flimits_17',['enforce_internal_brightness_limits',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5ee901eec1ea481cb226366f1f165254',1,'lampda::modes::hardware::LampTy']]],
+  ['enter_5fgroup_18',['enter_group',['../structlampda_1_1modes_1_1ContextTy.html#a26928fa653e23d803a2b22ab2a1b8c09',1,'lampda::modes::ContextTy']]],
+  ['enter_5fmode_19',['enter_mode',['../structlampda_1_1modes_1_1ContextTy.html#acff871b99b6ef452ac527e0b39d4aa9b',1,'lampda::modes::ContextTy']]],
+  ['enter_5fserial_5fdfu_20',['enter_serial_dfu',['../namespacelampda_1_1hal_1_1registers.html#ad346d945b3782a499033d5c449406278',1,'lampda::hal::registers']]],
+  ['estimated_5fprogress_21',['estimated_progress',['../structlampda_1_1modes_1_1anims_1_1fadein_1_1GravityFadeIn.html#ac29033654537f9e70d87a011ac6abc21',1,'lampda::modes::anims::fadein::GravityFadeIn']]],
+  ['execute_5floop_22',['execute_loop',['../structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a2c18214f42810def6a093442f59f473a',1,'lampda::logic::alerts::AlertBase']]],
+  ['exponentialcurve_23',['ExponentialCurve',['../classlampda_1_1common_1_1curves_1_1ExponentialCurve.html#ac439a7668c924d70015a78340eb831a2',1,'lampda::common::curves::ExponentialCurve']]]
 ];

@@ -93,9 +93,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="memItemLeft" align="right" valign="top"><a id="a00d40f9c0f3fa96a607035327d5ebdb9" name="a00d40f9c0f3fa96a607035327d5ebdb9"></a>
-<a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_brightness</b> ()</td></tr>
-<tr class="memdesc:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current brightness value (in range 0 - <a class="el" href="system_2utils_2constants_8h.html#a9faf7ba42a120f449494e8222aa0562c" title="Maximum brightness value.">brightness::absoluteMaximumBrightness</a>). It's value depends on a lot of factors and can be cantrolled by any actors. <br /></td></tr>
+<tr class="memitem:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a00d40f9c0f3fa96a607035327d5ebdb9">get_brightness</a> ()</td></tr>
+<tr class="memdesc:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current brightness value.  <br /></td></tr>
 <tr class="separator:a00d40f9c0f3fa96a607035327d5ebdb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe49f2d4c76155c6a176bdc1014b9c0e"><td class="memItemLeft" align="right" valign="top"><a id="abe49f2d4c76155c6a176bdc1014b9c0e" name="abe49f2d4c76155c6a176bdc1014b9c0e"></a>
 <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_max_brightness</b> ()</td></tr>
@@ -108,21 +107,24 @@ Functions</h2></td></tr>
 <tr class="memitem:a467277619e86efce55db64b649dc7799"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a467277619e86efce55db64b649dc7799">set_max_brightness</a> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brg)</td></tr>
 <tr class="memdesc:a467277619e86efce55db64b649dc7799"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the new max brightness.  <br /></td></tr>
 <tr class="separator:a467277619e86efce55db64b649dc7799"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab147451debf20e06aa43687837aa70e"><td class="memItemLeft" align="right" valign="top"><a id="aab147451debf20e06aa43687837aa70e" name="aab147451debf20e06aa43687837aa70e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_max_user_brightness</b> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brg)</td></tr>
-<tr class="memdesc:aab147451debf20e06aa43687837aa70e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum allowed brightness for the user modes. <br /></td></tr>
-<tr class="separator:aab147451debf20e06aa43687837aa70e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af00fd995d9c0ad7cdaf878a2c2bcad36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#af00fd995d9c0ad7cdaf878a2c2bcad36">set_user_brightness_scale</a> (const float scale)</td></tr>
+<tr class="memdesc:af00fd995d9c0ad7cdaf878a2c2bcad36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale the brightness available to the user modes, without changing the saved brightness. The maximum user brightness and the saved brightness scale together, so a mode animating around the saved brightness keeps its look at any scale. The scale is reset to 1 by <a class="el" href="namespacelampda_1_1logic_1_1brightness.html#af28d5a302b15c8de69597f1f74e69ac8">update_saved_brightness</a>.  <br /></td></tr>
+<tr class="separator:af00fd995d9c0ad7cdaf878a2c2bcad36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af28d5a302b15c8de69597f1f74e69ac8"><td class="memItemLeft" align="right" valign="top"><a id="af28d5a302b15c8de69597f1f74e69ac8" name="af28d5a302b15c8de69597f1f74e69ac8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update_saved_brightness</b> ()</td></tr>
 <tr class="memdesc:af28d5a302b15c8de69597f1f74e69ac8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the saved brightness value with the current brightness. <br /></td></tr>
 <tr class="separator:af28d5a302b15c8de69597f1f74e69ac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a344a0b2be33eeb345469fa4fc20d7b76"><td class="memItemLeft" align="right" valign="top"><a id="a344a0b2be33eeb345469fa4fc20d7b76" name="a344a0b2be33eeb345469fa4fc20d7b76"></a>
 <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_saved_brightness</b> ()</td></tr>
-<tr class="memdesc:a344a0b2be33eeb345469fa4fc20d7b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the saved brightness level. This shoudl be the prefered option in all computations. <br /></td></tr>
+<tr class="memdesc:a344a0b2be33eeb345469fa4fc20d7b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the saved brightness level. This should be the prefered option in all computations. <br /></td></tr>
 <tr class="separator:a344a0b2be33eeb345469fa4fc20d7b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a155cf705c29fd57d1c543fefc7a419ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a155cf705c29fd57d1c543fefc7a419ba">update_brightness</a> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> newBrightness, const bool shouldCallUserBrightnessCallback=false)</td></tr>
-<tr class="memdesc:a155cf705c29fd57d1c543fefc7a419ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the internal brightness values  <br /></td></tr>
-<tr class="separator:a155cf705c29fd57d1c543fefc7a419ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1a33cf62bc41615558a30d2334f87da"><td class="memItemLeft" align="right" valign="top"><a id="ac1a33cf62bc41615558a30d2334f87da" name="ac1a33cf62bc41615558a30d2334f87da"></a>
+<a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_scaled_saved_brightness</b> ()</td></tr>
+<tr class="memdesc:ac1a33cf62bc41615558a30d2334f87da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the saved brightness level, with the user brightness scale applied. This is the level that the user modes should follow. See <a class="el" href="namespacelampda_1_1logic_1_1brightness.html#af00fd995d9c0ad7cdaf878a2c2bcad36">set_user_brightness_scale</a>. <br /></td></tr>
+<tr class="separator:ac1a33cf62bc41615558a30d2334f87da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaba2023be50b8fda43f8cb735edb7592"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#aaba2023be50b8fda43f8cb735edb7592">update_brightness</a> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> newBrightness, const bool shouldSkipUserCallbacks=false)</td></tr>
+<tr class="memdesc:aaba2023be50b8fda43f8cb735edb7592"><td class="mdescLeft">&#160;</td><td class="mdescRight">update the internal brightness values  <br /></td></tr>
+<tr class="separator:aaba2023be50b8fda43f8cb735edb7592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c7170ca51cb8f0255cabc9d83d1bab0"><td class="memItemLeft" align="right" valign="top"><a id="a4c7170ca51cb8f0255cabc9d83d1bab0" name="a4c7170ca51cb8f0255cabc9d83d1bab0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>force_brightness_user_callback</b> ()</td></tr>
 <tr class="memdesc:a4c7170ca51cb8f0255cabc9d83d1bab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">force an update call to the user brightness callback <br /></td></tr>
@@ -141,6 +143,26 @@ Variables</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the LED output brightness. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a00d40f9c0f3fa96a607035327d5ebdb9" name="a00d40f9c0f3fa96a607035327d5ebdb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00d40f9c0f3fa96a607035327d5ebdb9">&#9670;&#160;</a></span>get_brightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> lampda::logic::brightness::get_brightness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current brightness value. </p>
+<p>It's value depends on a lot of factors and can be cantrolled by any actors. </p>
+
+</div>
+</div>
 <a id="a467277619e86efce55db64b649dc7799" name="a467277619e86efce55db64b649dc7799"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a467277619e86efce55db64b649dc7799">&#9670;&#160;</a></span>set_max_brightness()</h2>
 
@@ -167,8 +189,34 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a155cf705c29fd57d1c543fefc7a419ba" name="a155cf705c29fd57d1c543fefc7a419ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a155cf705c29fd57d1c543fefc7a419ba">&#9670;&#160;</a></span>update_brightness()</h2>
+<a id="af00fd995d9c0ad7cdaf878a2c2bcad36" name="af00fd995d9c0ad7cdaf878a2c2bcad36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af00fd995d9c0ad7cdaf878a2c2bcad36">&#9670;&#160;</a></span>set_user_brightness_scale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::brightness::set_user_brightness_scale </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scale the brightness available to the user modes, without changing the saved brightness. The maximum user brightness and the saved brightness scale together, so a mode animating around the saved brightness keeps its look at any scale. The scale is reset to 1 by <a class="el" href="namespacelampda_1_1logic_1_1brightness.html#af28d5a302b15c8de69597f1f74e69ac8">update_saved_brightness</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">scale</td><td>between 0 and 1 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aaba2023be50b8fda43f8cb735edb7592" name="aaba2023be50b8fda43f8cb735edb7592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaba2023be50b8fda43f8cb735edb7592">&#9670;&#160;</a></span>update_brightness()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -183,7 +231,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>shouldCallUserBrightnessCallback</em> = <code>false</code>&#160;</td>
+          <td class="paramname"><em>shouldSkipUserCallbacks</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -197,7 +245,7 @@ Variables</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">newBrightness</td><td>the new brightness value </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shouldCallUserBrightnessCallback</td><td>True if this will call the user callback call </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shouldSkipUserCallbacks</td><td>True if this will skip the user callback call </td></tr>
   </table>
   </dd>
 </dl>

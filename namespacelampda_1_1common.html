@@ -76,7 +76,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">lampda::common Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -95,17 +96,34 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1BitSet.html">BitSet</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A compact, zero-allocation bitset for compile-time sized bit arrays.  <a href="classlampda_1_1common_1_1BitSet.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1common_1_1RecoveryEvent.html">RecoveryEvent</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1common_1_1Queue.html">Queue</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1common_1_1RecoveryTiming.html">RecoveryTiming</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1RecoveryTrace.html">RecoveryTrace</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1StateMachine.html">StateMachine</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a state machine.  <a href="classlampda_1_1common_1_1StateMachine.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a state machine. Thread safe: all the methods are synchronized, a state change and its timeout are always seen together. Do not call from an interrupt.  <a href="classlampda_1_1common_1_1StateMachine.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a command destined to the user layer. Command can only be created by the static make_* methods.  <a href="classlampda_1_1common_1_1UserCommand.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a5c4a7abcb94508e3c88fdc874748a998"><td class="memItemLeft" align="right" valign="top"><a id="a5c4a7abcb94508e3c88fdc874748a998" name="a5c4a7abcb94508e3c88fdc874748a998"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>RecoveryStage</b> : uint8_t { <br />
+&#160;&#160;<b>ChargerProbe</b>
+, <b>BalancerProbe</b>
+, <b>VbusGateRequested</b>
+, <b>StartupRejected</b>
+, <br />
+&#160;&#160;<b>ChargerSetup</b>
+, <b>ChargeRequested</b>
+, <b>BalancerSetupFailed</b>
+, <b>Count</b>
+<br />
+ }</td></tr>
+<tr class="separator:a5c4a7abcb94508e3c88fdc874748a998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Shared interfaces &amp; general utilities. </p>

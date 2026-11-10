@@ -108,7 +108,7 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memItemLeft" align="right" valign="top"><a id="a13b290ef7ec43fd80aa08e37a53b2bfa" name="a13b290ef7ec43fd80aa08e37a53b2bfa"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">lampda::logic::alerts::Type</a> : uint32_t { <br />
+<tr class="memitem:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">lampda::logic::alerts::Type</a> : uint32_t { <br />
 &#160;&#160;<b>MAIN_LOOP_FREEZE</b> = 1 &lt;&lt; 0
 , <b>BATTERY_READINGS_INCOHERENT</b> = 1 &lt;&lt; 1
 , <b>BATTERY_CRITICAL</b> = 1 &lt;&lt; 2
@@ -132,9 +132,10 @@ Enumerations</h2></td></tr>
 &#160;&#160;<b>USB_PORT_SHORT</b> = 1 &lt;&lt; 16
 , <b>BATTERY_MISSING</b> = 1 &lt;&lt; 17
 , <b>CHARGER_ERROR</b> = 1 &lt;&lt; 18
+, <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfaa507753f75326ba13c85061de5853b82a">lampda::logic::alerts::OTG_OVER_LIMITS</a> = 1 &lt;&lt; 19
 <br />
  }</td></tr>
-<tr class="memdesc:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert types : 31 errors max. <br /></td></tr>
+<tr class="memdesc:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alert types : 31 errors max.  <a href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">More...</a><br /></td></tr>
 <tr class="separator:a13b290ef7ec43fd80aa08e37a53b2bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -143,10 +144,22 @@ Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::signal_wake_up_from_charger</b> ()</td></tr>
 <tr class="memdesc:a5303ff306969b36c085425eb26a5838b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal slot that the system just powered up from charger. <br /></td></tr>
 <tr class="separator:a5303ff306969b36c085425eb26a5838b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcf2345db9c06c3da37769587567bab6"><td class="memItemLeft" align="right" valign="top"><a id="adcf2345db9c06c3da37769587567bab6" name="adcf2345db9c06c3da37769587567bab6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::signal_usb_port_fault</b> ()</td></tr>
+<tr class="memdesc:adcf2345db9c06c3da37769587567bab6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a fault of the USB port protection. Safe to call from an interrupt: it only sets a flag. The USB_PORT_SHORT alert is raised (or refreshed) by the next <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a8657bd3e3917e26f54ac742bd6966fa7" title="Raise the alerts signaled from interrupts since the last call. Called by the alerts loop and the powe...">process_interrupt_signals()</a> call. <br /></td></tr>
+<tr class="separator:adcf2345db9c06c3da37769587567bab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8657bd3e3917e26f54ac742bd6966fa7"><td class="memItemLeft" align="right" valign="top"><a id="a8657bd3e3917e26f54ac742bd6966fa7" name="a8657bd3e3917e26f54ac742bd6966fa7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::process_interrupt_signals</b> ()</td></tr>
+<tr class="memdesc:a8657bd3e3917e26f54ac742bd6966fa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raise the alerts signaled from interrupts since the last call. Called by the alerts loop and the power thread. <br /></td></tr>
+<tr class="separator:a8657bd3e3917e26f54ac742bd6966fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6f8e270ad87c32139571d749506da3a"><td class="memItemLeft" align="right" valign="top"><a id="ab6f8e270ad87c32139571d749506da3a" name="ab6f8e270ad87c32139571d749506da3a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::handle_all</b> (const bool shouldIgnoreAlerts)</td></tr>
 <tr class="memdesc:ab6f8e270ad87c32139571d749506da3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">handle the behavior for all alerts. Must be called often <br /></td></tr>
 <tr class="separator:ab6f8e270ad87c32139571d749506da3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a292761867da97dc294438739d068096a"><td class="memItemLeft" align="right" valign="top"><a id="a292761867da97dc294438739d068096a" name="a292761867da97dc294438739d068096a"></a>
+brightness_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::get_alerts_max_brightness</b> ()</td></tr>
+<tr class="memdesc:a292761867da97dc294438739d068096a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the max output brightness allowed by the raised alerts (the lowest of their limits) <br /></td></tr>
+<tr class="separator:a292761867da97dc294438739d068096a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af437e7d59fca14cc6f8942bb9b113d2b"><td class="memItemLeft" align="right" valign="top"><a id="af437e7d59fca14cc6f8942bb9b113d2b" name="af437e7d59fca14cc6f8942bb9b113d2b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::alerts::show_all</b> ()</td></tr>
 <tr class="memdesc:af437e7d59fca14cc6f8942bb9b113d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">show all the raised alerts in Serial debug <br /></td></tr>

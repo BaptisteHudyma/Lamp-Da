@@ -127,7 +127,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power:
 <tr class="memdesc:a9c325cc17afce1389c575b6759db4f97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to IDLE mode (no power output/input)  <br /></td></tr>
 <tr class="separator:a9c325cc17afce1389c575b6759db4f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae22c358a69f172b32c864b818b44889c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#ae22c358a69f172b32c864b818b44889c">lampda::logic::power::go_to_shutdown</a> ()</td></tr>
-<tr class="memdesc:ae22c358a69f172b32c864b818b44889c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to SHUTDOWN mode (last mode before shuting system down)  <br /></td></tr>
+<tr class="memdesc:ae22c358a69f172b32c864b818b44889c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to SHUTDOWN mode (last mode before shuting system down) The power thread shuts the power components down, then stops running their loops. This call blocks until the shutdown is completed (or a timeout, after which the shutdown is forced from the calling thread).  <br /></td></tr>
 <tr class="separator:ae22c358a69f172b32c864b818b44889c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e73b3e950c9828d4a46522216aa43f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#a0e73b3e950c9828d4a46522216aa43f1">lampda::logic::power::go_to_error</a> ()</td></tr>
 <tr class="memdesc:a0e73b3e950c9828d4a46522216aa43f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the power handler to ERROR mode (locked safety state)  <br /></td></tr>
@@ -144,13 +144,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power:
 <tr class="memitem:a13a5015a6ec680d54aacf63ea0dfc492"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#a13a5015a6ec680d54aacf63ea0dfc492">lampda::logic::power::enable_charge</a> (const bool)</td></tr>
 <tr class="memdesc:a13a5015a6ec680d54aacf63ea0dfc492"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block or allow the charging of the battery. Note that the system can still be in CHARGING_MODE mode if you set this to false, but the battery just wont charge.  <br /></td></tr>
 <tr class="separator:a13a5015a6ec680d54aacf63ea0dfc492"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdd18af2b36f7eb39e299aee3302e6a9"><td class="memItemLeft" align="right" valign="top"><a id="abdd18af2b36f7eb39e299aee3302e6a9" name="abdd18af2b36f7eb39e299aee3302e6a9"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::get_state</b> ()</td></tr>
-<tr class="memdesc:abdd18af2b36f7eb39e299aee3302e6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current state, as a string. <br /></td></tr>
-<tr class="separator:abdd18af2b36f7eb39e299aee3302e6a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c9c83c4a276d93e1b999cbb45629834"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#a7c9c83c4a276d93e1b999cbb45629834">lampda::logic::power::get_error_string</a> ()</td></tr>
-<tr class="memdesc:a7c9c83c4a276d93e1b999cbb45629834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the error string if set, or "x".  <br /></td></tr>
-<tr class="separator:a7c9c83c4a276d93e1b999cbb45629834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaedf9ca9f2d152ac4a38d70d7fb0e29a"><td class="memItemLeft" align="right" valign="top"><a id="aaedf9ca9f2d152ac4a38d70d7fb0e29a" name="aaedf9ca9f2d152ac4a38d70d7fb0e29a"></a>
+etl::string&lt; 32 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::get_state</b> ()</td></tr>
+<tr class="memdesc:aaedf9ca9f2d152ac4a38d70d7fb0e29a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current state, as a string. <br /></td></tr>
+<tr class="separator:aaedf9ca9f2d152ac4a38d70d7fb0e29a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78ce44a40c0845cfda88aa33ea15f7f4"><td class="memItemLeft" align="right" valign="top">etl::string&lt; 128 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1power.html#a78ce44a40c0845cfda88aa33ea15f7f4">lampda::logic::power::get_error_string</a> ()</td></tr>
+<tr class="memdesc:a78ce44a40c0845cfda88aa33ea15f7f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the error string if set, or "x".  <br /></td></tr>
+<tr class="separator:a78ce44a40c0845cfda88aa33ea15f7f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fa42c8fca6aa26289b044632fb9dbc4"><td class="memItemLeft" align="right" valign="top"><a id="a6fa42c8fca6aa26289b044632fb9dbc4" name="a6fa42c8fca6aa26289b044632fb9dbc4"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::is_output_mode_ready</b> ()</td></tr>
 <tr class="memdesc:a6fa42c8fca6aa26289b044632fb9dbc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true when the current state is OUTPUT_VOLTAGE_MODE, and the desired voltage are set and gates are ready. Basically, it returns true when the output is being powered. <br /></td></tr>
@@ -167,6 +167,17 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power:
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::was_started_in_battery_recovery</b> ()</td></tr>
 <tr class="memdesc:a0ba1dc5c51a39955558feffe629cf321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates if the charger tried the battery recovery system. <br /></td></tr>
 <tr class="separator:a0ba1dc5c51a39955558feffe629cf321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afab97556388ad1b7b18e938ef1e65d6c"><td class="memItemLeft" align="right" valign="top"><a id="afab97556388ad1b7b18e938ef1e65d6c" name="afab97556388ad1b7b18e938ef1e65d6c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::is_in_in_battery_recovery</b> ()</td></tr>
+<tr class="memdesc:afab97556388ad1b7b18e938ef1e65d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that the system is currently attempting battery recovery. <br /></td></tr>
+<tr class="separator:afab97556388ad1b7b18e938ef1e65d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69d7c85ebdbd465f6b9247594fed64e0"><td class="memItemLeft" align="right" valign="top"><a id="a69d7c85ebdbd465f6b9247594fed64e0" name="a69d7c85ebdbd465f6b9247594fed64e0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::show_recovery_diagnostics</b> ()</td></tr>
+<tr class="memdesc:a69d7c85ebdbd465f6b9247594fed64e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only startup trace and current status. Does not initialize or enable charging. <br /></td></tr>
+<tr class="separator:a69d7c85ebdbd465f6b9247594fed64e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f045e2af935c0838fcc98b96767ebf9"><td class="memItemLeft" align="right" valign="top"><a id="a1f045e2af935c0838fcc98b96767ebf9" name="a1f045e2af935c0838fcc98b96767ebf9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::power::show_recovery_trace</b> ()</td></tr>
+<tr class="separator:a1f045e2af935c0838fcc98b96767ebf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Entry point of the battery charging and power gate behavior, implemented as a state machine. </p>

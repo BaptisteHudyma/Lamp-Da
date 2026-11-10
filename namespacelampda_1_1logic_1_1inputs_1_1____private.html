@@ -76,6 +76,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">lampda::logic::inputs::__private Namespace Reference</div></div>
 </div><!--header-->
@@ -88,20 +89,119 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html">ButtonEvent</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEventQueueLock.html">ButtonEventQueueLock</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hold _buttonEventQueueMutex for the scope.  <a href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEventQueueLock.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a288f4b7e32e1e4c1326dfd26e645805f"><td class="memItemLeft" align="right" valign="top"><a id="a288f4b7e32e1e4c1326dfd26e645805f" name="a288f4b7e32e1e4c1326dfd26e645805f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>pop_button_event</b> (<a class="el" href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html">ButtonEvent</a> &amp;event)</td></tr>
+<tr class="memdesc:a288f4b7e32e1e4c1326dfd26e645805f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop the oldest button event. Thread safe. Return false if there is no event. <br /></td></tr>
+<tr class="separator:a288f4b7e32e1e4c1326dfd26e645805f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accc2b893e8ea73679cc6e0a8db1d0870"><td class="memItemLeft" align="right" valign="top"><a id="accc2b893e8ea73679cc6e0a8db1d0870" name="accc2b893e8ea73679cc6e0a8db1d0870"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_button_event_count</b> ()</td></tr>
+<tr class="memdesc:accc2b893e8ea73679cc6e0a8db1d0870"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored button events. Thread safe. <br /></td></tr>
+<tr class="separator:accc2b893e8ea73679cc6e0a8db1d0870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a741f0b60fb52a9636e33e2d93f3692a9"><td class="memItemLeft" align="right" valign="top"><a id="a741f0b60fb52a9636e33e2d93f3692a9" name="a741f0b60fb52a9636e33e2d93f3692a9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_button_events</b> ()</td></tr>
+<tr class="memdesc:a741f0b60fb52a9636e33e2d93f3692a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop all stored button events. Thread safe. <br /></td></tr>
+<tr class="separator:a741f0b60fb52a9636e33e2d93f3692a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00c78264cb57d2004bb3928f3ca15f16"><td class="memItemLeft" align="right" valign="top"><a id="a00c78264cb57d2004bb3928f3ca15f16" name="a00c78264cb57d2004bb3928f3ca15f16"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>push_button_event</b> (const <a class="el" href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html">ButtonEvent</a> &amp;event, const size_t maxFillPercent)</td></tr>
+<tr class="memdesc:a00c78264cb57d2004bb3928f3ca15f16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a button event, if the queue fill stays below <code>maxFillPercent</code>. Thread safe. <br /></td></tr>
+<tr class="separator:a00c78264cb57d2004bb3928f3ca15f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c9ca5de847f6dd56c454b325340644e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html#a3c9ca5de847f6dd56c454b325340644e">handle_brightness_change</a> (uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration, bool isEndOfHoldEvent)</td></tr>
+<tr class="memdesc:a3c9ca5de847f6dd56c454b325340644e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle a brightness change control: 1 long clic raises brightness to maximum, then goes down if press continue, then shuts down the system. 2 long clics lower brightness to minimum, then if press continue shuts down the system.  <br /></td></tr>
+<tr class="separator:a3c9ca5de847f6dd56c454b325340644e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:ae79ef89d573184d745b317255b219f7a"><td class="memItemLeft" align="right" valign="top"><a id="ae79ef89d573184d745b317255b219f7a" name="ae79ef89d573184d745b317255b219f7a"></a>
-<a class="el" href="structlampda_1_1common_1_1Queue.html">common::Queue</a>&lt; <a class="el" href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html">ButtonEvent</a>, <a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html#ac157400120d9d5908190e0660644f089">maxButtonEventStore</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buttonEventQueue</b></td></tr>
-<tr class="memdesc:ae79ef89d573184d745b317255b219f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">button event asynchroneous queue <br /></td></tr>
-<tr class="separator:ae79ef89d573184d745b317255b219f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae64abec5ea29d60ddc10a40c5a5e6c54"><td class="memItemLeft" align="right" valign="top"><a id="ae64abec5ea29d60ddc10a40c5a5e6c54" name="ae64abec5ea29d60ddc10a40c5a5e6c54"></a>
+static etl::queue&lt; <a class="el" href="structlampda_1_1logic_1_1inputs_1_1____private_1_1ButtonEvent.html">ButtonEvent</a>, <a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html#ac157400120d9d5908190e0660644f089">maxButtonEventStore</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>buttonEventQueue</b></td></tr>
+<tr class="memdesc:ae64abec5ea29d60ddc10a40c5a5e6c54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Button event asynchroneous queue: filled by the button thread, emptied by the main loop. etl::queue is not thread safe: only access it under _buttonEventQueueMutex. <br /></td></tr>
+<tr class="separator:ae64abec5ea29d60ddc10a40c5a5e6c54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeb408afce74c24b17e9fc29342bf48a"><td class="memItemLeft" align="right" valign="top"><a id="abeb408afce74c24b17e9fc29342bf48a" name="abeb408afce74c24b17e9fc29342bf48a"></a>
+static <a class="el" href="structlampda_1_1hal_1_1mutex_1_1hal__mutex.html">hal::mutex::hal_mutex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_buttonEventQueueMutex</b></td></tr>
+<tr class="memdesc:abeb408afce74c24b17e9fc29342bf48a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Guards buttonEventQueue. Never held while running the button callbacks. Not recursive. <br /></td></tr>
+<tr class="separator:abeb408afce74c24b17e9fc29342bf48a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8368ee24a693c2e2afa1a7fec9763f7e"><td class="memItemLeft" align="right" valign="top">static const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html#a8368ee24a693c2e2afa1a7fec9763f7e">_isButtonEventQueueMutexInit</a></td></tr>
+<tr class="memdesc:a8368ee24a693c2e2afa1a7fec9763f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialized at program start: events can be pushed as soon as the button thread starts.  <br /></td></tr>
+<tr class="separator:a8368ee24a693c2e2afa1a7fec9763f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac157400120d9d5908190e0660644f089"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs_1_1____private.html#ac157400120d9d5908190e0660644f089">maxButtonEventStore</a></td></tr>
 <tr class="memdesc:ac157400120d9d5908190e0660644f089"><td class="mdescLeft">&#160;</td><td class="mdescRight">this event count should be high enough to not miss clicks and ramp events  <br /></td></tr>
 <tr class="separator:ac157400120d9d5908190e0660644f089"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>private handling namespace, used for unit testing </p>
-</div><h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a3c9ca5de847f6dd56c454b325340644e" name="a3c9ca5de847f6dd56c454b325340644e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c9ca5de847f6dd56c454b325340644e">&#9670;&#160;</a></span>handle_brightness_change()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::logic::inputs::__private::handle_brightness_change </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>consecutiveButtonCheck</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>buttonHoldDuration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isEndOfHoldEvent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle a brightness change control: 1 long clic raises brightness to maximum, then goes down if press continue, then shuts down the system. 2 long clics lower brightness to minimum, then if press continue shuts down the system. </p>
+<p>&lt; keep track of the ramp side : up of down</p>
+<p>&lt; keep track of the latest brightness saturation press duration</p>
+<p>user controled brightness, no more sunrise</p>
+<p>go up</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a8368ee24a693c2e2afa1a7fec9763f7e" name="a8368ee24a693c2e2afa1a7fec9763f7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8368ee24a693c2e2afa1a7fec9763f7e">&#9670;&#160;</a></span>_isButtonEventQueueMutexInit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const bool lampda::logic::inputs::__private::_isButtonEventQueueMutexInit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        (hal::mutex::hal_mutex_init(&amp;_buttonEventQueueMutex), <span class="keyword">true</span>)</div>
+</div><!-- fragment -->
+<p>Initialized at program start: events can be pushed as soon as the button thread starts. </p>
+
+</div>
+</div>
 <a id="ac157400120d9d5908190e0660644f089" name="ac157400120d9d5908190e0660644f089"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac157400120d9d5908190e0660644f089">&#9670;&#160;</a></span>maxButtonEventStore</h2>
 

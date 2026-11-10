@@ -75,6 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
@@ -85,6 +86,12 @@ $(function() {
 <p>Handles the battery charging processes, and power output control.  
 <a href="namespacelampda_1_1component_1_1charger.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda_1_1component_1_1charger_1_1policy"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1charger_1_1policy.html">policy</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1component_1_1charger_1_1policy"><td class="mdescLeft">&#160;</td><td class="mdescRight">Charge stop rules, from a snapshot of the battery measurements. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1component_1_1charger_1_1BatteryStatus__t.html">BatteryStatus_t</a></td></tr>
@@ -96,6 +103,10 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a8c9cc29cdc620142c4782e165ade0df4"><td class="memItemLeft" align="right" valign="top"><a id="a8c9cc29cdc620142c4782e165ade0df4" name="a8c9cc29cdc620142c4782e165ade0df4"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>publish_state</b> ()</td></tr>
+<tr class="memdesc:a8c9cc29cdc620142c4782e165ade0df4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the working charger state to the readers. <br /></td></tr>
+<tr class="separator:a8c9cc29cdc620142c4782e165ade0df4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f727f9558b0094ec873ec0e04f4f356"><td class="memItemLeft" align="right" valign="top"><a id="a6f727f9558b0094ec873ec0e04f4f356" name="a6f727f9558b0094ec873ec0e04f4f356"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_charge</b> ()</td></tr>
 <tr class="separator:a6f727f9558b0094ec873ec0e04f4f356"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,9 +157,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_vbus_signal_detect
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a1b51fa8df380caab4e42bb3e590d3589"><td class="memItemLeft" align="right" valign="top"><a id="a1b51fa8df380caab4e42bb3e590d3589" name="a1b51fa8df380caab4e42bb3e590d3589"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isBatteryFullLatched_s</b> = false</td></tr>
-<tr class="separator:a1b51fa8df380caab4e42bb3e590d3589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62bbc99fb124bf5dba2d999451290b6e"><td class="memItemLeft" align="right" valign="top"><a id="a62bbc99fb124bf5dba2d999451290b6e" name="a62bbc99fb124bf5dba2d999451290b6e"></a>
+static <a class="el" href="classlampda_1_1component_1_1charger_1_1policy_1_1ChargeLimiter.html">policy::ChargeLimiter</a>&#160;</td><td class="memItemRight" valign="bottom"><b>chargeLimiter_s</b></td></tr>
+<tr class="memdesc:a62bbc99fb124bf5dba2d999451290b6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Charge stop rules state (battery full, over voltage) <br /></td></tr>
+<tr class="separator:a62bbc99fb124bf5dba2d999451290b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9c4ca0849ead2217ea7456d8814b9bf"><td class="memItemLeft" align="right" valign="top"><a id="af9c4ca0849ead2217ea7456d8814b9bf" name="af9c4ca0849ead2217ea7456d8814b9bf"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>enableCharge_s</b> = true</td></tr>
 <tr class="separator:af9c4ca0849ead2217ea7456d8814b9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,7 +169,19 @@ static <a class="el" href="structlampda_1_1component_1_1charger_1_1BatteryStatus
 <tr class="separator:ac7703757be0fed42b0ecdd312cc93cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d418d1193ddafb522064726857ed92b"><td class="memItemLeft" align="right" valign="top"><a id="a6d418d1193ddafb522064726857ed92b" name="a6d418d1193ddafb522064726857ed92b"></a>
 static <a class="el" href="structlampda_1_1component_1_1charger_1_1Charger__t.html">Charger_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>charger</b></td></tr>
+<tr class="memdesc:a6d418d1193ddafb522064726857ed92b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Working charger state: only accessed by the power thread, that runs the charger loop. <br /></td></tr>
 <tr class="separator:a6d418d1193ddafb522064726857ed92b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1452190a2035d8d55d54adfc43b4fcf0"><td class="memItemLeft" align="right" valign="top"><a id="a1452190a2035d8d55d54adfc43b4fcf0" name="a1452190a2035d8d55d54adfc43b4fcf0"></a>
+static <a class="el" href="structlampda_1_1component_1_1charger_1_1Charger__t.html">Charger_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>publishedCharger</b></td></tr>
+<tr class="memdesc:a1452190a2035d8d55d54adfc43b4fcf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy of the charger state given to the readers of all threads, see <a class="el" href="namespacelampda_1_1component_1_1charger.html#af1328f2ca48eca78c1b3c98fb6cd07a4" title="Return the latest known state of the charger.">get_state()</a>. The power thread updates it from charger once its update is complete: only access it under _publishedChargerMutex. <br /></td></tr>
+<tr class="separator:a1452190a2035d8d55d54adfc43b4fcf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01ea44cccc8a4a18df0264e02a93e7a1"><td class="memItemLeft" align="right" valign="top"><a id="a01ea44cccc8a4a18df0264e02a93e7a1" name="a01ea44cccc8a4a18df0264e02a93e7a1"></a>
+static <a class="el" href="structlampda_1_1hal_1_1mutex_1_1hal__mutex.html">hal::mutex::hal_mutex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_publishedChargerMutex</b></td></tr>
+<tr class="memdesc:a01ea44cccc8a4a18df0264e02a93e7a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Guards publishedCharger: a reader never sees a partial update (status, measurements and error messages). Not recursive. <br /></td></tr>
+<tr class="separator:a01ea44cccc8a4a18df0264e02a93e7a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda962e80c642eedc890ada661ea7bff"><td class="memItemLeft" align="right" valign="top">static const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1charger.html#afda962e80c642eedc890ada661ea7bff">_isPublishedChargerMutexInit</a></td></tr>
+<tr class="memdesc:afda962e80c642eedc890ada661ea7bff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialized at program start: the state can be read before the charger setup.  <br /></td></tr>
+<tr class="separator:afda962e80c642eedc890ada661ea7bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e4352bcd3b529ba29326441d1ca442f"><td class="memItemLeft" align="right" valign="top"><a id="a6e4352bcd3b529ba29326441d1ca442f" name="a6e4352bcd3b529ba29326441d1ca442f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isOtgEnabled_s</b> = false</td></tr>
 <tr class="separator:a6e4352bcd3b529ba29326441d1ca442f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -208,6 +232,32 @@ const <a class="el" href="classlampda_1_1hal_1_1gpio_1_1DigitalPin.html">hal::gp
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
+<a id="afda962e80c642eedc890ada661ea7bff" name="afda962e80c642eedc890ada661ea7bff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afda962e80c642eedc890ada661ea7bff">&#9670;&#160;</a></span>_isPublishedChargerMutexInit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const bool lampda::component::charger::_isPublishedChargerMutexInit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        (hal::mutex::hal_mutex_init(&amp;_publishedChargerMutex), <span class="keyword">true</span>)</div>
+</div><!-- fragment -->
+<p>Initialized at program start: the state can be read before the charger setup. </p>
+
+</div>
+</div>
 <a id="a282151a34e4df4cb63252b61f3ac7e1f" name="a282151a34e4df4cb63252b61f3ac7e1f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a282151a34e4df4cb63252b61f3ac7e1f">&#9670;&#160;</a></span>isSetup</h2>
 

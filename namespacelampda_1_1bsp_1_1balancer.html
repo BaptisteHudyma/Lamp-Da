@@ -100,6 +100,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>balancer_t</b> = <a 
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aca34052aefe5f658ed0c96a979c97386"><td class="memItemLeft" align="right" valign="top"><a id="aca34052aefe5f658ed0c96a979c97386" name="aca34052aefe5f658ed0c96a979c97386"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>publish_status</b> ()</td></tr>
+<tr class="memdesc:aca34052aefe5f658ed0c96a979c97386"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish the working balancer status to the readers. <br /></td></tr>
+<tr class="separator:aca34052aefe5f658ed0c96a979c97386"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf580f92797d8c0d880b163b9dd879c2"><td class="memItemLeft" align="right" valign="top"><a id="abf580f92797d8c0d880b163b9dd879c2" name="abf580f92797d8c0d880b163b9dd879c2"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_battery_voltage_mv</b> (const uint8_t index)</td></tr>
 <tr class="separator:abf580f92797d8c0d880b163b9dd879c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,7 +151,19 @@ constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>unbalan
 <tr class="separator:aabb8b45ff57ce2b462bc85c8d9ccd190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a954423168f74df6a5821d069105d63b0"><td class="memItemLeft" align="right" valign="top"><a id="a954423168f74df6a5821d069105d63b0" name="a954423168f74df6a5821d069105d63b0"></a>
 <a class="el" href="structlampda_1_1bsp_1_1balancer_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_status</b></td></tr>
+<tr class="memdesc:a954423168f74df6a5821d069105d63b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Working balancer status: only accessed by the power thread, that runs the balancer loop. <br /></td></tr>
 <tr class="separator:a954423168f74df6a5821d069105d63b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa87225220e032ee18431e5e09ce2485f"><td class="memItemLeft" align="right" valign="top"><a id="aa87225220e032ee18431e5e09ce2485f" name="aa87225220e032ee18431e5e09ce2485f"></a>
+static <a class="el" href="structlampda_1_1bsp_1_1balancer_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_publishedStatus</b></td></tr>
+<tr class="memdesc:aa87225220e032ee18431e5e09ce2485f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy of the balancer status given to the readers of all threads, see <a class="el" href="namespacelampda_1_1bsp_1_1balancer.html#aae9fca402c2f319f02e1c50021cd52d2" title="Return the status of the balancer.">get_status()</a>. The power thread updates it from _status once a measurement is complete: only access it under _publishedStatusMutex. <br /></td></tr>
+<tr class="separator:aa87225220e032ee18431e5e09ce2485f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9790f3e02809fb7c0bced6c797a8707"><td class="memItemLeft" align="right" valign="top"><a id="ab9790f3e02809fb7c0bced6c797a8707" name="ab9790f3e02809fb7c0bced6c797a8707"></a>
+static <a class="el" href="structlampda_1_1hal_1_1mutex_1_1hal__mutex.html">hal::mutex::hal_mutex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_publishedStatusMutex</b></td></tr>
+<tr class="memdesc:ab9790f3e02809fb7c0bced6c797a8707"><td class="mdescLeft">&#160;</td><td class="mdescRight">Guards _publishedStatus: a reader never sees a partial measurement. Not recursive. <br /></td></tr>
+<tr class="separator:ab9790f3e02809fb7c0bced6c797a8707"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea680a410cd282c42e96c952f3e5188f"><td class="memItemLeft" align="right" valign="top">static const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1balancer.html#aea680a410cd282c42e96c952f3e5188f">_isPublishedStatusMutexInit</a></td></tr>
+<tr class="memdesc:aea680a410cd282c42e96c952f3e5188f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialized at program start: the status can be read before the balancer init.  <br /></td></tr>
+<tr class="separator:aea680a410cd282c42e96c952f3e5188f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae45298a2d62bc5eab9ada206752702b"><td class="memItemLeft" align="right" valign="top"><a id="aae45298a2d62bc5eab9ada206752702b" name="aae45298a2d62bc5eab9ada206752702b"></a>
 <a class="el" href="classbq76905_1_1BQ76905.html">balancer_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>balancer</b></td></tr>
 <tr class="separator:aae45298a2d62bc5eab9ada206752702b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,6 +200,33 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInitFirstFullScanDo
 
 <p>Call once on init. </p>
 <dl class="section return"><dt>Returns</dt><dd>false if the component detect an issue </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="aea680a410cd282c42e96c952f3e5188f" name="aea680a410cd282c42e96c952f3e5188f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea680a410cd282c42e96c952f3e5188f">&#9670;&#160;</a></span>_isPublishedStatusMutexInit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const bool lampda::bsp::balancer::_isPublishedStatusMutexInit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        (hal::mutex::hal_mutex_init(&amp;_publishedStatusMutex), <span class="keyword">true</span>)</div>
+</div><!-- fragment -->
+<p>Initialized at program start: the status can be read before the balancer init. </p>
 
 </div>
 </div>

@@ -76,6 +76,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">lampda::bsp::powergates Namespace Reference</div></div>
@@ -89,6 +90,12 @@ $(function() {
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1bsp_1_1powergates_1_1power"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1powergates_1_1power.html">power</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1bsp_1_1powergates_1_1power"><td class="mdescLeft">&#160;</td><td class="mdescRight">specific power commands <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1bsp_1_1powergates_1_1PowerGateLock.html">PowerGateLock</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hold _powerGateMutex for the scope.  <a href="structlampda_1_1bsp_1_1powergates_1_1PowerGateLock.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -167,12 +174,23 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>BLIP_MAX_TIME</b> = 10000</td></tr>
 <tr class="memdesc:aa81d14468e08d5724357beedd92332eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">max off delay of the gate blip <br /></td></tr>
 <tr class="separator:aa81d14468e08d5724357beedd92332eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ab7072fdcabc1135263e07e76a7f854"><td class="memItemLeft" align="right" valign="top"><a id="a1ab7072fdcabc1135263e07e76a7f854" name="a1ab7072fdcabc1135263e07e76a7f854"></a>
-static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>_blipWakeUpTime_ms</b> = 0</td></tr>
-<tr class="separator:a1ab7072fdcabc1135263e07e76a7f854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7219f44be68288799a02746c6445bd5"><td class="memItemLeft" align="right" valign="top"><a id="aa7219f44be68288799a02746c6445bd5" name="aa7219f44be68288799a02746c6445bd5"></a>
+static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>_blipStartTime_ms</b> = 0</td></tr>
+<tr class="separator:aa7219f44be68288799a02746c6445bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af44713911f3895dac06b1a0f7f56e023"><td class="memItemLeft" align="right" valign="top"><a id="af44713911f3895dac06b1a0f7f56e023" name="af44713911f3895dac06b1a0f7f56e023"></a>
+static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>_blipDuration_ms</b> = 0</td></tr>
+<tr class="separator:af44713911f3895dac06b1a0f7f56e023"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcc2e3987cfafc78928f8dd9450ac980"><td class="memItemLeft" align="right" valign="top"><a id="adcc2e3987cfafc78928f8dd9450ac980" name="adcc2e3987cfafc78928f8dd9450ac980"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isPowerGateReallyEnabled</b> = false</td></tr>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isPowerGateReallyEnabled</b> = false</td></tr>
 <tr class="separator:adcc2e3987cfafc78928f8dd9450ac980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35552cffb13868a91236c229ce3a6ad1"><td class="memItemLeft" align="right" valign="top"><a id="a35552cffb13868a91236c229ce3a6ad1" name="a35552cffb13868a91236c229ce3a6ad1"></a>
+static <a class="el" href="structlampda_1_1hal_1_1mutex_1_1hal__mutex.html">hal::mutex::hal_mutex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_powerGateMutex</b></td></tr>
+<tr class="memdesc:a35552cffb13868a91236c229ce3a6ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Guards the power gate pin, the blip state (_blipStartTime_ms, _blipDuration_ms) and _isPowerGateReallyEnabled: blip() and cancel_blip() run on the user thread, while <a class="el" href="namespacelampda_1_1bsp_1_1powergates.html#a2a4e6702030c4bbbf0dc4956ccf5b122" title="Called often to refresh the status.">loop()</a> and the gate switches run on the power thread. A blip start, its timeout and its cancellation are then never interleaved with each other or with a gate switch. Not recursive. <br /></td></tr>
+<tr class="separator:a35552cffb13868a91236c229ce3a6ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b493f2eb7d03645f60cbe58c3c5cccd"><td class="memItemLeft" align="right" valign="top"><a id="a0b493f2eb7d03645f60cbe58c3c5cccd" name="a0b493f2eb7d03645f60cbe58c3c5cccd"></a>
+static const bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isPowerGateMutexInit</b> = (hal::mutex::hal_mutex_init(&amp;<a class="el" href="namespacelampda_1_1bsp_1_1powergates.html#a35552cffb13868a91236c229ce3a6ad1">_powerGateMutex</a>), true)</td></tr>
+<tr class="memdesc:a0b493f2eb7d03645f60cbe58c3c5cccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialized at program start: blips can be requested before the power init. <br /></td></tr>
+<tr class="separator:a0b493f2eb7d03645f60cbe58c3c5cccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48d22822dead586bd8301c2d412132c9"><td class="memItemLeft" align="right" valign="top"><a id="a48d22822dead586bd8301c2d412132c9" name="a48d22822dead586bd8301c2d412132c9"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isVbusGateEnabled</b> = false</td></tr>
 <tr class="separator:a48d22822dead586bd8301c2d412132c9"><td class="memSeparator" colspan="2">&#160;</td></tr>

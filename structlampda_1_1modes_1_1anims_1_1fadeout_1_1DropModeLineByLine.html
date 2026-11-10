@@ -88,22 +88,22 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a5a16fe93969ea7bae6c795b26adf383b"><td class="memTemplParams" colspan="2">template&lt;typename ContextType , uint8_t MaskBuffId, uint8_t minMaskValue&gt; </td></tr>
-<tr class="memitem:a5a16fe93969ea7bae6c795b26adf383b"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1anims_1_1fadeout_1_1DropModeLineByLine.html#a5a16fe93969ea7bae6c795b26adf383b">depop_one</a> (ContextType &amp;ctx, uint32_t &amp;pixelId)</td></tr>
-<tr class="memdesc:a5a16fe93969ea7bae6c795b26adf383b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find and depop one particle according to this mode.  <br /></td></tr>
-<tr class="separator:a5a16fe93969ea7bae6c795b26adf383b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad486236fb985c5328518292bba179191"><td class="memTemplParams" colspan="2">template&lt;typename ContextType &gt; </td></tr>
+<tr class="memitem:ad486236fb985c5328518292bba179191"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1anims_1_1fadeout_1_1DropModeLineByLine.html#ad486236fb985c5328518292bba179191">depop_one</a> (ContextType &amp;ctx, const etl::bitset&lt; <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#aeb5ce4c6ed543d46c61fd0ac46a6dad3">LampTy::ledCount</a> &gt; &amp;maskedLeds, uint32_t &amp;pixelId)</td></tr>
+<tr class="memdesc:ad486236fb985c5328518292bba179191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find and depop one particle according to this mode.  <br /></td></tr>
+<tr class="separator:ad486236fb985c5328518292bba179191"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Drop mode policy: remove particles line by line from bottom to top Only pixels from the lowest non-empty line can be dropped. </p>
 <p>Drop policies: choose the drop mode </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5a16fe93969ea7bae6c795b26adf383b" name="a5a16fe93969ea7bae6c795b26adf383b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a16fe93969ea7bae6c795b26adf383b">&#9670;&#160;</a></span>depop_one()</h2>
+<a id="ad486236fb985c5328518292bba179191" name="ad486236fb985c5328518292bba179191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad486236fb985c5328518292bba179191">&#9670;&#160;</a></span>depop_one()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ContextType , uint8_t MaskBuffId, uint8_t minMaskValue&gt; </div>
+template&lt;typename ContextType &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -113,6 +113,12 @@ template&lt;typename ContextType , uint8_t MaskBuffId, uint8_t minMaskValue&gt; 
           <td>(</td>
           <td class="paramtype">ContextType &amp;&#160;</td>
           <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const etl::bitset&lt; <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#aeb5ce4c6ed543d46c61fd0ac46a6dad3">LampTy::ledCount</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>maskedLeds</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['lamptypes_0',['LampTypes',['../namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819',1,'lampda::modes::hardware']]]
+  ['interrupttype_0',['InterruptType',['../classlampda_1_1bsp_1_1imu_1_1Wrapper.html#a3ff3e65e273f23c21b476727c2907ab3',1,'lampda::bsp::imu::Wrapper']]]
 ];

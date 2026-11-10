@@ -113,7 +113,7 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::LampT
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ac7498eab6ce83a5e34039bdb4ea38fd4"><td class="memItemLeft" align="right" valign="top"><a id="ac7498eab6ce83a5e34039bdb4ea38fd4" name="ac7498eab6ce83a5e34039bdb4ea38fd4"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::cylinderRadius_m</b> = LampTy::lampBodyRadius_mm / 1000.0</td></tr>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::cylinderRadius_m</b> = LampTy::lampBodyRadius_mm / 1000.0f</td></tr>
 <tr class="memdesc:ac7498eab6ce83a5e34039bdb4ea38fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">radius of the cylinder, in meters <br /></td></tr>
 <tr class="separator:ac7498eab6ce83a5e34039bdb4ea38fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a044e21c899e6a7b1b11d64b113b475e8"><td class="memItemLeft" align="right" valign="top"><a id="a044e21c899e6a7b1b11d64b113b475e8" name="a044e21c899e6a7b1b11d64b113b475e8"></a>
@@ -125,11 +125,11 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lam
 <tr class="memdesc:a73a4c20153a7046fbcc298cb4f834733"><td class="mdescLeft">&#160;</td><td class="mdescRight">gain for the linear speeds <br /></td></tr>
 <tr class="separator:a73a4c20153a7046fbcc298cb4f834733"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae94cb9c42170ca6b5b76462da41440f8"><td class="memItemLeft" align="right" valign="top"><a id="ae94cb9c42170ca6b5b76462da41440f8" name="ae94cb9c42170ca6b5b76462da41440f8"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::reboundCoeff</b> = 0.1</td></tr>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::reboundCoeff</b> = 0.1f</td></tr>
 <tr class="memdesc:ae94cb9c42170ca6b5b76462da41440f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">low rebound [0 - 1] on walls <br /></td></tr>
 <tr class="separator:ae94cb9c42170ca6b5b76462da41440f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32ed30c0358682872de82c09e7927b5d"><td class="memItemLeft" align="right" valign="top"><a id="a32ed30c0358682872de82c09e7927b5d" name="a32ed30c0358682872de82c09e7927b5d"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::speedDampening</b> = 0.92</td></tr>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::speedDampening</b> = 0.92f</td></tr>
 <tr class="memdesc:a32ed30c0358682872de82c09e7927b5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">low speed dampening [0-0.99] at every steps (viscosity) <br /></td></tr>
 <tr class="separator:a32ed30c0358682872de82c09e7927b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6942d49fe71244485ba6b0b24fea824"><td class="memItemLeft" align="right" valign="top"><a id="aa6942d49fe71244485ba6b0b24fea824" name="aa6942d49fe71244485ba6b0b24fea824"></a>
@@ -140,6 +140,25 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lam
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::maxVerticalSpeed_mmS</b> = 50</td></tr>
 <tr class="memdesc:a06f8e9c17ad8fb8209070484c85c930d"><td class="mdescLeft">&#160;</td><td class="mdescRight">max vertical speed in mm/S <br /></td></tr>
 <tr class="separator:a06f8e9c17ad8fb8209070484c85c930d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd2a25e05a8f2d38425006c270d88b3"><td class="memItemLeft" align="right" valign="top"><a id="acfd2a25e05a8f2d38425006c270d88b3" name="acfd2a25e05a8f2d38425006c270d88b3"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::ledsPerTurn</b> = LampTy::ledPerTurns</td></tr>
+<tr class="memdesc:acfd2a25e05a8f2d38425006c270d88b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">leds around the tube. Not an integer: rows are sheared <br /></td></tr>
+<tr class="separator:acfd2a25e05a8f2d38425006c270d88b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a888d624f1113d0d5493a2bf9989b093a"><td class="memItemLeft" align="right" valign="top"><a id="a888d624f1113d0d5493a2bf9989b093a" name="a888d624f1113d0d5493a2bf9989b093a"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::rowHeight_mm</b> = LampTy::ledStripWidth_mm</td></tr>
+<tr class="memdesc:a888d624f1113d0d5493a2bf9989b093a"><td class="mdescLeft">&#160;</td><td class="mdescRight">height gained by the helix in one turn <br /></td></tr>
+<tr class="separator:a888d624f1113d0d5493a2bf9989b093a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afff8459a18ebb115626df8906d447b7e"><td class="memItemLeft" align="right" valign="top"><a id="afff8459a18ebb115626df8906d447b7e" name="afff8459a18ebb115626df8906d447b7e"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::ledLength_mm</b> = LampTy::ledSize_mm</td></tr>
+<tr class="memdesc:afff8459a18ebb115626df8906d447b7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">length of a led along the strip <br /></td></tr>
+<tr class="separator:afff8459a18ebb115626df8906d447b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad463d74592fdea5db5bf2d78809a73e4"><td class="memItemLeft" align="right" valign="top"><a id="ad463d74592fdea5db5bf2d78809a73e4" name="ad463d74592fdea5db5bf2d78809a73e4"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::cylinderRadius_mm</b> = LampTy::lampBodyRadius_mm</td></tr>
+<tr class="memdesc:ad463d74592fdea5db5bf2d78809a73e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">radius of the cylinder, in millimeters ratio between the speed gained around the tube and the physical one <br /></td></tr>
+<tr class="separator:ad463d74592fdea5db5bf2d78809a73e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af539f6af7ef06c4cdd3945864d79afe4"><td class="memItemLeft" align="right" valign="top"><a id="af539f6af7ef06c4cdd3945864d79afe4" name="af539f6af7ef06c4cdd3945864d79afe4"></a>
+static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::modes::aroundTubeRatio</b> = angularSpeedGain * cylinderRadius_m * cylinderRadius_m * cylinderRadius_m</td></tr>
+<tr class="separator:af539f6af7ef06c4cdd3945864d79afe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define a single particle for a particle system. </p>

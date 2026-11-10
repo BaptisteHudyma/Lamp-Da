@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['status_5ft_0',['Status_t',['../namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61',1,'lampda::bsp::charger']]]
+  ['lamptypes_0',['LampTypes',['../namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819',1,'lampda::modes::hardware']]]
 ];

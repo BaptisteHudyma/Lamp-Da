@@ -75,13 +75,14 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classlampda_1_1common_1_1StateMachine-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">lampda::common::StateMachine&lt; State &gt; Class Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Define a state machine.  
+<p>Define a state machine. Thread safe: all the methods are synchronized, a state change and its timeout are always seen together. Do not call from an interrupt.  
  <a href="classlampda_1_1common_1_1StateMachine.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="state__machine_8h_source.html">state_machine.h</a>&gt;</code></p>
@@ -95,6 +96,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a929d8c753f34aa31a94a69eb607854f5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1StateMachine.html#a929d8c753f34aa31a94a69eb607854f5">StateMachine</a> (const State s, const uint32_t timeout, const State stateOnTimeout)</td></tr>
 <tr class="memdesc:a929d8c753f34aa31a94a69eb607854f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a state machine from the first given state, with a timeout to another.  <br /></td></tr>
 <tr class="separator:a929d8c753f34aa31a94a69eb607854f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0630f850024724b2d3d3376222bab8a"><td class="memItemLeft" align="right" valign="top"><a id="af0630f850024724b2d3d3376222bab8a" name="af0630f850024724b2d3d3376222bab8a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StateMachine</b> (const <a class="el" href="classlampda_1_1common_1_1StateMachine.html">StateMachine</a> &amp;)=delete</td></tr>
+<tr class="separator:af0630f850024724b2d3d3376222bab8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa33691b63f72bbff69fa551e48c08c56"><td class="memItemLeft" align="right" valign="top"><a id="aa33691b63f72bbff69fa551e48c08c56" name="aa33691b63f72bbff69fa551e48c08c56"></a>
+<a class="el" href="classlampda_1_1common_1_1StateMachine.html">StateMachine</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classlampda_1_1common_1_1StateMachine.html">StateMachine</a> const &amp;)=delete</td></tr>
+<tr class="separator:aa33691b63f72bbff69fa551e48c08c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa961d1c9846f9947d510cf6a07ea98e4"><td class="memItemLeft" align="right" valign="top"><a id="aa961d1c9846f9947d510cf6a07ea98e4" name="aa961d1c9846f9947d510cf6a07ea98e4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>run</b> ()</td></tr>
 <tr class="memdesc:aa961d1c9846f9947d510cf6a07ea98e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">timeout check, and such, call it often <br /></td></tr>
@@ -105,6 +112,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>run</b> ()</td></tr>
 <tr class="memitem:ae4a7177e72f6d6fe750e5debdc3fd0d3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1StateMachine.html#ae4a7177e72f6d6fe750e5debdc3fd0d3">set_state</a> (const State s, const uint32_t timeout, const State stateOnTimeout)</td></tr>
 <tr class="memdesc:ae4a7177e72f6d6fe750e5debdc3fd0d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the new current state, with a timeout  <br /></td></tr>
 <tr class="separator:ae4a7177e72f6d6fe750e5debdc3fd0d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26c12b232e6cdca7bd592394e0f53ba7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1StateMachine.html#a26c12b232e6cdca7bd592394e0f53ba7">set_state_unless</a> (const State blockingState, const State s, const uint32_t timeout, const State stateOnTimeout)</td></tr>
+<tr class="memdesc:a26c12b232e6cdca7bd592394e0f53ba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as set_state(s, timeout, stateOnTimeout), unless the machine is in <code>blockingState</code>. The check and the update are atomic: another thread can not switch to <code>blockingState</code> in between.  <br /></td></tr>
+<tr class="separator:a26c12b232e6cdca7bd592394e0f53ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a248eb6cc1566a9f4e44dca8933aa8277"><td class="memItemLeft" align="right" valign="top"><a id="a248eb6cc1566a9f4e44dca8933aa8277" name="a248eb6cc1566a9f4e44dca8933aa8277"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update_timeout</b> (const uint32_t timeout)</td></tr>
 <tr class="memdesc:a248eb6cc1566a9f4e44dca8933aa8277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the current state timeout if a timeout is active. <br /></td></tr>
@@ -113,10 +123,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>update_timeout</b> (c
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>state_just_changed</b> ()</td></tr>
 <tr class="memdesc:ac12f57df489ddba5a9a32f949ebaacd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the current state just changed. Resetted on read. <br /></td></tr>
 <tr class="separator:ac12f57df489ddba5a9a32f949ebaacd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab47a048806f8c1488b1d16a06545e321"><td class="memItemLeft" align="right" valign="top"><a id="ab47a048806f8c1488b1d16a06545e321" name="ab47a048806f8c1488b1d16a06545e321"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>state_changed_with_timeout</b> ()</td></tr>
-<tr class="memdesc:ab47a048806f8c1488b1d16a06545e321"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this state was reached with a timeout <br /></td></tr>
-<tr class="separator:ab47a048806f8c1488b1d16a06545e321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512223c16c9e236ad731e233042477d0"><td class="memItemLeft" align="right" valign="top"><a id="a512223c16c9e236ad731e233042477d0" name="a512223c16c9e236ad731e233042477d0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>state_changed_with_timeout</b> () const</td></tr>
+<tr class="memdesc:a512223c16c9e236ad731e233042477d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this state was reached with a timeout <br /></td></tr>
+<tr class="separator:a512223c16c9e236ad731e233042477d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a43b68980328327a949a111bb20dfba"><td class="memItemLeft" align="right" valign="top"><a id="a1a43b68980328327a949a111bb20dfba" name="a1a43b68980328327a949a111bb20dfba"></a>
 State&#160;</td><td class="memItemRight" valign="bottom"><b>get_state</b> () const</td></tr>
 <tr class="memdesc:a1a43b68980328327a949a111bb20dfba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the actual state. <br /></td></tr>
@@ -129,18 +139,29 @@ State&#160;</td><td class="memItemRight" valign="bottom"><b>get_last_state</b> (
 State&#160;</td><td class="memItemRight" valign="bottom"><b>after_timeout_state</b> () const</td></tr>
 <tr class="memdesc:adc7e4d500dfe26df36d7e684a615e83b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the state after the timeout. May be undefined. <br /></td></tr>
 <tr class="separator:adc7e4d500dfe26df36d7e684a615e83b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e58cd764825277163b7ea086699c480"><td class="memItemLeft" align="right" valign="top"><a id="a8e58cd764825277163b7ea086699c480" name="a8e58cd764825277163b7ea086699c480"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_state_generation</b> () const</td></tr>
+<tr class="memdesc:a8e58cd764825277163b7ea086699c480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a value changed on every state set (timeout target included), to detect a concurrent update. See <a class="el" href="classlampda_1_1common_1_1StateMachine.html#ab6b7f68388c5702bcb0c227fdf70a81c" title="Skip the timeout, only if the state was not set since generation was read (see get_state_generation)....">skip_timeout(const uint32_t)</a> <br /></td></tr>
+<tr class="separator:a8e58cd764825277163b7ea086699c480"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba35273c759146be0e911374c67eb304"><td class="memItemLeft" align="right" valign="top"><a id="aba35273c759146be0e911374c67eb304" name="aba35273c759146be0e911374c67eb304"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>skip_timeout</b> ()</td></tr>
 <tr class="memdesc:aba35273c759146be0e911374c67eb304"><td class="mdescLeft">&#160;</td><td class="mdescRight">use this in a state with a timeout set to skip to the next state directly <br /></td></tr>
 <tr class="separator:aba35273c759146be0e911374c67eb304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6b7f68388c5702bcb0c227fdf70a81c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1StateMachine.html#ab6b7f68388c5702bcb0c227fdf70a81c">skip_timeout</a> (const uint32_t generation)</td></tr>
+<tr class="memdesc:ab6b7f68388c5702bcb0c227fdf70a81c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skip the timeout, only if the state was not set since <code>generation</code> was read (see get_state_generation). A skip decided on a state that another thread replaced meanwhile is dropped.  <br /></td></tr>
+<tr class="separator:ab6b7f68388c5702bcb0c227fdf70a81c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad719c683b72cd268cd3fff1df1c2da7d"><td class="memItemLeft" align="right" valign="top"><a id="ad719c683b72cd268cd3fff1df1c2da7d" name="ad719c683b72cd268cd3fff1df1c2da7d"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_state_raised_time</b> () const</td></tr>
 <tr class="memdesc:ad719c683b72cd268cd3fff1df1c2da7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the time at which this state was raised. <br /></td></tr>
 <tr class="separator:ad719c683b72cd268cd3fff1df1c2da7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4153de13eac9ef47491185e54c4b5a9"><td class="memItemLeft" align="right" valign="top"><a id="ad4153de13eac9ef47491185e54c4b5a9" name="ad4153de13eac9ef47491185e54c4b5a9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset_state_raised_time</b> ()</td></tr>
+<tr class="memdesc:ad4153de13eac9ef47491185e54c4b5a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restart the time returned by <a class="el" href="classlampda_1_1common_1_1StateMachine.html#ad719c683b72cd268cd3fff1df1c2da7d">get_state_raised_time</a>, without changing the state or its timeout. <br /></td></tr>
+<tr class="separator:ad4153de13eac9ef47491185e54c4b5a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename State&gt;<br />
-class lampda::common::StateMachine&lt; State &gt;</div><p>Define a state machine. </p>
+class lampda::common::StateMachine&lt; State &gt;</div><p>Define a state machine. Thread safe: all the methods are synchronized, a state change and its timeout are always seen together. Do not call from an interrupt. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a929d8c753f34aa31a94a69eb607854f5" name="a929d8c753f34aa31a94a69eb607854f5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a929d8c753f34aa31a94a69eb607854f5">&#9670;&#160;</a></span>StateMachine()</h2>
@@ -297,6 +318,90 @@ template&lt;typename State &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true is the state changed </dd></dl>
+
+</div>
+</div>
+<a id="a26c12b232e6cdca7bd592394e0f53ba7" name="a26c12b232e6cdca7bd592394e0f53ba7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26c12b232e6cdca7bd592394e0f53ba7">&#9670;&#160;</a></span>set_state_unless()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename State &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classlampda_1_1common_1_1StateMachine.html">lampda::common::StateMachine</a>&lt; State &gt;::set_state_unless </td>
+          <td>(</td>
+          <td class="paramtype">const State&#160;</td>
+          <td class="paramname"><em>blockingState</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const State&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>timeout</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const State&#160;</td>
+          <td class="paramname"><em>stateOnTimeout</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Same as set_state(s, timeout, stateOnTimeout), unless the machine is in <code>blockingState</code>. The check and the update are atomic: another thread can not switch to <code>blockingState</code> in between. </p>
+<dl class="section return"><dt>Returns</dt><dd>false if the machine is in <code>blockingState</code>, true otherwise (even if the state did not change) </dd></dl>
+
+</div>
+</div>
+<a id="ab6b7f68388c5702bcb0c227fdf70a81c" name="ab6b7f68388c5702bcb0c227fdf70a81c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6b7f68388c5702bcb0c227fdf70a81c">&#9670;&#160;</a></span>skip_timeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename State &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classlampda_1_1common_1_1StateMachine.html">lampda::common::StateMachine</a>&lt; State &gt;::skip_timeout </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>generation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Skip the timeout, only if the state was not set since <code>generation</code> was read (see get_state_generation). A skip decided on a state that another thread replaced meanwhile is dropped. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the timeout was skipped </dd></dl>
 
 </div>
 </div>

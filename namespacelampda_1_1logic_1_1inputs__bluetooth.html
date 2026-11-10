@@ -91,7 +91,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_bluetooth_used</b>
 <tr class="memdesc:a2dbeb9868cc478d5481e4869a0e4a865"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates when called if a bluetooth command was received during the last power on. <br /></td></tr>
 <tr class="separator:a2dbeb9868cc478d5481e4869a0e4a865"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7301d046716a5510cfbc7f592bdce3f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs__bluetooth.html#a7301d046716a5510cfbc7f592bdce3f0">handle_BLE_ELK_command</a> (const <a class="el" href="structlampda_1_1common_1_1elk_1_1Package.html">common::elk::Package</a> &amp;elkControlCommand)</td></tr>
-<tr class="memdesc:a7301d046716a5510cfbc7f592bdce3f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle an ELK bluetooth command.  <br /></td></tr>
+<tr class="memdesc:a7301d046716a5510cfbc7f592bdce3f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle an ELK bluetooth command. Thread safe (called from the bluetooth callback task): the command is converted to user commands, run by the main loop (see <a class="el" href="namespacelampda_1_1logic_1_1user__command__queue.html" title="Defer the user commands to the main loop.">user_command_queue</a>)  <br /></td></tr>
 <tr class="separator:a7301d046716a5510cfbc7f592bdce3f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
@@ -120,7 +120,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>_wasBluetoothU
       </table>
 </div><div class="memdoc">
 
-<p>Handle an ELK bluetooth command. </p>
+<p>Handle an ELK bluetooth command. Thread safe (called from the bluetooth callback task): the command is converted to user commands, run by the main loop (see <a class="el" href="namespacelampda_1_1logic_1_1user__command__queue.html" title="Defer the user commands to the main loop.">user_command_queue</a>) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">elkControlCommand</td><td>Control command, assumed to be received by bluetooth </td></tr>

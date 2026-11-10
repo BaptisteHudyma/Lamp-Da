@@ -114,13 +114,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::ba
 <tr class="memitem:a5e6dd98d40fd8fae451fa7e84cb6f273"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1battery.html#a5e6dd98d40fd8fae451fa7e84cb6f273">lampda::component::battery::liion_mv_to_battery_percent</a> (const uint16_t liionLevel_mv, const uint8_t batteryCountSerie)</td></tr>
 <tr class="memdesc:a5e6dd98d40fd8fae451fa7e84cb6f273"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert a single liion battery voltage to a percent level model  <br /></td></tr>
 <tr class="separator:a5e6dd98d40fd8fae451fa7e84cb6f273"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28c832c24922eeef73048dfd11a7fbba"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1battery.html#a28c832c24922eeef73048dfd11a7fbba">lampda::component::battery::get_level_percent</a> (const uint16_t batteryVoltage_mV, const uint8_t cellCount=batteryCount)</td></tr>
-<tr class="memdesc:a28c832c24922eeef73048dfd11a7fbba"><td class="mdescLeft">&#160;</td><td class="mdescRight">transform a battery voltage measurment to a percent * 100 estimate  <br /></td></tr>
-<tr class="separator:a28c832c24922eeef73048dfd11a7fbba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d62abee3742296c5cb62fa35dbd6a39"><td class="memItemLeft" align="right" valign="top"><a id="a0d62abee3742296c5cb62fa35dbd6a39" name="a0d62abee3742296c5cb62fa35dbd6a39"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::battery::get_level_safe</b> (const uint16_t battery_mv, const uint8_t cellCount=batteryCount)</td></tr>
-<tr class="memdesc:a0d62abee3742296c5cb62fa35dbd6a39"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the battery level, mapped to the desired safe battery level <br /></td></tr>
-<tr class="separator:a0d62abee3742296c5cb62fa35dbd6a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a324b82356837a643cf0af77155457533"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1battery.html#a324b82356837a643cf0af77155457533">lampda::component::battery::get_level_percent</a> (const uint16_t batteryVoltage_mV, const uint8_t cellCount=physical_constants::batterySeriesCount)</td></tr>
+<tr class="memdesc:a324b82356837a643cf0af77155457533"><td class="mdescLeft">&#160;</td><td class="mdescRight">transform a battery voltage measurment to a percent * 100 estimate  <br /></td></tr>
+<tr class="separator:a324b82356837a643cf0af77155457533"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d254dbf5249fbc65abf4ff7ed6b5f30"><td class="memItemLeft" align="right" valign="top"><a id="a4d254dbf5249fbc65abf4ff7ed6b5f30" name="a4d254dbf5249fbc65abf4ff7ed6b5f30"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::battery::get_level_safe</b> (const uint16_t battery_mv, const uint8_t cellCount=physical_constants::batterySeriesCount)</td></tr>
+<tr class="memdesc:a4d254dbf5249fbc65abf4ff7ed6b5f30"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the battery level, mapped to the desired safe battery level <br /></td></tr>
+<tr class="separator:a4d254dbf5249fbc65abf4ff7ed6b5f30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8532ca26df98e360ab307ae6a14917f0"><td class="memItemLeft" align="right" valign="top"><a id="a8532ca26df98e360ab307ae6a14917f0" name="a8532ca26df98e360ab307ae6a14917f0"></a>
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::battery::get_battery_level</b> ()</td></tr>
 <tr class="memdesc:a8532ca26df98e360ab307ae6a14917f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the battery level, corresponding to user safe choice (0-10000) <br /></td></tr>

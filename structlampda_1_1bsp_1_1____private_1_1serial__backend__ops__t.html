@@ -91,9 +91,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6bbfbb35b0c781e9799e962071cf4ad1"><td class="memItemLeft" align="right" valign="top"><a id="a6bbfbb35b0c781e9799e962071cf4ad1" name="a6bbfbb35b0c781e9799e962071cf4ad1"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>send_uart</b> (char const *buffer) const</td></tr>
-<tr class="memdesc:a6bbfbb35b0c781e9799e962071cf4ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueue some text to display. <br /></td></tr>
+<tr class="memitem:a6bbfbb35b0c781e9799e962071cf4ad1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1bsp_1_1____private_1_1serial__backend__ops__t.html#a6bbfbb35b0c781e9799e962071cf4ad1">send_uart</a> (char const *buffer) const</td></tr>
+<tr class="memdesc:a6bbfbb35b0c781e9799e962071cf4ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueue some text to display, as one block. The text is split into chunks of UART_TX_BUFFER_SIZE. It is queued only if all the chunks fit in the queue, so a line is never sent in part. The caller must hold the print lock, so that no other text is queued in between.  <br /></td></tr>
 <tr class="separator:a6bbfbb35b0c781e9799e962071cf4ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30440ed97fec3a1c4ffff26ab821b331"><td class="memItemLeft" align="right" valign="top"><a id="a30440ed97fec3a1c4ffff26ab821b331" name="a30440ed97fec3a1c4ffff26ab821b331"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (void(*taskfunc)(void))</td></tr>
@@ -136,6 +135,36 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>UA
 static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>sendQueueThreadBufferSize</b> = 512</td></tr>
 <tr class="separator:ab912d623039c21d1b2285c5836193909"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6bbfbb35b0c781e9799e962071cf4ad1" name="a6bbfbb35b0c781e9799e962071cf4ad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bbfbb35b0c781e9799e962071cf4ad1">&#9670;&#160;</a></span>send_uart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::bsp::__private::serial_backend_ops_t::send_uart </td>
+          <td>(</td>
+          <td class="paramtype">char const *&#160;</td>
+          <td class="paramname"><em>buffer</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enqueue some text to display, as one block. The text is split into chunks of UART_TX_BUFFER_SIZE. It is queued only if all the chunks fit in the queue, so a line is never sent in part. The caller must hold the print lock, so that no other text is queued in between. </p>
+<dl class="section return"><dt>Returns</dt><dd>false if the queue is too full and the text was dropped </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/system/bsp/text_out.cpp</li>
 </ul>

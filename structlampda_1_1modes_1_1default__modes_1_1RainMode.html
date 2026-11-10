@@ -115,6 +115,10 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>custom_ramp_up
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_update</b> (auto &amp;ctx, float progress)</td></tr>
 <tr class="memdesc:a5dbdce0e14859ea6ed6f6c4ec630aa94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sunset timer will fade out the rain to zero. <br /></td></tr>
 <tr class="separator:a5dbdce0e14859ea6ed6f6c4ec630aa94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58220fd3eae4a2877fbdb4cf2bfc759e"><td class="memItemLeft" align="right" valign="top"><a id="a58220fd3eae4a2877fbdb4cf2bfc759e" name="a58220fd3eae4a2877fbdb4cf2bfc759e"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunrise_update</b> (auto &amp;ctx, float progress)</td></tr>
+<tr class="memdesc:a58220fd3eae4a2877fbdb4cf2bfc759e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sunrise timer will fade in the rain from 0 to saved limit. <br /></td></tr>
+<tr class="separator:a58220fd3eae4a2877fbdb4cf2bfc759e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a483e511ee201354d5cd3569237464373"><td class="memItemLeft" align="right" valign="top"><a id="a483e511ee201354d5cd3569237464373" name="a483e511ee201354d5cd3569237464373"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>loop</b> (auto &amp;ctx)</td></tr>
 <tr class="separator:a483e511ee201354d5cd3569237464373"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,8 +162,11 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasC
 <tr class="separator:a841fdc3bae379a3d4b2ca82fe98324b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9a5ddc1ca20384954535dcb4e97f9e9"><td class="memItemLeft" align="right" valign="top"><a id="aa9a5ddc1ca20384954535dcb4e97f9e9" name="aa9a5ddc1ca20384954535dcb4e97f9e9"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = true</td></tr>
-<tr class="memdesc:aa9a5ddc1ca20384954535dcb4e97f9e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">sunset animation on the rain <br /></td></tr>
+<tr class="memdesc:aa9a5ddc1ca20384954535dcb4e97f9e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">sunset &amp; sunrise animation on the rain <br /></td></tr>
 <tr class="separator:aa9a5ddc1ca20384954535dcb4e97f9e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3222efc1fd9e4934a288f03eae05ff90"><td class="memItemLeft" align="right" valign="top"><a id="a3222efc1fd9e4934a288f03eae05ff90" name="a3222efc1fd9e4934a288f03eae05ff90"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunriseAnimation</b> = true</td></tr>
+<tr class="separator:a3222efc1fd9e4934a288f03eae05ff90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af897646e23d8307bd8907605140d377e"><td class="memItemLeft" align="right" valign="top"><a id="af897646e23d8307bd8907605140d377e" name="af897646e23d8307bd8907605140d377e"></a>
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lightRainDropsPerSecond</b> = 1</td></tr>
 <tr class="memdesc:af897646e23d8307bd8907605140d377e"><td class="mdescLeft">&#160;</td><td class="mdescRight">average drops per seconds for a light rain <br /></td></tr>
@@ -171,6 +178,14 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>hea
 <tr class="memitem:ad3ff09556dbf251003831caed6c07def"><td class="memItemLeft" align="right" valign="top"><a id="ad3ff09556dbf251003831caed6c07def" name="ad3ff09556dbf251003831caed6c07def"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>isGroupManager</b> = false</td></tr>
 <tr class="separator:ad3ff09556dbf251003831caed6c07def"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac10c4957f2fd6e61c29f15f51c1c5ec1"><td class="memItemLeft" align="right" valign="top"><a id="ac10c4957f2fd6e61c29f15f51c1c5ec1" name="ac10c4957f2fd6e61c29f15f51c1c5ec1"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>usesSunsetGravityDissolveMode</b> = false</td></tr>
+<tr class="memdesc:ac10c4957f2fd6e61c29f15f51c1c5ec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">If hasSunsetAnimation is true, this can be used to toggle an internal handling that dissolve the current animation during the sunset. <br /></td></tr>
+<tr class="separator:ac10c4957f2fd6e61c29f15f51c1c5ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a714cecf207c24eba97bf3a0465ce4fa2"><td class="memItemLeft" align="right" valign="top"><a id="a714cecf207c24eba97bf3a0465ce4fa2" name="a714cecf207c24eba97bf3a0465ce4fa2"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>usesSunriseGravityAppearMode</b> = false</td></tr>
+<tr class="memdesc:a714cecf207c24eba97bf3a0465ce4fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">If hasSunriseAnimation is true, this can be used to toggle an internal handling that make the current animation appear with dropped particles during sunrise. <br /></td></tr>
+<tr class="separator:a714cecf207c24eba97bf3a0465ce4fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="memItemLeft" align="right" valign="top"><a id="ae2df3e9f204ee899bd972b6ca4b0a2e8" name="ae2df3e9f204ee899bd972b6ca4b0a2e8"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasBrightCallback</b> = false</td></tr>
 <tr class="memdesc:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7" title="Custom callback when brightness changes (optional)">BasicMode::brightness_update()</a> callback. <br /></td></tr>

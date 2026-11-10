@@ -78,12 +78,12 @@ $(function() {
 <p>This repository contains the bootloader, software and hardware files to create and program the board.</p>
 <p>The system supports programming and charge throught the same USB-C port.</p>
 <p>The board is made to fit into a 50mm tube.</p>
-<h1><a class="anchor" id="autotoc_md45"></a>
+<h1><a class="anchor" id="autotoc_md51"></a>
 File details</h1>
 <ul>
 <li>LampColorControler.ino: main class of the program, containing the setup and loop functions</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md46"></a>
+<h1><a class="anchor" id="autotoc_md52"></a>
 Physical build and architecture :</h1>
 <p>The electrical circuit and build files can be found in the <b>physical/electrical</b> folder.</p>
 <div class="image">
@@ -108,19 +108,56 @@ electrical circuit</div></div>
 <li><b>NO REVERSE VOLTAGE PROTECTION FOR BATTERY</b>: it will blow the circuit right up</li>
 <li><b>IO are 3.3V max</b>, any voltage greater will destroy the system</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md47"></a>
+<h1><a class="anchor" id="autotoc_md53"></a>
 Update the system</h1>
 <p>You can update the program without any tools :</p>
 <p>Open a serial connection to the lamp, and use the "DFU" command to reset the system. The system will appear on a computer as a USB file device.</p>
 <p>You just need to copy the .uf2 file matching your lamp type into this USB device. It will then reboot and update the system itself.</p>
-<h1><a class="anchor" id="autotoc_md48"></a>
+<h1><a class="anchor" id="autotoc_md54"></a>
 Behavior</h1>
 <p>The code in this repo is made to be used as compact lanterns.</p>
 <p>base behavior:</p><ul>
 <li>The lamp starts and stops with one click.</li>
 <li>The luminosity can be raised by clicking than holding, and diminished by double-clicking than holding.</li>
 </ul>
+<p>Some behaviors can be moved to other clicks with the command line (over USB serial, or Bluetooth UART):</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Behavior   </th><th class="markdownTableHeadNone">Name   </th><th class="markdownTableHeadNone">Default clicks   </th><th class="markdownTableHeadNone">Click action   </th><th class="markdownTableHeadNone">Hold action    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Custom ramp   </td><td class="markdownTableBodyNone"><code>ramp</code>   </td><td class="markdownTableBodyNone">3   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">configure the custom ramp of the mode    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Favorites   </td><td class="markdownTableBodyNone"><code>favorite</code>   </td><td class="markdownTableBodyNone">4   </td><td class="markdownTableBodyNone">jump to the favorites   </td><td class="markdownTableBodyNone">add or remove a favorite    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Sunset timer   </td><td class="markdownTableBodyNone"><code>sunset</code>   </td><td class="markdownTableBodyNone">5   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">start or extend the sunset timer    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Quick navigation   </td><td class="markdownTableBodyNone"><code>nav</code>   </td><td class="markdownTableBodyNone">6   </td><td class="markdownTableBodyNone">jump to the first mode   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Scroll   </td><td class="markdownTableBodyNone"><code>scroll</code>   </td><td class="markdownTableBodyNone">6   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">scroll across modes and groups    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Indicator brightness   </td><td class="markdownTableBodyNone"><code>indicator</code>   </td><td class="markdownTableBodyNone">7   </td><td class="markdownTableBodyNone">next brightness   </td><td class="markdownTableBodyNone">cycle the brightness   </td></tr>
+</table>
+<ul>
+<li><code>sys bind</code> shows the current links, <code>set bind nav 8</code> moves a behavior and <code>set bind_reset</code> restores the defaults.</li>
+<li>The click and hold actions of a behavior always move together, to 4 up to 9 clicks (3 up to 9 for <code>ramp</code>, <code>scroll</code> and <code>sunset</code>, that have no click action).</li>
+<li>A click only and a hold only behavior can share the same clicks, like <code>nav</code> and <code>scroll</code>. Otherwise, the behaviors already on these clicks swap with the moved one. A swap that would leave two behaviors on the same action is refused: move the other behavior first.</li>
+<li>1 and 2 clicks (on/off, next mode, brightness), 3 clicks (next group, or quit the favorites) and 10 clicks and above (shutdown, resets) cannot be changed.</li>
+<li>Links are saved when the lamp shuts down, and clearing the user parameters restores the defaults.</li>
+<li>Commands of the lamp when it is off keep priority whatever the links: 3 clicks + hold starts in button usermode (so <code>sunset</code> on 3 clicks only works when the lamp is on) and 4 clicks toggles the lockout. In button usermode, a 5 clicks hold still exits after 5 seconds.</li>
+<li>CCT lamps can only move <code>indicator</code>, to 5 up to 9 clicks: 3 and 4 clicks + hold are their color ramps.</li>
+</ul>
 <p>The battery level is displayed as a color gradient from green (high) to red (low).</p>
+<p>The indicator can also be controlled with the command line:</p><ul>
+<li><code>set ind_lvl [0-2]</code> sets the indicator brightness, like the <code>indicator</code> behavior: 0 is full brightness, 1 is low brightness, 2 is low brightness and off when charging. This choice is saved when the lamp shuts down.</li>
+<li><code>set ind_color [red] [green] [blue]</code> replaces the battery level color by a fixed color (0-255 each), with the same animations. <code>set ind_color</code> without parameters restores the battery level color. This color is not saved.</li>
+<li><code>sys ind</code> shows the indicator brightness level and color.</li>
+<li>Alerts always take precedence over these settings.</li>
+</ul>
+<p>The microphone sensitivity of the sound reactive modes can be set with the command line, or with the sensitivity slider of ELK bluetooth apps:</p><ul>
+<li><code>set mic_sens [0-100]</code> sets the sensitivity. 50 is the default (no gain), 0 divides the sound by 10, 100 multiplies it by 10. This choice is not saved.</li>
+<li><code>sys mic</code> shows the current sensitivity.</li>
+</ul>
+<p>When the lamp is on, the output blinks once when the battery goes under 75%, twice under 50% and three times under 25%. A level passed during the first 10 seconds of use is never displayed, even after this delay. Each level is displayed once until the lamp is turned off and on again. Use <code>set bat_blink 0</code> to disable the blinks, <code>set bat_blink 1</code> to enable them, and <code>sys bat_blink</code> to check the current choice. This choice is saved when the lamp shuts down.</p>
 <div class="image">
 <img src="lamp_top.jpg" alt=""/>
 <div class="caption">
@@ -140,7 +177,7 @@ battery levels</div></div>
 <li>system in error state : fast pink/orange, then shutdown : reached an error state and is stuck here. Shutdown after five seconds</li>
 <li>unhandled: fast white blinks</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md49"></a>
+<h2><a class="anchor" id="autotoc_md55"></a>
 User defined behaviors</h2>
 <p>The user MUST define the target behavior for the target uses.</p>
 <p>Some functions are defined in <a class="el" href="functions_8h.html" title="Define specific needed user functions.">functions.h</a> files, and must be implemented in functions.cpp They allow the user to program the exact desired behavior.</p>
@@ -150,16 +187,16 @@ User defined behaviors</h2>
 <li>simple: Program designed for a constant color led strip</li>
 </ul>
 <p><img src="lamp_types.jpg" alt="" class="inline" title="The different lamps"/>     Above: simple, cct, indexable</p>
-<h3><a class="anchor" id="autotoc_md50"></a>
+<h3><a class="anchor" id="autotoc_md56"></a>
 Bootloader flash</h3>
 <p>Out of factory, the board will miss a bootloader.</p>
 <ul>
 <li>Use a raspberry of any other linux system with gpios</li>
 <li>Use the open source program <b>openocd</b> as described in the <b>flashInfo</b> folder of this repository.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md51"></a>
+<h1><a class="anchor" id="autotoc_md57"></a>
 Building the project</h1>
-<h2><a class="anchor" id="autotoc_md52"></a>
+<h2><a class="anchor" id="autotoc_md58"></a>
 Quick Setup</h2>
 <p>The supported platform to work with the project is:</p>
 <ul>
@@ -170,7 +207,7 @@ Quick Setup</h2>
 <li><a class="el" href="md_docs_QuickSetup.html">Quick Setup</a> &ndash; also lists all required dependencies</li>
 </ul>
 <p>Note that after building documentation, it will be in <code>docs/html/index.html</code></p>
-<h2><a class="anchor" id="autotoc_md53"></a>
+<h2><a class="anchor" id="autotoc_md59"></a>
 Other Guides</h2>
 <p>You will find a guide on how to update the system via USB</p>
 <ul>

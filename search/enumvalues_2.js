@@ -16,8 +16,9 @@ var searchData=
   ['cornflowerblue_13',['CornflowerBlue',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bad3363e2e9ba7a6d941d3fd6ef8da5246',1,'lampda::modes::colors']]],
   ['cornsilk_14',['Cornsilk',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba51707d0c997db62a6fdae4b6a8142adf',1,'lampda::modes::colors']]],
   ['crimson_15',['Crimson',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08baf8ca07edfa87f9a3427b2b4a5253d5f8',1,'lampda::modes::colors']]],
-  ['customrampanimchoice_16',['customRampAnimChoice',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17abdb0fca8269674f487f8806c9aeccbab',1,'lampda::modes']]],
-  ['customrampanimeffect_17',['customRampAnimEffect',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a1b792c24c47faa2a26f6bb829df1dc52',1,'lampda::modes']]],
-  ['customrampstepspeedms_18',['customRampStepSpeedMs',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17aa15ae9cf165a628be7458981d0831395',1,'lampda::modes']]],
-  ['cyan_19',['Cyan',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba392e19cb99e5ec90db131d7b6b618799',1,'lampda::modes::colors']]]
+  ['customramp_16',['CustomRamp',['../namespacelampda_1_1logic_1_1button__bindings.html#ac18aacc8e72ceebbb3d4dfb67531efb8ad91cdc9249f299da8e096c8c21ddd0fb',1,'lampda::logic::button_bindings']]],
+  ['customrampanimchoice_17',['customRampAnimChoice',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17abdb0fca8269674f487f8806c9aeccbab',1,'lampda::modes']]],
+  ['customrampanimeffect_18',['customRampAnimEffect',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17a1b792c24c47faa2a26f6bb829df1dc52',1,'lampda::modes']]],
+  ['customrampstepspeedms_19',['customRampStepSpeedMs',['../namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17aa15ae9cf165a628be7458981d0831395',1,'lampda::modes']]],
+  ['cyan_20',['Cyan',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba392e19cb99e5ec90db131d7b6b618799',1,'lampda::modes::colors']]]
 ];

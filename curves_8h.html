@@ -76,7 +76,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">curves.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -91,7 +92,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1common_1_1curves_1_1Point.html">lampda::common::curves::Point&lt; T, U &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a 2D point.  <a href="structlampda_1_1common_1_1curves_1_1Point.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1curves_1_1LinearCurve.html">lampda::common::curves::LinearCurve&lt; T, U &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1curves_1_1LinearCurve.html">lampda::common::curves::LinearCurve&lt; T, U, maxSize &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a set of points, will fit multiple linear segments to it.  <a href="classlampda_1_1common_1_1curves_1_1LinearCurve.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1curves_1_1ExponentialCurve.html">lampda::common::curves::ExponentialCurve&lt; T, U &gt;</a></td></tr>
@@ -109,6 +110,13 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1common_1_1curves"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1common_1_1curves.html">lampda::common::curves</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1common_1_1curves"><td class="mdescLeft">&#160;</td><td class="mdescRight">Curves classes to sample values from predefined custom parameters. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ab0397617a199d9cd43d87a835d37b18a"><td class="memTemplParams" colspan="2"><a id="ab0397617a199d9cd43d87a835d37b18a" name="ab0397617a199d9cd43d87a835d37b18a"></a>
+template&lt;typename T , typename U , typename... Args&gt; </td></tr>
+<tr class="memitem:ab0397617a199d9cd43d87a835d37b18a"><td class="memTemplItemLeft" align="right" valign="top">LinearCurve&lt; T, U &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>lampda::common::curves::make_linear_curve</b> (const Point&lt; T, U &gt; &amp;firstPoint, const Point&lt; T, U &gt; &amp;secondPoint, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:ab0397617a199d9cd43d87a835d37b18a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define curves types, that can be sampled. </p>

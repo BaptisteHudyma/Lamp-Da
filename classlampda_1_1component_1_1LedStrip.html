@@ -103,12 +103,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a33c2aeb9d5bb22d326b80e464c03f017"><td class="memItemLeft" align="right" valign="top"><a id="a33c2aeb9d5bb22d326b80e464c03f017" name="a33c2aeb9d5bb22d326b80e464c03f017"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>LedStrip</b> (int16_t pin, <a class="el" href="strip__impl_8h.html#a6ff31bc7214a3ae338a80ed6142d69ff">neoPixelType</a> type=NEO_RGB+NEO_KHZ800)</td></tr>
 <tr class="separator:a33c2aeb9d5bb22d326b80e464c03f017"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7491db16053df0256a0a07605c7bf55"><td class="memItemLeft" align="right" valign="top"><a id="ab7491db16053df0256a0a07605c7bf55" name="ab7491db16053df0256a0a07605c7bf55"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>LedStrip</b> (const <a class="el" href="classlampda_1_1component_1_1LedStrip.html">LedStrip</a> &amp;)=delete</td></tr>
+<tr class="separator:ab7491db16053df0256a0a07605c7bf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d39fb7c1f4eacec8e180e879ffe5c3e"><td class="memItemLeft" align="right" valign="top"><a id="a8d39fb7c1f4eacec8e180e879ffe5c3e" name="a8d39fb7c1f4eacec8e180e879ffe5c3e"></a>
+<a class="el" href="classlampda_1_1component_1_1LedStrip.html">LedStrip</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classlampda_1_1component_1_1LedStrip.html">LedStrip</a> const &amp;)=delete</td></tr>
+<tr class="separator:a8d39fb7c1f4eacec8e180e879ffe5c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a739619d2ce875c7fc648d7b98a2559a1"><td class="memItemLeft" align="right" valign="top"><a id="a739619d2ce875c7fc648d7b98a2559a1" name="a739619d2ce875c7fc648d7b98a2559a1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>show</b> ()</td></tr>
 <tr class="separator:a739619d2ce875c7fc648d7b98a2559a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8ee4229fa7f1d0ab697f81f3ba7780f"><td class="memItemLeft" align="right" valign="top"><a id="af8ee4229fa7f1d0ab697f81f3ba7780f" name="af8ee4229fa7f1d0ab697f81f3ba7780f"></a>
-float&#160;</td><td class="memItemRight" valign="bottom"><b>estimateCurrentDraw</b> () const</td></tr>
-<tr class="separator:af8ee4229fa7f1d0ab697f81f3ba7780f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7918a5cf9e744947d278d9cc6c528ec3"><td class="memItemLeft" align="right" valign="top"><a id="a7918a5cf9e744947d278d9cc6c528ec3" name="a7918a5cf9e744947d278d9cc6c528ec3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setBrightness</b> (uint8_t b)</td></tr>
 <tr class="memdesc:a7918a5cf9e744947d278d9cc6c528ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Brightness is an internal counter. <br /></td></tr>
@@ -117,9 +120,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setBrightness</b> (ui
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>getBrightness</b> () const</td></tr>
 <tr class="memdesc:a16428fdbbb2e3d6fee1cf3f1f5e9199d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Brightness is an internal flag. <br /></td></tr>
 <tr class="separator:a16428fdbbb2e3d6fee1cf3f1f5e9199d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fe53b28cc0b6d71298c1bc54ea92054"><td class="memItemLeft" align="right" valign="top"><a id="a9fe53b28cc0b6d71298c1bc54ea92054" name="a9fe53b28cc0b6d71298c1bc54ea92054"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColor</b> (uint16_t n, <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> c)</td></tr>
-<tr class="separator:a9fe53b28cc0b6d71298c1bc54ea92054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d1bcedf515bd161eeec5a53bd57d23c"><td class="memItemLeft" align="right" valign="top"><a id="a9d1bcedf515bd161eeec5a53bd57d23c" name="a9d1bcedf515bd161eeec5a53bd57d23c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setBlackout</b> (const bool shouldBlackout)</td></tr>
+<tr class="memdesc:a9d1bcedf515bd161eeec5a53bd57d23c"><td class="mdescLeft">&#160;</td><td class="mdescRight">While set, the next shows write black to all leds, whatever the brightness or masks. The colors are kept. <br /></td></tr>
+<tr class="separator:a9d1bcedf515bd161eeec5a53bd57d23c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae752858e101f0406eb40f3b0c544a0fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1component_1_1LedStrip.html#ae752858e101f0406eb40f3b0c544a0fe">begin</a> ()</td></tr>
 <tr class="separator:ae752858e101f0406eb40f3b0c544a0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9028ce590b496e2fe4d15336e7601eb8"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1component_1_1LedStrip.html#a9028ce590b496e2fe4d15336e7601eb8">getRawPixelColor</a> (uint16_t n) const</td></tr>
@@ -129,51 +133,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColor</b> (ui
 void&#160;</td><td class="memItemRight" valign="bottom"><b>show_now</b> ()</td></tr>
 <tr class="memdesc:af5cbdbfc2f602a669f321257878d6014"><td class="mdescLeft">&#160;</td><td class="mdescRight">Show the current data, independant of changes. <br /></td></tr>
 <tr class="separator:af5cbdbfc2f602a669f321257878d6014"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc12224c041f0c471b93c067671e72d4"><td class="memItemLeft" align="right" valign="top"><a id="abc12224c041f0c471b93c067671e72d4" name="abc12224c041f0c471b93c067671e72d4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColor</b> (uint16_t n, uint8_t r, uint8_t g, uint8_t b)</td></tr>
-<tr class="separator:abc12224c041f0c471b93c067671e72d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0a94d43640ee59f6b1a3e230b2b8598"><td class="memItemLeft" align="right" valign="top"><a id="ab0a94d43640ee59f6b1a3e230b2b8598" name="ab0a94d43640ee59f6b1a3e230b2b8598"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColor</b> (uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w)</td></tr>
-<tr class="separator:ab0a94d43640ee59f6b1a3e230b2b8598"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46f57704dba3d004e966333f5083d8d2"><td class="memItemLeft" align="right" valign="top"><a id="a46f57704dba3d004e966333f5083d8d2" name="a46f57704dba3d004e966333f5083d8d2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColor</b> (uint16_t n, uint32_t c)</td></tr>
 <tr class="separator:a46f57704dba3d004e966333f5083d8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adae0718b76c3ebabdf2f912a9391b0f4"><td class="memItemLeft" align="right" valign="top"><a id="adae0718b76c3ebabdf2f912a9391b0f4" name="adae0718b76c3ebabdf2f912a9391b0f4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColorXY</b> (uint16_t x, uint16_t y, <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> c)</td></tr>
-<tr class="separator:adae0718b76c3ebabdf2f912a9391b0f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace282f0d92a7f650202b7b9f7ce0e20e"><td class="memItemLeft" align="right" valign="top"><a id="ace282f0d92a7f650202b7b9f7ce0e20e" name="ace282f0d92a7f650202b7b9f7ce0e20e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setPixelColorXY</b> (uint16_t x, uint16_t y, uint32_t c)</td></tr>
-<tr class="separator:ace282f0d92a7f650202b7b9f7ce0e20e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace950f61ac978dda64f2edd791ecd185"><td class="memItemLeft" align="right" valign="top"><a id="ace950f61ac978dda64f2edd791ecd185" name="ace950f61ac978dda64f2edd791ecd185"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>color_wheel</b> (uint8_t pos)</td></tr>
-<tr class="separator:ace950f61ac978dda64f2edd791ecd185"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f4d208660b714f2c539f5c3a382965c"><td class="memItemLeft" align="right" valign="top"><a id="a9f4d208660b714f2c539f5c3a382965c" name="a9f4d208660b714f2c539f5c3a382965c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>blur</b> (uint8_t blur_amount)</td></tr>
-<tr class="separator:a9f4d208660b714f2c539f5c3a382965c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a970802531b19d12fc7509d9bc27e1381"><td class="memItemLeft" align="right" valign="top"><a id="a970802531b19d12fc7509d9bc27e1381" name="a970802531b19d12fc7509d9bc27e1381"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getPixelColor</b> (uint16_t n) const</td></tr>
 <tr class="separator:a970802531b19d12fc7509d9bc27e1381"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf941e4bbb31781a29cd257e5a24959b"><td class="memItemLeft" align="right" valign="top"><a id="acf941e4bbb31781a29cd257e5a24959b" name="acf941e4bbb31781a29cd257e5a24959b"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getPixelColorXY</b> (int16_t x, int16_t y) const</td></tr>
-<tr class="separator:acf941e4bbb31781a29cd257e5a24959b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add95a3e9a15f40bd2570db1e3f9d6a73"><td class="memItemLeft" align="right" valign="top"><a id="add95a3e9a15f40bd2570db1e3f9d6a73" name="add95a3e9a15f40bd2570db1e3f9d6a73"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addPixelColor</b> (uint16_t n, uint32_t color, bool fast=false)</td></tr>
-<tr class="separator:add95a3e9a15f40bd2570db1e3f9d6a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6b15120e33118cfcf2c3bbf1776f16a"><td class="memItemLeft" align="right" valign="top"><a id="ab6b15120e33118cfcf2c3bbf1776f16a" name="ab6b15120e33118cfcf2c3bbf1776f16a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>addPixelColorXY</b> (uint16_t x, uint16_t y, uint32_t color, bool fast=false)</td></tr>
-<tr class="separator:ab6b15120e33118cfcf2c3bbf1776f16a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a625547cd8f552e2fb2c77ca8e1c4272f"><td class="memItemLeft" align="right" valign="top"><a id="a625547cd8f552e2fb2c77ca8e1c4272f" name="a625547cd8f552e2fb2c77ca8e1c4272f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>signal_display</b> ()</td></tr>
 <tr class="separator:a625547cd8f552e2fb2c77ca8e1c4272f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e60fa4e143e878479b3dfb093c678a6"><td class="memItemLeft" align="right" valign="top"><a id="a7e60fa4e143e878479b3dfb093c678a6" name="a7e60fa4e143e878479b3dfb093c678a6"></a>
-uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><b>get_buffer_ptr</b> (const uint8_t index)</td></tr>
-<tr class="separator:a7e60fa4e143e878479b3dfb093c678a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac38329c35150c41a2bae77b8e1bdd583"><td class="memItemLeft" align="right" valign="top"><a id="ac38329c35150c41a2bae77b8e1bdd583" name="ac38329c35150c41a2bae77b8e1bdd583"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>buffer_current_colors</b> (const uint8_t index)</td></tr>
-<tr class="separator:ac38329c35150c41a2bae77b8e1bdd583"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9383561b6e99d52a6472bccc04f3ea5"><td class="memItemLeft" align="right" valign="top"><a id="ab9383561b6e99d52a6472bccc04f3ea5" name="ab9383561b6e99d52a6472bccc04f3ea5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fill_buffer</b> (const uint8_t index, const uint32_t value)</td></tr>
-<tr class="separator:ab9383561b6e99d52a6472bccc04f3ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e93b63cf41f94e2e7a01d135e20c4b7"><td class="memItemLeft" align="right" valign="top"><a id="a4e93b63cf41f94e2e7a01d135e20c4b7" name="a4e93b63cf41f94e2e7a01d135e20c4b7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>mask_led_at_index</b> (const size_t n, const bool shouldMask)</td></tr>
+<tr class="memdesc:a4e93b63cf41f94e2e7a01d135e20c4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a pixel to be masked at the next show. <br /></td></tr>
+<tr class="separator:a4e93b63cf41f94e2e7a01d135e20c4b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -183,27 +155,16 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ab7329f3ae7f76fbae7a71a6bafb0ce3e"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; uint8_t, uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1component_1_1LedStrip.html#ab7329f3ae7f76fbae7a71a6bafb0ce3e">get_brightness_color_and_error</a> (const uint8_t colorIn, uint16_t errorIn, const uint8_t brightness, const uint16_t index)</td></tr>
 <tr class="memdesc:ab7329f3ae7f76fbae7a71a6bafb0ce3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a color to the desired brightness level, with an error adjustment.  <br /></td></tr>
 <tr class="separator:ab7329f3ae7f76fbae7a71a6bafb0ce3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6b858d69eafea78f2d9ac492a570b09"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1component_1_1LedStrip.html#af6b858d69eafea78f2d9ac492a570b09">convert_color_with_brightness</a> (const <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;c, const uint8_t brightness, const uint16_t index, <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;error)</td></tr>
-<tr class="memdesc:af6b858d69eafea78f2d9ac492a570b09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a color to the correct brightness, with temporal dithering.  <br /></td></tr>
-<tr class="separator:af6b858d69eafea78f2d9ac492a570b09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25a54189c42bba77e80d4aa54bc9ddb1"><td class="memItemLeft" align="right" valign="top"><a id="a25a54189c42bba77e80d4aa54bc9ddb1" name="a25a54189c42bba77e80d4aa54bc9ddb1"></a>
-static uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>to_strip</b> (uint16_t screenX, uint16_t screenY)</td></tr>
-<tr class="separator:a25a54189c42bba77e80d4aa54bc9ddb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1868ca4623a2e06222b7a7a5a3d65679"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1component_1_1LedStrip.html#a1868ca4623a2e06222b7a7a5a3d65679">convert_color_with_brightness</a> (const uint32_t color, const uint8_t brightness, const uint16_t index, uint32_t &amp;error)</td></tr>
+<tr class="memdesc:a1868ca4623a2e06222b7a7a5a3d65679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a color to the correct brightness, with temporal dithering.  <br /></td></tr>
+<tr class="separator:a1868ca4623a2e06222b7a7a5a3d65679"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a1704b98e15ef86c4ae78cea7eadd8375"><td class="memItemLeft" align="right" valign="top"><a id="a1704b98e15ef86c4ae78cea7eadd8375" name="a1704b98e15ef86c4ae78cea7eadd8375"></a>
-<a class="el" href="unionlampda_1_1COLOR.html">COLOR</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_colors</b> [LED_COUNT]</td></tr>
-<tr class="memdesc:a1704b98e15ef86c4ae78cea7eadd8375"><td class="mdescLeft">&#160;</td><td class="mdescRight">store the display colors, with no brightness scaling <br /></td></tr>
-<tr class="separator:a1704b98e15ef86c4ae78cea7eadd8375"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dbd4ccb3722993a512fb6ce4fbcf8e4"><td class="memItemLeft" align="right" valign="top"><a id="a1dbd4ccb3722993a512fb6ce4fbcf8e4" name="a1dbd4ccb3722993a512fb6ce4fbcf8e4"></a>
-std::array&lt; <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a>, useTemporalDithering ? LED_COUNT :1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_colorErrors</b></td></tr>
-<tr class="memdesc:a1dbd4ccb3722993a512fb6ce4fbcf8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">used for temporal dithering <br /></td></tr>
-<tr class="separator:a1dbd4ccb3722993a512fb6ce4fbcf8e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4bfac74b2e6a34c98eef919b6083d64"><td class="memItemLeft" align="right" valign="top"><a id="aa4bfac74b2e6a34c98eef919b6083d64" name="aa4bfac74b2e6a34c98eef919b6083d64"></a>
-BufferTy&#160;</td><td class="memItemRight" valign="bottom"><b>_buffers</b> [stripNbBuffers]</td></tr>
-<tr class="memdesc:aa4bfac74b2e6a34c98eef919b6083d64"><td class="mdescLeft">&#160;</td><td class="mdescRight">buffers for computations <br /></td></tr>
-<tr class="separator:aa4bfac74b2e6a34c98eef919b6083d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b577ff362efcfe2537dfe051142b54d"><td class="memItemLeft" align="right" valign="top"><a id="a6b577ff362efcfe2537dfe051142b54d" name="a6b577ff362efcfe2537dfe051142b54d"></a>
+std::array&lt; BufferTy, stripNbBuffers &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_buffers</b></td></tr>
+<tr class="memdesc:a6b577ff362efcfe2537dfe051142b54d"><td class="mdescLeft">&#160;</td><td class="mdescRight">buffers for computations <br /></td></tr>
+<tr class="separator:a6b577ff362efcfe2537dfe051142b54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -241,8 +202,8 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>modes::hardware::La
 
 </div>
 </div>
-<a id="af6b858d69eafea78f2d9ac492a570b09" name="af6b858d69eafea78f2d9ac492a570b09"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af6b858d69eafea78f2d9ac492a570b09">&#9670;&#160;</a></span>convert_color_with_brightness()</h2>
+<a id="a1868ca4623a2e06222b7a7a5a3d65679" name="a1868ca4623a2e06222b7a7a5a3d65679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1868ca4623a2e06222b7a7a5a3d65679">&#9670;&#160;</a></span>convert_color_with_brightness()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -251,10 +212,10 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>modes::hardware::La
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> lampda::component::LedStrip::convert_color_with_brightness </td>
+          <td class="memname">static uint32_t lampda::component::LedStrip::convert_color_with_brightness </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;&#160;</td>
-          <td class="paramname"><em>c</em>, </td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>color</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -271,7 +232,7 @@ struct&#160;</td><td class="memItemRight" valign="bottom"><b>modes::hardware::La
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="unionlampda_1_1COLOR.html">COLOR</a> &amp;&#160;</td>
+          <td class="paramtype">uint32_t &amp;&#160;</td>
           <td class="paramname"><em>error</em>&#160;</td>
         </tr>
         <tr>

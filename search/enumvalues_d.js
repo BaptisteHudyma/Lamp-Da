@@ -9,5 +9,6 @@ var searchData=
   ['orange_6',['Orange',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba356a4a34a3ad5a823f7bb6a813d9a681',1,'lampda::modes::colors']]],
   ['orangered_7',['OrangeRed',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08bac2e5610c3c8bc6ea6b707e89fe2c7640',1,'lampda::modes::colors']]],
   ['orchid_8',['Orchid',['../namespacelampda_1_1modes_1_1colors.html#af7c29eff69c944a4af998b56a3d2c08ba1fc83f74e87bb2a14a63ed4ad7b58fe0',1,'lampda::modes::colors']]],
-  ['overcastsky_9',['OvercastSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ae83a70a623090823f131d86c42cbec09',1,'lampda::modes::colors']]]
+  ['otg_5fover_5flimits_9',['OTG_OVER_LIMITS',['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfaa507753f75326ba13c85061de5853b82a',1,'lampda::logic::alerts']]],
+  ['overcastsky_10',['OvercastSky',['../namespacelampda_1_1modes_1_1colors.html#a8a56d683fba54f268698765528af4ab5ae83a70a623090823f131d86c42cbec09',1,'lampda::modes::colors']]]
 ];

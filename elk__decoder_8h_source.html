@@ -98,88 +98,88 @@ $(function() {
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7d436e56ba6d750db43a8d8ab2189402">MIC_ONOFF</a>,       </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566aae7d76ac9c4702acb9bb0808ad92e7c5">MIC_MODE</a>,        </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a627ad7b3ff651623b3c75bb5aa6806e5">MIC_SENSITIVITY</a>, </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb">LED_ORDER</a>,       </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5">SET_TIME</a>,        </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c">TIMING</a>,          </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structlampda_1_1common_1_1elk_1_1Package.html">   31</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structlampda_1_1common_1_1elk_1_1Package.html">Package</a></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <a class="code hl_enumeration" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566">Type</a> type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566accc0377a8afbf50e7094f5c23a8af223">Type::INVALID</a>;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  uint8_t dataSize = 0;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  std::array&lt;uint8_t, 5&gt; data;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespacelampda_1_1common_1_1elk.html#a2294977a0ce9982b0255e5e831c6b043">   42</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1common_1_1elk.html#a2294977a0ce9982b0255e5e831c6b043">decode_ELK_message</a>(<span class="keyword">const</span> uint8_t* msg, uint16_t len, <a class="code hl_struct" href="structlampda_1_1common_1_1elk_1_1Package.html">Package</a>&amp; package)</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>{</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566accc0377a8afbf50e7094f5c23a8af223">Type::INVALID</a>;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  package.dataSize = 0;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="comment">// basic check: ELK messages are 9 char long</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">if</span> (len != 9)</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="comment">// Must start with 7E and end with EF</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="keywordflow">if</span> (msg[0] != 0x7E || msg[8] != 0xEF)</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <span class="keywordflow">switch</span> (msg[2])</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">case</span> 0x01: <span class="comment">// BRIGHTNESS [0-100]</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (msg[3] &gt; 100)</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a3a8a0aeb55d2886191dee8a5e0d07cc9">Type::BRIGHTNESS</a>;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        package.data[0] = msg[3]; <span class="comment">// [0; 100]</span></div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        package.dataSize = 1;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>      }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">case</span> 0x02: <span class="comment">// PATTERN_SPEED [0-100]</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>      {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">if</span> (msg[3] &gt; 100)</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a0391347e999857b932ff82e4ea4655de">Type::PATTERN_SPEED</a>;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        package.data[0] = msg[3]; <span class="comment">// [0; 100]</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        package.dataSize = 1;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>      }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">case</span> 0x03:</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>      {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="comment">// PATTERN_SELECT [0-28]</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">if</span> (msg[4] == 0x03)</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>          <span class="keyword">const</span> uint8_t patternId = (msg[3] &gt;= 128) ? (msg[3] - 128) : msg[3];</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>          <span class="keywordflow">if</span> (patternId &gt; 28)</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>          package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a086219f72537f1f59998a9b1bbc2c866">Type::PATTERN_SELECT</a>;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>          package.data[0] = patternId; <span class="comment">// [0; 28]</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>          package.dataSize = 1;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="comment">// MIC_MODE: 0 = Classic, 1 = Soft, 2 = Dynamic, 3 = Disco.</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (msg[4] == 0x04)</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        {</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>          <span class="keyword">const</span> uint8_t micMode = (msg[3] &gt;= 128) ? (msg[3] - 128) : msg[3];</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>          <span class="keywordflow">if</span> (micMode &gt; 3)</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>          package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566aae7d76ac9c4702acb9bb0808ad92e7c5">Type::MIC_MODE</a>;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>          package.data[0] = micMode; <span class="comment">// [0; 3]</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>          package.dataSize = 1;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        }</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>      }</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">case</span> 0x04: <span class="comment">// ONOFF</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>      {</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">if</span> (msg[3] &gt; 0x01)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5">SET_TIME</a>,        </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c">TIMING</a>,          </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structlampda_1_1common_1_1elk_1_1Package.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structlampda_1_1common_1_1elk_1_1Package.html">Package</a></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <a class="code hl_enumeration" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566">Type</a> type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566accc0377a8afbf50e7094f5c23a8af223">Type::INVALID</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  uint8_t dataSize = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  std::array&lt;uint8_t, 5&gt; data;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="namespacelampda_1_1common_1_1elk.html#a2294977a0ce9982b0255e5e831c6b043">   41</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacelampda_1_1common_1_1elk.html#a2294977a0ce9982b0255e5e831c6b043">decode_ELK_message</a>(<span class="keyword">const</span> uint8_t* msg, uint16_t len, <a class="code hl_struct" href="structlampda_1_1common_1_1elk_1_1Package.html">Package</a>&amp; package)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566accc0377a8afbf50e7094f5c23a8af223">Type::INVALID</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  package.dataSize = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="comment">// basic check: ELK messages are 9 char long</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="keywordflow">if</span> (len != 9)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="comment">// Must start with 7E and end with EF</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="keywordflow">if</span> (msg[0] != 0x7E || msg[8] != 0xEF)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keywordflow">switch</span> (msg[2])</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">case</span> 0x01: <span class="comment">// BRIGHTNESS [0-100]</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>      {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">if</span> (msg[3] &gt; 100)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a3a8a0aeb55d2886191dee8a5e0d07cc9">Type::BRIGHTNESS</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        package.data[0] = msg[3]; <span class="comment">// [0; 100]</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        package.dataSize = 1;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">case</span> 0x02: <span class="comment">// PATTERN_SPEED [0-100]</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>      {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">if</span> (msg[3] &gt; 100)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a0391347e999857b932ff82e4ea4655de">Type::PATTERN_SPEED</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        package.data[0] = msg[3]; <span class="comment">// [0; 100]</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        package.dataSize = 1;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">case</span> 0x03:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>      {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="comment">// PATTERN_SELECT [0-28]</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">if</span> (msg[4] == 0x03)</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>          <span class="keyword">const</span> uint8_t patternId = (msg[3] &gt;= 128) ? (msg[3] - 128) : msg[3];</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>          <span class="keywordflow">if</span> (patternId &gt; 28)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>          package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a086219f72537f1f59998a9b1bbc2c866">Type::PATTERN_SELECT</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>          package.data[0] = patternId; <span class="comment">// [0; 28]</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>          package.dataSize = 1;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="comment">// MIC_MODE: 0 = Classic, 1 = Soft, 2 = Dynamic, 3 = Disco.</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (msg[4] == 0x04)</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>          <span class="keyword">const</span> uint8_t micMode = (msg[3] &gt;= 128) ? (msg[3] - 128) : msg[3];</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>          <span class="keywordflow">if</span> (micMode &gt; 3)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>          package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566aae7d76ac9c4702acb9bb0808ad92e7c5">Type::MIC_MODE</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>          package.data[0] = micMode; <span class="comment">// [0; 3]</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>          package.dataSize = 1;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>          <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>      }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">case</span> 0x04: <span class="comment">// ONOFF</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>      {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="comment">// [0x00; 0x01] for legacy, [0x00, 0xF0] for new versions</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">if</span> (msg[3] != 0x00 and msg[3] != 0x01 and msg[3] != 0xF0)</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a56bb4a0d6f80963b8625fb039071dd62">Type::ONOFF</a>;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        package.data[0] = msg[3];</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        package.data[0] = msg[3] != 0x00;</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        package.dataSize = 1;</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>      }</div>
@@ -217,56 +217,37 @@ $(function() {
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>      }</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">case</span> 0x81: <span class="comment">// LED_ORDER</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">case</span> 0x82: <span class="comment">// TIMING</span></div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>      {</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keywordflow">if</span> (msg[3] &lt;= 0 or msg[3] &gt; 3)</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">if</span> (msg[4] &lt;= 0 or msg[4] &gt; 3)</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">if</span> (msg[5] &lt;= 0 or msg[5] &gt; 3)</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="comment">// should contain only one 1, one 2 and one 3</span></div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">if</span> (msg[3] + msg[4] + msg[5] != 1 + 2 + 3)</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb">Type::LED_ORDER</a>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c">Type::TIMING</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        package.data[0] = msg[3];</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        package.data[1] = msg[4];</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        package.data[2] = msg[5];</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        package.data[3] = msg[6];</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        package.data[4] = msg[7];</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        package.dataSize = 5;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>      }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordflow">case</span> 0x83: <span class="comment">// SET_TIME</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>      {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5">Type::SET_TIME</a>;</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        package.data[0] = msg[3];</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        package.data[1] = msg[4];</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        package.data[2] = msg[5];</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        package.dataSize = 3;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>      }</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">case</span> 0x82: <span class="comment">// TIMING</span></div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>      {</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c">Type::TIMING</a>;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        package.data[0] = msg[3];</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        package.data[1] = msg[4];</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        package.data[2] = msg[5];</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        package.data[3] = msg[6];</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        package.data[4] = msg[7];</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        package.dataSize = 5;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>      }</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">case</span> 0x83: <span class="comment">// SET_TIME</span></div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>      {</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        package.type = <a class="code hl_enumvalue" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5">Type::SET_TIME</a>;</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        package.data[0] = msg[3];</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        package.data[1] = msg[4];</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        package.data[2] = msg[5];</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        package.data[3] = msg[6];</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        package.dataSize = 4;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>      }</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordflow">default</span>:</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>      <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>  }</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>}</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>} <span class="comment">// namespace elk</span></div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>} <span class="comment">// namespace common</span></div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>} <span class="comment">// namespace lampda</span></div>
-<div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_a2294977a0ce9982b0255e5e831c6b043"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#a2294977a0ce9982b0255e5e831c6b043">lampda::common::elk::decode_ELK_message</a></div><div class="ttdeci">bool decode_ELK_message(const uint8_t *msg, uint16_t len, Package &amp;package)</div><div class="ttdoc">Decode a given message, assuming it it a ELK control message.</div><div class="ttdef"><b>Definition:</b> elk_decoder.h:42</div></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        package.data[3] = msg[6];</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        package.dataSize = 4;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>      }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>  }</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>}</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>} <span class="comment">// namespace elk</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>} <span class="comment">// namespace common</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>} <span class="comment">// namespace lampda</span></div>
+<div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_a2294977a0ce9982b0255e5e831c6b043"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#a2294977a0ce9982b0255e5e831c6b043">lampda::common::elk::decode_ELK_message</a></div><div class="ttdeci">bool decode_ELK_message(const uint8_t *msg, uint16_t len, Package &amp;package)</div><div class="ttdoc">Decode a given message, assuming it it a ELK control message.</div><div class="ttdef"><b>Definition:</b> elk_decoder.h:41</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566">lampda::common::elk::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition:</b> elk_decoder.h:16</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a0391347e999857b932ff82e4ea4655de"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a0391347e999857b932ff82e4ea4655de">lampda::common::elk::Type::PATTERN_SPEED</a></div><div class="ttdeci">@ PATTERN_SPEED</div><div class="ttdoc">set the current pattern speed</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a086219f72537f1f59998a9b1bbc2c866"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a086219f72537f1f59998a9b1bbc2c866">lampda::common::elk::Type::PATTERN_SELECT</a></div><div class="ttdeci">@ PATTERN_SELECT</div><div class="ttdoc">select a display pattern in a list</div></div>
@@ -274,14 +255,13 @@ $(function() {
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a48c23937c624c7f645bfb320d5a059c4"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a48c23937c624c7f645bfb320d5a059c4">lampda::common::elk::Type::COLOR_SELECT</a></div><div class="ttdeci">@ COLOR_SELECT</div><div class="ttdoc">set output as a target color</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a56bb4a0d6f80963b8625fb039071dd62"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a56bb4a0d6f80963b8625fb039071dd62">lampda::common::elk::Type::ONOFF</a></div><div class="ttdeci">@ ONOFF</div><div class="ttdoc">turn output onand off</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a627ad7b3ff651623b3c75bb5aa6806e5"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a627ad7b3ff651623b3c75bb5aa6806e5">lampda::common::elk::Type::MIC_SENSITIVITY</a></div><div class="ttdeci">@ MIC_SENSITIVITY</div><div class="ttdoc">set microphone sensitivity</div></div>
-<div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb">lampda::common::elk::Type::LED_ORDER</a></div><div class="ttdeci">@ LED_ORDER</div><div class="ttdoc">set the new RGB led ordering</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5">lampda::common::elk::Type::SET_TIME</a></div><div class="ttdeci">@ SET_TIME</div><div class="ttdoc">set the system time to a set time</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a7d436e56ba6d750db43a8d8ab2189402"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7d436e56ba6d750db43a8d8ab2189402">lampda::common::elk::Type::MIC_ONOFF</a></div><div class="ttdeci">@ MIC_ONOFF</div><div class="ttdoc">turn on/off the microphone</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c">lampda::common::elk::Type::TIMING</a></div><div class="ttdeci">@ TIMING</div><div class="ttdoc">set a desired on/off time</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566aae7d76ac9c4702acb9bb0808ad92e7c5"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566aae7d76ac9c4702acb9bb0808ad92e7c5">lampda::common::elk::Type::MIC_MODE</a></div><div class="ttdeci">@ MIC_MODE</div><div class="ttdoc">set the pattern changes type with the microphone</div></div>
 <div class="ttc" id="anamespacelampda_1_1common_1_1elk_html_acaa45e95815f1bc5db6a0affa837a566accc0377a8afbf50e7094f5c23a8af223"><div class="ttname"><a href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566accc0377a8afbf50e7094f5c23a8af223">lampda::common::elk::Type::INVALID</a></div><div class="ttdeci">@ INVALID</div><div class="ttdoc">invalid value</div></div>
-<div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:15</div></div>
-<div class="ttc" id="astructlampda_1_1common_1_1elk_1_1Package_html"><div class="ttname"><a href="structlampda_1_1common_1_1elk_1_1Package.html">lampda::common::elk::Package</a></div><div class="ttdef"><b>Definition:</b> elk_decoder.h:32</div></div>
+<div class="ttc" id="anamespacelampda_html"><div class="ttname"><a href="namespacelampda.html">lampda</a></div><div class="ttdoc">Program scope.</div><div class="ttdef"><b>Definition:</b> control_fixed_modes.hpp:14</div></div>
+<div class="ttc" id="astructlampda_1_1common_1_1elk_1_1Package_html"><div class="ttname"><a href="structlampda_1_1common_1_1elk_1_1Package.html">lampda::common::elk::Package</a></div><div class="ttdef"><b>Definition:</b> elk_decoder.h:31</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

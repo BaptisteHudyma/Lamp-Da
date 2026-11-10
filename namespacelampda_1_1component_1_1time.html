@@ -97,6 +97,10 @@ Functions</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>set_real_time</b> (const <a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a> &amp;realTime)</td></tr>
 <tr class="memdesc:abadccaa893776ba9f3011ff12da36a6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the real time in the lamp, only valid until the next shutdown. <br /></td></tr>
 <tr class="separator:abadccaa893776ba9f3011ff12da36a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a757646f46fd5be9d310f9589fe98d42f"><td class="memItemLeft" align="right" valign="top"><a id="a757646f46fd5be9d310f9589fe98d42f" name="a757646f46fd5be9d310f9589fe98d42f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_real_time</b> ()</td></tr>
+<tr class="memdesc:a757646f46fd5be9d310f9589fe98d42f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forget the real time set by <a class="el" href="namespacelampda_1_1component_1_1time.html#abadccaa893776ba9f3011ff12da36a6d" title="Set the real time in the lamp, only valid until the next shutdown.">set_real_time()</a>, as after a shutdown. The real time functions then behave as if it was never set. <br /></td></tr>
+<tr class="separator:a757646f46fd5be9d310f9589fe98d42f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1d985f38e65a283c46c2995656424c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1time.html#aa1d985f38e65a283c46c2995656424c7">convert_to_real_time</a> (const uint32_t time_s)</td></tr>
 <tr class="memdesc:aa1d985f38e65a283c46c2995656424c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a platform time in seconds to a real time value.  <br /></td></tr>
 <tr class="separator:aa1d985f38e65a283c46c2995656424c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -105,8 +109,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>set_real_time</b> (co
 <tr class="memdesc:a9ae576ef23a6f073f91631e15130ef4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a real time value, only valid if it was set first. <br /></td></tr>
 <tr class="separator:a9ae576ef23a6f073f91631e15130ef4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5eedd683abf2091a5c50fca2b3fbfe1a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1time.html#a5eedd683abf2091a5c50fca2b3fbfe1a">get_platform_time_from_target_time</a> (const <a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">RealTime</a> &amp;time)</td></tr>
-<tr class="memdesc:a5eedd683abf2091a5c50fca2b3fbfe1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a real time, return the expected platform time in seconds at wich it will be reached.  <br /></td></tr>
+<tr class="memdesc:a5eedd683abf2091a5c50fca2b3fbfe1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a real time, return the expected platform time in seconds at wich it will be reached. This is the next occurrence of this day of the week and time, at most a week from now. If the given time is the current time, the current platform time is returned.  <br /></td></tr>
 <tr class="separator:a5eedd683abf2091a5c50fca2b3fbfe1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab10e02338f9b9b79b6e479b1bbe5c7d0"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1time.html#ab10e02338f9b9b79b6e479b1bbe5c7d0">get_next_enabled_day</a> (const uint8_t daysMask, const uint8_t hour, const uint8_t minutes, const uint8_t seconds)</td></tr>
+<tr class="memdesc:ab10e02338f9b9b79b6e479b1bbe5c7d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Among the days enabled in <code>daysMask</code>, return the one with the soonest next occurrence of the given time.  <br /></td></tr>
+<tr class="separator:ab10e02338f9b9b79b6e479b1bbe5c7d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -156,6 +163,56 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 
 </div>
 </div>
+<a id="ab10e02338f9b9b79b6e479b1bbe5c7d0" name="ab10e02338f9b9b79b6e479b1bbe5c7d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab10e02338f9b9b79b6e479b1bbe5c7d0">&#9670;&#160;</a></span>get_next_enabled_day()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t lampda::component::time::get_next_enabled_day </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>daysMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>hour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>minutes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Among the days enabled in <code>daysMask</code>, return the one with the soonest next occurrence of the given time. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">daysMask</td><td>bit i enables the day of the week i (bit 0 is monday). Bits above 6 are ignored. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">hour,minutes,seconds</td><td>The target time of the day </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The day of the week [0; 6], or -1 if no day is enabled. If the real time is unset, return the first enabled day. </dd></dl>
+
+</div>
+</div>
 <a id="a5eedd683abf2091a5c50fca2b3fbfe1a" name="a5eedd683abf2091a5c50fca2b3fbfe1a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5eedd683abf2091a5c50fca2b3fbfe1a">&#9670;&#160;</a></span>get_platform_time_from_target_time()</h2>
 
@@ -172,12 +229,11 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
       </table>
 </div><div class="memdoc">
 
-<p>Given a real time, return the expected platform time in seconds at wich it will be reached. </p>
+<p>Given a real time, return the expected platform time in seconds at wich it will be reached. This is the next occurrence of this day of the week and time, at most a week from now. If the given time is the current time, the current platform time is returned. </p>
 <dl class="section warning"><dt>Warning</dt><dd>The returned time in seconds is only valid if the real time was set before. </dd>
 <dd>
 The returned time could be greater than the maximum platform time. </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>if the global time is unset, the function return 0 </dd></dl>
-<p>TODO: handle the clock wrap around</p>
 
 </div>
 </div>

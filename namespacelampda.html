@@ -106,6 +106,9 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1modes"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1modes.html">modes</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1modes"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains basic interface types to implement custom user modes. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1physical__constants"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1physical__constants.html">physical_constants</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1physical__constants"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the board and hardware physical constants. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacelampda_1_1user"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1user.html">user</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1user"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains code handling custom user mode functions for indexable strips. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -221,82 +224,6 @@ static const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ADC_
 static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>internalReferenceVoltage</b> = 3.0f</td></tr>
 <tr class="memdesc:a729edfc67b1af3cbc960ed8e9be8c578"><td class="mdescLeft">&#160;</td><td class="mdescRight">internal voltage reference <br /></td></tr>
 <tr class="separator:a729edfc67b1af3cbc960ed8e9be8c578"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c95f9420f9f61ca077019b976c37070"><td class="memItemLeft" align="right" valign="top"><a id="a9c95f9420f9f61ca077019b976c37070" name="a9c95f9420f9f61ca077019b976c37070"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryCount</b> = 3</td></tr>
-<tr class="memdesc:a9c95f9420f9f61ca077019b976c37070"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of batteries for this model <br /></td></tr>
-<tr class="separator:a9c95f9420f9f61ca077019b976c37070"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3932f4f4c665d8cfa3d0476b8bdb3e4d"><td class="memItemLeft" align="right" valign="top"><a id="a3932f4f4c665d8cfa3d0476b8bdb3e4d" name="a3932f4f4c665d8cfa3d0476b8bdb3e4d"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>imuToCircuitRotationX_rad</b> = 0.0f * <a class="el" href="namespacelampda.html#a4c8acabd644c7a2bc279071e25bc0529">c_degreesToRadians</a></td></tr>
-<tr class="separator:a3932f4f4c665d8cfa3d0476b8bdb3e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72328ddacee9afb152d20a53a90339c2"><td class="memItemLeft" align="right" valign="top"><a id="a72328ddacee9afb152d20a53a90339c2" name="a72328ddacee9afb152d20a53a90339c2"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>imuToCircuitRotationY_rad</b> = 0.0f * <a class="el" href="namespacelampda.html#a4c8acabd644c7a2bc279071e25bc0529">c_degreesToRadians</a></td></tr>
-<tr class="separator:a72328ddacee9afb152d20a53a90339c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a688ffa9c4fd39a472f18472f4e0eb470"><td class="memItemLeft" align="right" valign="top"><a id="a688ffa9c4fd39a472f18472f4e0eb470" name="a688ffa9c4fd39a472f18472f4e0eb470"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>imuToCircuitRotationZ_rad</b> = -9.0f * <a class="el" href="namespacelampda.html#a4c8acabd644c7a2bc279071e25bc0529">c_degreesToRadians</a></td></tr>
-<tr class="separator:a688ffa9c4fd39a472f18472f4e0eb470"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed522175d3d2692c1a35ef26b9005d14"><td class="memItemLeft" align="right" valign="top"><a id="aed522175d3d2692c1a35ef26b9005d14" name="aed522175d3d2692c1a35ef26b9005d14"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>imuToCircuitPositionX_m</b> = 8.915f / 1000.0f</td></tr>
-<tr class="separator:aed522175d3d2692c1a35ef26b9005d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ff2caee25235995e1349ca97c169665"><td class="memItemLeft" align="right" valign="top"><a id="a5ff2caee25235995e1349ca97c169665" name="a5ff2caee25235995e1349ca97c169665"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>imuToCircuitPositionY_m</b> = -5.769f / 1000.0f</td></tr>
-<tr class="separator:a5ff2caee25235995e1349ca97c169665"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1137921a71bb8d9e13a9a359196d50b"><td class="memItemLeft" align="right" valign="top"><a id="ab1137921a71bb8d9e13a9a359196d50b" name="ab1137921a71bb8d9e13a9a359196d50b"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>imuToCircuitPositionZ_m</b> = 0.0f / 1000.0f</td></tr>
-<tr class="separator:ab1137921a71bb8d9e13a9a359196d50b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58175bc936b2ebebab48d76bcd0acc55"><td class="memItemLeft" align="right" valign="top"><a id="a58175bc936b2ebebab48d76bcd0acc55" name="a58175bc936b2ebebab48d76bcd0acc55"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>batteryChargeC_Rate</b> = 0.33f</td></tr>
-<tr class="memdesc:a58175bc936b2ebebab48d76bcd0acc55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum charge rate. <br /></td></tr>
-<tr class="separator:a58175bc936b2ebebab48d76bcd0acc55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab55ce46d7156bbf0e37f6b89d9fb206"><td class="memItemLeft" align="right" valign="top"><a id="aab55ce46d7156bbf0e37f6b89d9fb206" name="aab55ce46d7156bbf0e37f6b89d9fb206"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>batteryDischargeC_Rate</b> = 1.0f</td></tr>
-<tr class="memdesc:aab55ce46d7156bbf0e37f6b89d9fb206"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typical discharge rate. <br /></td></tr>
-<tr class="separator:aab55ce46d7156bbf0e37f6b89d9fb206"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65ff441d1e29ccd8ed553df24ab5b13a"><td class="memItemLeft" align="right" valign="top"><a id="a65ff441d1e29ccd8ed553df24ab5b13a" name="a65ff441d1e29ccd8ed553df24ab5b13a"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryCapacity_mAH</b> = 4850</td></tr>
-<tr class="memdesc:a65ff441d1e29ccd8ed553df24ab5b13a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Battery capacity, in mA*hours. <br /></td></tr>
-<tr class="separator:a65ff441d1e29ccd8ed553df24ab5b13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b5934a5e9670fb80955592a2df13609"><td class="memItemLeft" align="right" valign="top"><a id="a8b5934a5e9670fb80955592a2df13609" name="a8b5934a5e9670fb80955592a2df13609"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>minLiionVoltage_mV</b> = 2500</td></tr>
-<tr class="memdesc:a8b5934a5e9670fb80955592a2df13609"><td class="mdescLeft">&#160;</td><td class="mdescRight">minimum Li-ion voltage <br /></td></tr>
-<tr class="separator:a8b5934a5e9670fb80955592a2df13609"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade87cbd4b1366e64f87e966d75f7922c"><td class="memItemLeft" align="right" valign="top"><a id="ade87cbd4b1366e64f87e966d75f7922c" name="ade87cbd4b1366e64f87e966d75f7922c"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>typicalLiionVoltage_mV</b> = 3630</td></tr>
-<tr class="memdesc:ade87cbd4b1366e64f87e966d75f7922c"><td class="mdescLeft">&#160;</td><td class="mdescRight">standard 50% charge Li-ion voltage <br /></td></tr>
-<tr class="separator:ade87cbd4b1366e64f87e966d75f7922c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e582f802ee2f8e38adaca10f2417f47"><td class="memItemLeft" align="right" valign="top"><a id="a5e582f802ee2f8e38adaca10f2417f47" name="a5e582f802ee2f8e38adaca10f2417f47"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxLiionVoltage_mV</b> = 4200</td></tr>
-<tr class="memdesc:a5e582f802ee2f8e38adaca10f2417f47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute maximum allowed Li-ion voltage. <br /></td></tr>
-<tr class="separator:a5e582f802ee2f8e38adaca10f2417f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7be7b5f0d9266c4b6e46976728349d46"><td class="memItemLeft" align="right" valign="top"><a id="a7be7b5f0d9266c4b6e46976728349d46" name="a7be7b5f0d9266c4b6e46976728349d46"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>minSafeLiionVoltage_mV</b> = 3100</td></tr>
-<tr class="memdesc:a7be7b5f0d9266c4b6e46976728349d46"><td class="mdescLeft">&#160;</td><td class="mdescRight">minimum allowed li-ion voltage safe zone <br /></td></tr>
-<tr class="separator:a7be7b5f0d9266c4b6e46976728349d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a591a2c6c654ed3899c9e13e30f246a52"><td class="memItemLeft" align="right" valign="top"><a id="a591a2c6c654ed3899c9e13e30f246a52" name="a591a2c6c654ed3899c9e13e30f246a52"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxSafeLiionVoltage_mV</b> = 4100</td></tr>
-<tr class="memdesc:a591a2c6c654ed3899c9e13e30f246a52"><td class="mdescLeft">&#160;</td><td class="mdescRight">maximum allowed li-ion voltage safe zone <br /></td></tr>
-<tr class="separator:a591a2c6c654ed3899c9e13e30f246a52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d9062633850ef4db7bf8c84226567e3"><td class="memItemLeft" align="right" valign="top">static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html#a1d9062633850ef4db7bf8c84226567e3">minSingularBatteryVoltage_mV</a></td></tr>
-<tr class="memdesc:a1d9062633850ef4db7bf8c84226567e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">with added margins to avoid wrong detection  <br /></td></tr>
-<tr class="separator:a1d9062633850ef4db7bf8c84226567e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8bb15f5c8411f5b91acd27b616218d8"><td class="memItemLeft" align="right" valign="top">static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html#ae8bb15f5c8411f5b91acd27b616218d8">maxSingularBatteryVoltage_mV</a></td></tr>
-<tr class="memdesc:ae8bb15f5c8411f5b91acd27b616218d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">with added margins to avoid wrong detection  <br /></td></tr>
-<tr class="separator:ae8bb15f5c8411f5b91acd27b616218d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b3c9997fb656bfbe319715ecbad05c7"><td class="memItemLeft" align="right" valign="top"><a id="a7b3c9997fb656bfbe319715ecbad05c7" name="a7b3c9997fb656bfbe319715ecbad05c7"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>maxSystemTemp_c</b> = 70.0f</td></tr>
-<tr class="memdesc:a7b3c9997fb656bfbe319715ecbad05c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">maximum microcontroler temperature, in degrees <br /></td></tr>
-<tr class="separator:a7b3c9997fb656bfbe319715ecbad05c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7afdfc6a2439b02adef7485227686416"><td class="memItemLeft" align="right" valign="top"><a id="a7afdfc6a2439b02adef7485227686416" name="a7afdfc6a2439b02adef7485227686416"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>criticalSystemTemp_c</b> = 80.0f</td></tr>
-<tr class="memdesc:a7afdfc6a2439b02adef7485227686416"><td class="mdescLeft">&#160;</td><td class="mdescRight">absolute maximum microcontroler temperature, in degrees <br /></td></tr>
-<tr class="separator:a7afdfc6a2439b02adef7485227686416"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6edd1cd37f00bd3c6e1874acf342623"><td class="memItemLeft" align="right" valign="top"><a id="aa6edd1cd37f00bd3c6e1874acf342623" name="aa6edd1cd37f00bd3c6e1874acf342623"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryCritical</b> = 300</td></tr>
-<tr class="memdesc:aa6edd1cd37f00bd3c6e1874acf342623"><td class="mdescLeft">&#160;</td><td class="mdescRight">in % *100, critical battery level <br /></td></tr>
-<tr class="separator:aa6edd1cd37f00bd3c6e1874acf342623"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab83c391bd977a9aba5f903acb02ae026"><td class="memItemLeft" align="right" valign="top"><a id="ab83c391bd977a9aba5f903acb02ae026" name="ab83c391bd977a9aba5f903acb02ae026"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryLow</b> = 500</td></tr>
-<tr class="memdesc:ab83c391bd977a9aba5f903acb02ae026"><td class="mdescLeft">&#160;</td><td class="mdescRight">in % *100, low battery level <br /></td></tr>
-<tr class="separator:ab83c391bd977a9aba5f903acb02ae026"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2308b911b4eb0e3a9d0d5373f90b1024"><td class="memItemLeft" align="right" valign="top"><a id="a2308b911b4eb0e3a9d0d5373f90b1024" name="a2308b911b4eb0e3a9d0d5373f90b1024"></a>
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>USER_WATCHDOG_ID</b> = 0</td></tr>
 <tr class="memdesc:a2308b911b4eb0e3a9d0d5373f90b1024"><td class="mdescLeft">&#160;</td><td class="mdescRight">user thread watchdog <br /></td></tr>
@@ -305,47 +232,6 @@ static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>U
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>POWER_WATCHDOG_ID</b> = 2</td></tr>
 <tr class="memdesc:abe3f22b133b7ba273c4f7f000ff2b182"><td class="mdescLeft">&#160;</td><td class="mdescRight">power thread watchdog <br /></td></tr>
 <tr class="separator:abe3f22b133b7ba273c4f7f000ff2b182"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac48518ede7690a325f8095306247750e"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html#ac48518ede7690a325f8095306247750e">loopDeltaTime</a> = MAIN_LOOP_UPDATE_PERIOD_MS / 1000.0f</td></tr>
-<tr class="memdesc:ac48518ede7690a325f8095306247750e"><td class="mdescLeft">&#160;</td><td class="mdescRight">EXPECTED delta time for each loop run.  <br /></td></tr>
-<tr class="separator:ac48518ede7690a325f8095306247750e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af644101f93e3238b3aa7aa8080e74aab"><td class="memItemLeft" align="right" valign="top"><a id="af644101f93e3238b3aa7aa8080e74aab" name="af644101f93e3238b3aa7aa8080e74aab"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryMaxVoltage_mV</b> = <a class="el" href="namespacelampda.html#a5e582f802ee2f8e38adaca10f2417f47">maxLiionVoltage_mV</a> * <a class="el" href="namespacelampda.html#a9c95f9420f9f61ca077019b976c37070">batteryCount</a></td></tr>
-<tr class="memdesc:af644101f93e3238b3aa7aa8080e74aab"><td class="mdescLeft">&#160;</td><td class="mdescRight">max voltage of a single li-ion cell <br /></td></tr>
-<tr class="separator:af644101f93e3238b3aa7aa8080e74aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf6d8279c176cde6e465bc9610bd1073"><td class="memItemLeft" align="right" valign="top"><a id="adf6d8279c176cde6e465bc9610bd1073" name="adf6d8279c176cde6e465bc9610bd1073"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryMaxVoltageSafe_mV</b> = <a class="el" href="namespacelampda.html#a591a2c6c654ed3899c9e13e30f246a52">maxSafeLiionVoltage_mV</a> * <a class="el" href="namespacelampda.html#a9c95f9420f9f61ca077019b976c37070">batteryCount</a></td></tr>
-<tr class="memdesc:adf6d8279c176cde6e465bc9610bd1073"><td class="mdescLeft">&#160;</td><td class="mdescRight">max voltage of a li-ion cell to maximise lifetime <br /></td></tr>
-<tr class="separator:adf6d8279c176cde6e465bc9610bd1073"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7f8d2f4b3b53a77befeb3bbf40a457f"><td class="memItemLeft" align="right" valign="top"><a id="ac7f8d2f4b3b53a77befeb3bbf40a457f" name="ac7f8d2f4b3b53a77befeb3bbf40a457f"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryTypicalVoltageSafe_mV</b> = <a class="el" href="namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c">typicalLiionVoltage_mV</a> * <a class="el" href="namespacelampda.html#a9c95f9420f9f61ca077019b976c37070">batteryCount</a></td></tr>
-<tr class="memdesc:ac7f8d2f4b3b53a77befeb3bbf40a457f"><td class="mdescLeft">&#160;</td><td class="mdescRight">typical pack voltage <br /></td></tr>
-<tr class="separator:ac7f8d2f4b3b53a77befeb3bbf40a457f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6716f504f9d519d15ae02d02ad5a069c"><td class="memItemLeft" align="right" valign="top"><a id="a6716f504f9d519d15ae02d02ad5a069c" name="a6716f504f9d519d15ae02d02ad5a069c"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryMinVoltage_mV</b> = <a class="el" href="namespacelampda.html#a8b5934a5e9670fb80955592a2df13609">minLiionVoltage_mV</a> * <a class="el" href="namespacelampda.html#a9c95f9420f9f61ca077019b976c37070">batteryCount</a></td></tr>
-<tr class="memdesc:a6716f504f9d519d15ae02d02ad5a069c"><td class="mdescLeft">&#160;</td><td class="mdescRight">min voltage of a single li-ion cell <br /></td></tr>
-<tr class="separator:a6716f504f9d519d15ae02d02ad5a069c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae57457fb59fbaf839ad359f691d5f56b"><td class="memItemLeft" align="right" valign="top"><a id="ae57457fb59fbaf839ad359f691d5f56b" name="ae57457fb59fbaf839ad359f691d5f56b"></a>
-static constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryMinVoltageSafe_mV</b> = <a class="el" href="namespacelampda.html#a7be7b5f0d9266c4b6e46976728349d46">minSafeLiionVoltage_mV</a> * <a class="el" href="namespacelampda.html#a9c95f9420f9f61ca077019b976c37070">batteryCount</a></td></tr>
-<tr class="memdesc:ae57457fb59fbaf839ad359f691d5f56b"><td class="mdescLeft">&#160;</td><td class="mdescRight">min voltage of a li-ion cell to maximise lifetime <br /></td></tr>
-<tr class="separator:ae57457fb59fbaf839ad359f691d5f56b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad043cec810b8319390f8802a87197a15"><td class="memItemLeft" align="right" valign="top"><a id="ad043cec810b8319390f8802a87197a15" name="ad043cec810b8319390f8802a87197a15"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>totalCons_Watt</b> = consWattByMeter * ledStripLength_mm / 1000.0f</td></tr>
-<tr class="memdesc:ad043cec810b8319390f8802a87197a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total maximum power usage of the led strip. <br /></td></tr>
-<tr class="separator:ad043cec810b8319390f8802a87197a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada03a8ee8348bacb6713c27534ad4f58"><td class="memItemLeft" align="right" valign="top"><a id="ada03a8ee8348bacb6713c27534ad4f58" name="ada03a8ee8348bacb6713c27534ad4f58"></a>
-static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>maxStripConsumption_A</b> = 1000.0f * <a class="el" href="namespacelampda.html#ad043cec810b8319390f8802a87197a15">totalCons_Watt</a> / stripInputMaxVoltage_mV</td></tr>
-<tr class="memdesc:ada03a8ee8348bacb6713c27534ad4f58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum led strip current usage, in Amps. <br /></td></tr>
-<tr class="separator:ada03a8ee8348bacb6713c27534ad4f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0e694c7a9580bdbde12b0f02aac9a3f"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html#ad0e694c7a9580bdbde12b0f02aac9a3f">batteryMaxChargeCurrent_mA</a></td></tr>
-<tr class="memdesc:ad0e694c7a9580bdbde12b0f02aac9a3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Battery maximum charge current, in milliAmps.  <br /></td></tr>
-<tr class="separator:ad0e694c7a9580bdbde12b0f02aac9a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2fefcfd6d9abe264a6a15dcc7bcda4f"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda.html#ac2fefcfd6d9abe264a6a15dcc7bcda4f">batteryMaxDischargeCurrent_mA</a></td></tr>
-<tr class="memdesc:ac2fefcfd6d9abe264a6a15dcc7bcda4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Battery maximum discharge current, in milliAmps.  <br /></td></tr>
-<tr class="separator:ac2fefcfd6d9abe264a6a15dcc7bcda4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4496dc7863c3f6778edb07588b40ca28"><td class="memItemLeft" align="right" valign="top"><a id="a4496dc7863c3f6778edb07588b40ca28" name="a4496dc7863c3f6778edb07588b40ca28"></a>
-static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>batteryTypicalPower_mWH</b> = <a class="el" href="namespacelampda.html#a65ff441d1e29ccd8ed553df24ab5b13a">batteryCapacity_mAH</a> * <a class="el" href="namespacelampda.html#ac7f8d2f4b3b53a77befeb3bbf40a457f">batteryTypicalVoltageSafe_mV</a> / 1000</td></tr>
-<tr class="memdesc:a4496dc7863c3f6778edb07588b40ca28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Battery standard power, in milliWatt*Hours. <br /></td></tr>
-<tr class="separator:a4496dc7863c3f6778edb07588b40ca28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c3f35d2161c8b074eed3604c26acf54"><td class="memItemLeft" align="right" valign="top"><a id="a1c3f35d2161c8b074eed3604c26acf54" name="a1c3f35d2161c8b074eed3604c26acf54"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>usermodeDefaultsToLockdown</b> = false</td></tr>
 <tr class="separator:a1c3f35d2161c8b074eed3604c26acf54"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -369,7 +255,7 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>c_d
 static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>USER_SOFTWARE_VERSION_MAJOR</b> = 1</td></tr>
 <tr class="separator:a8b9ac0efd3cb192f3cdd82f4b0f152cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab9fd2086d1d2d3b9b2462389b41d110"><td class="memItemLeft" align="right" valign="top"><a id="aab9fd2086d1d2d3b9b2462389b41d110" name="aab9fd2086d1d2d3b9b2462389b41d110"></a>
-static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>USER_SOFTWARE_VERSION_MINOR</b> = 9</td></tr>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>USER_SOFTWARE_VERSION_MINOR</b> = 10</td></tr>
 <tr class="separator:aab9fd2086d1d2d3b9b2462389b41d110"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc75662b45974f0b6b261c1788bd6a2f"><td class="memItemLeft" align="right" valign="top"><a id="acc75662b45974f0b6b261c1788bd6a2f" name="acc75662b45974f0b6b261c1788bd6a2f"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>MAIN_LOOP_UPDATE_PERIOD_MS</b> = static_cast&lt;uint32_t&gt;(1000 / 80.0f)</td></tr>
@@ -626,141 +512,6 @@ template&lt;typename T  = float&gt; </div>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="ad0e694c7a9580bdbde12b0f02aac9a3f" name="ad0e694c7a9580bdbde12b0f02aac9a3f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0e694c7a9580bdbde12b0f02aac9a3f">&#9670;&#160;</a></span>batteryMaxChargeCurrent_mA</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr uint32_t lampda::batteryMaxChargeCurrent_mA</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="namespacelampda.html#a58175bc936b2ebebab48d76bcd0acc55">batteryChargeC_Rate</a> * <a class="code hl_variable" href="namespacelampda.html#a65ff441d1e29ccd8ed553df24ab5b13a">batteryCapacity_mAH</a>)</div>
-<div class="ttc" id="anamespacelampda_html_a58175bc936b2ebebab48d76bcd0acc55"><div class="ttname"><a href="namespacelampda.html#a58175bc936b2ebebab48d76bcd0acc55">lampda::batteryChargeC_Rate</a></div><div class="ttdeci">static constexpr float batteryChargeC_Rate</div><div class="ttdoc">Maximum charge rate.</div><div class="ttdef"><b>Definition:</b> constants.h:70</div></div>
-<div class="ttc" id="anamespacelampda_html_a65ff441d1e29ccd8ed553df24ab5b13a"><div class="ttname"><a href="namespacelampda.html#a65ff441d1e29ccd8ed553df24ab5b13a">lampda::batteryCapacity_mAH</a></div><div class="ttdeci">static constexpr uint32_t batteryCapacity_mAH</div><div class="ttdoc">Battery capacity, in mA*hours.</div><div class="ttdef"><b>Definition:</b> constants.h:72</div></div>
-</div><!-- fragment -->
-<p>Battery maximum charge current, in milliAmps. </p>
-
-</div>
-</div>
-<a id="ac2fefcfd6d9abe264a6a15dcc7bcda4f" name="ac2fefcfd6d9abe264a6a15dcc7bcda4f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2fefcfd6d9abe264a6a15dcc7bcda4f">&#9670;&#160;</a></span>batteryMaxDischargeCurrent_mA</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr uint32_t lampda::batteryMaxDischargeCurrent_mA</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="namespacelampda.html#aab55ce46d7156bbf0e37f6b89d9fb206">batteryDischargeC_Rate</a> * <a class="code hl_variable" href="namespacelampda.html#a65ff441d1e29ccd8ed553df24ab5b13a">batteryCapacity_mAH</a>)</div>
-<div class="ttc" id="anamespacelampda_html_aab55ce46d7156bbf0e37f6b89d9fb206"><div class="ttname"><a href="namespacelampda.html#aab55ce46d7156bbf0e37f6b89d9fb206">lampda::batteryDischargeC_Rate</a></div><div class="ttdeci">static constexpr float batteryDischargeC_Rate</div><div class="ttdoc">Typical discharge rate.</div><div class="ttdef"><b>Definition:</b> constants.h:71</div></div>
-</div><!-- fragment -->
-<p>Battery maximum discharge current, in milliAmps. </p>
-
-</div>
-</div>
-<a id="ac48518ede7690a325f8095306247750e" name="ac48518ede7690a325f8095306247750e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac48518ede7690a325f8095306247750e">&#9670;&#160;</a></span>loopDeltaTime</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr float lampda::loopDeltaTime = MAIN_LOOP_UPDATE_PERIOD_MS / 1000.0f</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>EXPECTED delta time for each loop run. </p>
-<p>Computations from set constants </p>
-
-</div>
-</div>
-<a id="ae8bb15f5c8411f5b91acd27b616218d8" name="ae8bb15f5c8411f5b91acd27b616218d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8bb15f5c8411f5b91acd27b616218d8">&#9670;&#160;</a></span>maxSingularBatteryVoltage_mV</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr uint16_t lampda::maxSingularBatteryVoltage_mV</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="namespacelampda.html#a5e582f802ee2f8e38adaca10f2417f47">maxLiionVoltage_mV</a> * 1.01f)</div>
-<div class="ttc" id="anamespacelampda_html_a5e582f802ee2f8e38adaca10f2417f47"><div class="ttname"><a href="namespacelampda.html#a5e582f802ee2f8e38adaca10f2417f47">lampda::maxLiionVoltage_mV</a></div><div class="ttdeci">static constexpr uint16_t maxLiionVoltage_mV</div><div class="ttdoc">Absolute maximum allowed Li-ion voltage.</div><div class="ttdef"><b>Definition:</b> constants.h:76</div></div>
-</div><!-- fragment -->
-<p>with added margins to avoid wrong detection </p>
-
-</div>
-</div>
-<a id="a1d9062633850ef4db7bf8c84226567e3" name="a1d9062633850ef4db7bf8c84226567e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d9062633850ef4db7bf8c84226567e3">&#9670;&#160;</a></span>minSingularBatteryVoltage_mV</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr uint16_t lampda::minSingularBatteryVoltage_mV</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div>
-<div class="line">        <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="namespacelampda.html#a8b5934a5e9670fb80955592a2df13609">minLiionVoltage_mV</a> * 0.9f)</div>
-<div class="ttc" id="anamespacelampda_html_a8b5934a5e9670fb80955592a2df13609"><div class="ttname"><a href="namespacelampda.html#a8b5934a5e9670fb80955592a2df13609">lampda::minLiionVoltage_mV</a></div><div class="ttdeci">static constexpr uint16_t minLiionVoltage_mV</div><div class="ttdoc">minimum Li-ion voltage</div><div class="ttdef"><b>Definition:</b> constants.h:74</div></div>
-</div><!-- fragment -->
-<p>with added margins to avoid wrong detection </p>
 
 </div>
 </div>

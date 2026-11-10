@@ -75,6 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -84,6 +85,11 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy_1_1PendingFavorite.html">PendingFavorite</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad74c8fb9f48db8d391418930fd0029c6"><td class="memItemLeft" align="right" valign="top"><a id="ad74c8fb9f48db8d391418930fd0029c6" name="ad74c8fb9f48db8d391418930fd0029c6"></a>
@@ -101,6 +107,9 @@ static void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>be
 static void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>after_enter_mode</b> (auto &amp;ctx)</td></tr>
 <tr class="memdesc:ae9f8045008717822f841be991068a1df"><td class="mdescLeft">&#160;</td><td class="mdescRight">configuration-related actions done after mode entering <br /></td></tr>
 <tr class="separator:ae9f8045008717822f841be991068a1df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b7075b6ba738314d0917f1a0caaf503"><td class="memItemLeft" align="right" valign="top"><a id="a1b7075b6ba738314d0917f1a0caaf503" name="a1b7075b6ba738314d0917f1a0caaf503"></a>
+static void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>on_favorite_hold_end</b> (auto &amp;ctx, bool shouldExecuteAction)</td></tr>
+<tr class="separator:a1b7075b6ba738314d0917f1a0caaf503"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -120,26 +129,18 @@ std::array&lt; ActiveIndexTy, <a class="el" href="structlampda_1_1modes_1_1ModeM
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>usedFavoriteCount</b> = 0</td></tr>
 <tr class="memdesc:ab73a19022c3ec9afc92d554e69080bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of favorite set by user [0, maxFavoriteCount] <br /></td></tr>
 <tr class="separator:ab73a19022c3ec9afc92d554e69080bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8e8a82d65c9a043573e1761bbc94bc2"><td class="memItemLeft" align="right" valign="top"><a id="af8e8a82d65c9a043573e1761bbc94bc2" name="af8e8a82d65c9a043573e1761bbc94bc2"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>isFavoritePending</b> = 0</td></tr>
-<tr class="memdesc:af8e8a82d65c9a043573e1761bbc94bc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicate that the addition of a favorite in in process <br /></td></tr>
-<tr class="separator:af8e8a82d65c9a043573e1761bbc94bc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb9e4534d844cfdc9c7dda1d0dfa0a80"><td class="memItemLeft" align="right" valign="top"><a id="abb9e4534d844cfdc9c7dda1d0dfa0a80" name="abb9e4534d844cfdc9c7dda1d0dfa0a80"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>whichFavoritePending</b> = 0</td></tr>
-<tr class="memdesc:abb9e4534d844cfdc9c7dda1d0dfa0a80"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates the favorite currently selected <br /></td></tr>
-<tr class="separator:abb9e4534d844cfdc9c7dda1d0dfa0a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe9fc8dfd77636824053d8a7693ab6b1"><td class="memItemLeft" align="right" valign="top"><a id="afe9fc8dfd77636824053d8a7693ab6b1" name="afe9fc8dfd77636824053d8a7693ab6b1"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInDeleteFavorite</b> = false</td></tr>
 <tr class="memdesc:afe9fc8dfd77636824053d8a7693ab6b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicates that we are in a favorite deletion process <br /></td></tr>
 <tr class="separator:afe9fc8dfd77636824053d8a7693ab6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fbf57063a873fea494e2bc846a6e7c7"><td class="memItemLeft" align="right" valign="top"><a id="a5fbf57063a873fea494e2bc846a6e7c7" name="a5fbf57063a873fea494e2bc846a6e7c7"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>isFavoriteDeletePending</b> = 0</td></tr>
-<tr class="memdesc:a5fbf57063a873fea494e2bc846a6e7c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">indicate that the deletion of a favorite in in process <br /></td></tr>
-<tr class="separator:a5fbf57063a873fea494e2bc846a6e7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a478d786fc05cdfcb0e3bf340528d8362"><td class="memItemLeft" align="right" valign="top"><a id="a478d786fc05cdfcb0e3bf340528d8362" name="a478d786fc05cdfcb0e3bf340528d8362"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastFavoriteStep</b> = 0</td></tr>
 <tr class="memdesc:a478d786fc05cdfcb0e3bf340528d8362"><td class="mdescLeft">&#160;</td><td class="mdescRight">last used favorite index <br /></td></tr>
 <tr class="separator:a478d786fc05cdfcb0e3bf340528d8362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcb5edaadd765df68f7da36b6f31d82a"><td class="memItemLeft" align="right" valign="top"><a id="afcb5edaadd765df68f7da36b6f31d82a" name="afcb5edaadd765df68f7da36b6f31d82a"></a>
+<a class="el" href="structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy_1_1PendingFavorite.html">PendingFavorite</a>&#160;</td><td class="memItemRight" valign="bottom"><b>pendingFavorite</b></td></tr>
+<tr class="memdesc:afcb5edaadd765df68f7da36b6f31d82a"><td class="mdescLeft">&#160;</td><td class="mdescRight">store the pending favorite to add or delete <br /></td></tr>
+<tr class="separator:afcb5edaadd765df68f7da36b6f31d82a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39e320425ffc0c9ba6062be000cf2e56"><td class="memItemLeft" align="right" valign="top"><a id="a39e320425ffc0c9ba6062be000cf2e56" name="a39e320425ffc0c9ba6062be000cf2e56"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInFavoriteMockGroup</b> = false</td></tr>
 <tr class="memdesc:a39e320425ffc0c9ba6062be000cf2e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates that we are in the fake favorite page. <br /></td></tr>

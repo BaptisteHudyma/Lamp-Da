@@ -93,6 +93,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a1abf1a99d69c535608f065d1751580dd"><td class="memItemLeft" align="right" valign="top"><a id="a1abf1a99d69c535608f065d1751580dd" name="a1abf1a99d69c535608f065d1751580dd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_isSystemOn_status</b> ()</td></tr>
+<tr class="memdesc:a1abf1a99d69c535608f065d1751580dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the on/off status when outside of a long button press. <br /></td></tr>
+<tr class="separator:a1abf1a99d69c535608f065d1751580dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3d67f9fa19aad77643075f09cd9d331"><td class="memItemLeft" align="right" valign="top"><a id="ab3d67f9fa19aad77643075f09cd9d331" name="ab3d67f9fa19aad77643075f09cd9d331"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>button_clicked_callback</b> (const uint8_t consecutiveButtonCheck, const bool isFirstClick)</td></tr>
 <tr class="separator:ab3d67f9fa19aad77643075f09cd9d331"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,14 +118,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>button_disable_usermo
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_button_usermode_enabled</b> ()</td></tr>
 <tr class="memdesc:a3f63f0a5c31e13142e3365879f23150c"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if custom user modes are enabled <br /></td></tr>
 <tr class="separator:a3f63f0a5c31e13142e3365879f23150c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10c071ed628e3d42a056bab89f059def"><td class="memItemLeft" align="right" valign="top"><a id="a10c071ed628e3d42a056bab89f059def" name="a10c071ed628e3d42a056bab89f059def"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_button_click_event</b> (uint32_t clickCount)</td></tr>
-<tr class="memdesc:a10c071ed628e3d42a056bab89f059def"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button click event. <br /></td></tr>
-<tr class="separator:a10c071ed628e3d42a056bab89f059def"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e1ebaed35f9b932a8ae73bd6f0ea43a"><td class="memItemLeft" align="right" valign="top"><a id="a3e1ebaed35f9b932a8ae73bd6f0ea43a" name="a3e1ebaed35f9b932a8ae73bd6f0ea43a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_button_press_event</b> (uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)</td></tr>
-<tr class="memdesc:a3e1ebaed35f9b932a8ae73bd6f0ea43a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button press event. <br /></td></tr>
-<tr class="separator:a3e1ebaed35f9b932a8ae73bd6f0ea43a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1782ee746297dd16c16c8f31d3750f6"><td class="memItemLeft" align="right" valign="top"><a id="ae1782ee746297dd16c16c8f31d3750f6" name="ae1782ee746297dd16c16c8f31d3750f6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_button_click_event</b> (uint8_t clickCount)</td></tr>
+<tr class="memdesc:ae1782ee746297dd16c16c8f31d3750f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button click event. <br /></td></tr>
+<tr class="separator:ae1782ee746297dd16c16c8f31d3750f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefa5fecb0b3de75944006eb3f7be3594"><td class="memItemLeft" align="right" valign="top"><a id="aefa5fecb0b3de75944006eb3f7be3594" name="aefa5fecb0b3de75944006eb3f7be3594"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_button_press_event</b> (uint8_t clickCount, uint32_t pressDuration, bool isEndOfPress)</td></tr>
+<tr class="memdesc:aefa5fecb0b3de75944006eb3f7be3594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button press event. <br /></td></tr>
+<tr class="separator:aefa5fecb0b3de75944006eb3f7be3594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -140,10 +144,18 @@ static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSystemOn</b> = false</td></tr>
 <tr class="memdesc:a4c270ec7bcdf64236a236303789b68fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">holds the state of system on <br /></td></tr>
 <tr class="separator:a4c270ec7bcdf64236a236303789b68fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1940760b18716d0d4f33546671583da"><td class="memItemLeft" align="right" valign="top"><a id="ad1940760b18716d0d4f33546671583da" name="ad1940760b18716d0d4f33546671583da"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInLongClick</b> = false</td></tr>
+<tr class="memdesc:ad1940760b18716d0d4f33546671583da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keep track of a long click event. <br /></td></tr>
+<tr class="separator:ad1940760b18716d0d4f33546671583da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99a8b187b5a205765a0d9f99ffaf7760"><td class="memItemLeft" align="right" valign="top"><a id="a99a8b187b5a205765a0d9f99ffaf7760" name="a99a8b187b5a205765a0d9f99ffaf7760"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isButtonUsermodeEnabled</b> = false</td></tr>
 <tr class="memdesc:a99a8b187b5a205765a0d9f99ffaf7760"><td class="mdescLeft">&#160;</td><td class="mdescRight">hold the boolean that configures if button's usermode UI is enabled <br /></td></tr>
 <tr class="separator:a99a8b187b5a205765a0d9f99ffaf7760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840e69af47caef3fd1db3b65de31a8d5"><td class="memItemLeft" align="right" valign="top"><a id="a840e69af47caef3fd1db3b65de31a8d5" name="a840e69af47caef3fd1db3b65de31a8d5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isStartChainPending</b> = false</td></tr>
+<tr class="memdesc:a840e69af47caef3fd1db3b65de31a8d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, we are waiting for a button event before starting the check logic. <br /></td></tr>
+<tr class="separator:a840e69af47caef3fd1db3b65de31a8d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the system input, the behavior associated to the button inputs. </p>

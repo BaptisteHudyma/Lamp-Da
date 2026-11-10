@@ -110,10 +110,18 @@ Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>shutdown</b> ()</td></tr>
 <tr class="memdesc:ac3dffa4a2d846177cbbbe7c735d0cb2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once on program stop. <br /></td></tr>
 <tr class="separator:ac3dffa4a2d846177cbbbe7c735d0cb2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4cbbcf7ec6892188ab2c45c65340415"><td class="memItemLeft" align="right" valign="top"><a id="aa4cbbcf7ec6892188ab2c45c65340415" name="aa4cbbcf7ec6892188ab2c45c65340415"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>format_storage</b> ()</td></tr>
+<tr class="memdesc:aa4cbbcf7ec6892188ab2c45c65340415"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format the storage only: the cached parameters are kept as is. <br /></td></tr>
+<tr class="separator:aa4cbbcf7ec6892188ab2c45c65340415"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ab4b772a6c96d9635e993c44957ecfe"><td class="memItemLeft" align="right" valign="top"><a id="a6ab4b772a6c96d9635e993c44957ecfe" name="a6ab4b772a6c96d9635e993c44957ecfe"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear_internal_fs</b> ()</td></tr>
 <tr class="memdesc:a6ab4b772a6c96d9635e993c44957ecfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">hard clean of the whole filesystem, you will loose all stored data. <br /></td></tr>
 <tr class="separator:a6ab4b772a6c96d9635e993c44957ecfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaa5bfd472d8bcfbc245a327848bb660"><td class="memItemLeft" align="right" valign="top"><a id="aeaa5bfd472d8bcfbc245a327848bb660" name="aeaa5bfd472d8bcfbc245a327848bb660"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_overflowed</b> ()</td></tr>
+<tr class="memdesc:aeaa5bfd472d8bcfbc245a327848bb660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true is the filesystem overflowed at a point. Some parameters may be lost. <br /></td></tr>
+<tr class="separator:aeaa5bfd472d8bcfbc245a327848bb660"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -128,15 +136,18 @@ static constexpr const char *const&#160;</td><td class="memItemRight" valign="bo
 <tr class="memitem:a0b32e5638c0e51d4d0efe495e33860dd"><td class="memItemLeft" align="right" valign="top"><a id="a0b32e5638c0e51d4d0efe495e33860dd" name="a0b32e5638c0e51d4d0efe495e33860dd"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastUserParameterSize</b> = 0</td></tr>
 <tr class="separator:a0b32e5638c0e51d4d0efe495e33860dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accb7fe685187bf6ef84c514d5835b5f2"><td class="memItemLeft" align="right" valign="top"><a id="accb7fe685187bf6ef84c514d5835b5f2" name="accb7fe685187bf6ef84c514d5835b5f2"></a>
-std::map&lt; uint32_t, uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_userParametersValueMap</b></td></tr>
-<tr class="separator:accb7fe685187bf6ef84c514d5835b5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c328816d2dac44e4708ecf7de77bbf0"><td class="memItemLeft" align="right" valign="top"><a id="a5c328816d2dac44e4708ecf7de77bbf0" name="a5c328816d2dac44e4708ecf7de77bbf0"></a>
-std::map&lt; uint32_t, uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_systemParametersValueMap</b></td></tr>
-<tr class="separator:a5c328816d2dac44e4708ecf7de77bbf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a03448b7e80e57eea6c5904e1574ffe"><td class="memItemLeft" align="right" valign="top"><a id="a8a03448b7e80e57eea6c5904e1574ffe" name="a8a03448b7e80e57eea6c5904e1574ffe"></a>
+etl::map&lt; uint32_t, uint32_t, 128 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_userParametersValueMap</b></td></tr>
+<tr class="separator:a8a03448b7e80e57eea6c5904e1574ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40776e218a43d1112fc5fa2d7a0f5823"><td class="memItemLeft" align="right" valign="top"><a id="a40776e218a43d1112fc5fa2d7a0f5823" name="a40776e218a43d1112fc5fa2d7a0f5823"></a>
+etl::map&lt; uint32_t, uint32_t, 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>_systemParametersValueMap</b></td></tr>
+<tr class="separator:a40776e218a43d1112fc5fa2d7a0f5823"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67e3f95c2b7fddc03cf01e9b4f808f63"><td class="memItemLeft" align="right" valign="top"><a id="a67e3f95c2b7fddc03cf01e9b4f808f63" name="a67e3f95c2b7fddc03cf01e9b4f808f63"></a>
 constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>sizeOfData</b> = sizeof(<a class="el" href="structlampda_1_1bsp_1_1filesystem_1_1keyValue.html">keyValue</a>)</td></tr>
 <tr class="separator:a67e3f95c2b7fddc03cf01e9b4f808f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eea398bf9da02e3ec4d960fc5ce8065"><td class="memItemLeft" align="right" valign="top"><a id="a1eea398bf9da02e3ec4d960fc5ce8065" name="a1eea398bf9da02e3ec4d960fc5ce8065"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasOverflowed</b> = false</td></tr>
+<tr class="separator:a1eea398bf9da02e3ec4d960fc5ce8065"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>File system high level actions. </p>

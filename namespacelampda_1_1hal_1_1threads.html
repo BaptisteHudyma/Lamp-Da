@@ -99,9 +99,9 @@ typedef void *&#160;</td><td class="memItemRight" valign="bottom"><b>TaskHandle_
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aae283c9ccb80e8c3f18190127a693aa1"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#aae283c9ccb80e8c3f18190127a693aa1">HAL_create_thread</a> (TaskHandle_t *handle, taskfunc_t task, char const *const name, const int priority, const int stackSize, TaskBuffer_t *buffer, const int startSuspended)</td></tr>
-<tr class="memdesc:aae283c9ccb80e8c3f18190127a693aa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
-<tr class="separator:aae283c9ccb80e8c3f18190127a693aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e2fbb943deae8e31500ac572a70d490"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1hal_1_1threads.html#a5e2fbb943deae8e31500ac572a70d490">HAL_create_thread</a> (TaskHandle_t *handle, taskfunc_t task, char const *const name, const int priority, const int stackSize, TaskBuffer_t *buffer, const bool startSuspended)</td></tr>
+<tr class="memdesc:a5e2fbb943deae8e31500ac572a70d490"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a thread from the given function and return the associated handle.  <br /></td></tr>
+<tr class="separator:a5e2fbb943deae8e31500ac572a70d490"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87d32ed0344bfae3b5a3165c87918738"><td class="memItemLeft" align="right" valign="top"><a id="a87d32ed0344bfae3b5a3165c87918738" name="a87d32ed0344bfae3b5a3165c87918738"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>HAL_yield</b> ()</td></tr>
 <tr class="memdesc:a87d32ed0344bfae3b5a3165c87918738"><td class="mdescLeft">&#160;</td><td class="mdescRight">Yield this thread. <br /></td></tr>
@@ -151,8 +151,8 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>Ma
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define tasks and threads specifics. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="aae283c9ccb80e8c3f18190127a693aa1" name="aae283c9ccb80e8c3f18190127a693aa1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae283c9ccb80e8c3f18190127a693aa1">&#9670;&#160;</a></span>HAL_create_thread()</h2>
+<a id="a5e2fbb943deae8e31500ac572a70d490" name="a5e2fbb943deae8e31500ac572a70d490"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e2fbb943deae8e31500ac572a70d490">&#9670;&#160;</a></span>HAL_create_thread()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,7 +196,7 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>Ma
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const bool&#160;</td>
           <td class="paramname"><em>startSuspended</em>&#160;</td>
         </tr>
         <tr>
@@ -214,7 +214,7 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>Ma
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>internal name of the thread </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">priority</td><td>from 0 to 2, this thread priority </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stackSize</td><td>The size of the stack to allocate. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">startSuspended</td><td>if == 0, start the thread in a suspended mode </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startSuspended</td><td>if true, start the thread in a suspended mode </td></tr>
   </table>
   </dd>
 </dl>

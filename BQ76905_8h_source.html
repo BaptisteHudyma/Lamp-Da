@@ -142,7 +142,7 @@ $(function() {
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">constexpr</span> uint16_t SUBCOMMAND_FW_VERSION_ADDR = 0x0002;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">constexpr</span> uint16_t SUBCOMMAND_HW_VERSION_ADDR = 0x0003;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">constexpr</span> uint16_t SUBCOMMAND_PASSQ_ADDR = 0x0003;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">constexpr</span> uint16_t SUBCOMMAND_PASSQ_ADDR = 0x0004;</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">constexpr</span> uint16_t SUBCOMMAND_RESET_PASSQ_ADDR = 0x0005;</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">constexpr</span> uint16_t SUBCOMMAND_EXIT_DEEPSLEEP_ADDR = 0x000E;</div>
@@ -177,7 +177,7 @@ $(function() {
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">constexpr</span> uint16_t SUBCOMMAND_CONFIGURATION_TS_OFFSET_ADDR = 0x900E;</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="comment">// compute data checksum for communication</span></div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>uint8_t checksum(uint8_t lenght, uint8_t* data)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="keyword">inline</span> uint8_t checksum(uint8_t lenght, uint8_t* data)</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>{</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  uint8_t checksum = 0;</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <span class="keywordflow">for</span> (uint8_t i = 0; i &lt; lenght; ++i)</div>

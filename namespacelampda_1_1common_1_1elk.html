@@ -104,7 +104,6 @@ Enumerations</h2></td></tr>
 , <a class="el" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566aae7d76ac9c4702acb9bb0808ad92e7c5">MIC_MODE</a>
 , <br />
 &#160;&#160;<a class="el" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a627ad7b3ff651623b3c75bb5aa6806e5">MIC_SENSITIVITY</a>
-, <a class="el" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb">LED_ORDER</a>
 , <a class="el" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5">SET_TIME</a>
 , <a class="el" href="namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c">TIMING</a>
 <br />
@@ -113,8 +112,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2294977a0ce9982b0255e5e831c6b043"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1common_1_1elk.html#a2294977a0ce9982b0255e5e831c6b043">decode_ELK_message</a> (const uint8_t *msg, uint16_t len, <a class="el" href="structlampda_1_1common_1_1elk_1_1Package.html">Package</a> &amp;package)</td></tr>
-<tr class="memdesc:a2294977a0ce9982b0255e5e831c6b043"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a given message, assuming it it a ELK control message.  <br /></td></tr>
+<tr class="memitem:a2294977a0ce9982b0255e5e831c6b043"><td class="memItemLeft" align="right" valign="top"><a id="a2294977a0ce9982b0255e5e831c6b043" name="a2294977a0ce9982b0255e5e831c6b043"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>decode_ELK_message</b> (const uint8_t *msg, uint16_t len, <a class="el" href="structlampda_1_1common_1_1elk_1_1Package.html">Package</a> &amp;package)</td></tr>
+<tr class="memdesc:a2294977a0ce9982b0255e5e831c6b043"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a given message, assuming it it a ELK control message. <br /></td></tr>
 <tr class="separator:a2294977a0ce9982b0255e5e831c6b043"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -158,59 +158,11 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="acaa45e95815f1bc5db6a0affa837a566a627ad7b3ff651623b3c75bb5aa6806e5" name="acaa45e95815f1bc5db6a0affa837a566a627ad7b3ff651623b3c75bb5aa6806e5"></a>MIC_SENSITIVITY&#160;</td><td class="fielddoc"><p>set microphone sensitivity </p>
 </td></tr>
-<tr><td class="fieldname"><a id="acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb" name="acaa45e95815f1bc5db6a0affa837a566a6619029c4e585db53bc5ec40165abebb"></a>LED_ORDER&#160;</td><td class="fielddoc"><p>set the new RGB led ordering </p>
-</td></tr>
 <tr><td class="fieldname"><a id="acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5" name="acaa45e95815f1bc5db6a0affa837a566a7169c86fc007c60a3e7b485524b6ade5"></a>SET_TIME&#160;</td><td class="fielddoc"><p>set the system time to a set time </p>
 </td></tr>
 <tr><td class="fieldname"><a id="acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c" name="acaa45e95815f1bc5db6a0affa837a566a8f9e1889c89e42901ab7c0a033a3347c"></a>TIMING&#160;</td><td class="fielddoc"><p>set a desired on/off time </p>
 </td></tr>
 </table>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a2294977a0ce9982b0255e5e831c6b043" name="a2294977a0ce9982b0255e5e831c6b043"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2294977a0ce9982b0255e5e831c6b043">&#9670;&#160;</a></span>decode_ELK_message()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool lampda::common::elk::decode_ELK_message </td>
-          <td>(</td>
-          <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname"><em>msg</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>len</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structlampda_1_1common_1_1elk_1_1Package.html">Package</a> &amp;&#160;</td>
-          <td class="paramname"><em>package</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Decode a given message, assuming it it a ELK control message. </p>
-<p>TODO: finish this check</p>
 
 </div>
 </div>

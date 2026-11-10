@@ -108,10 +108,22 @@ Public Member Functions</h2></td></tr>
 void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>cancel_blip</b> () const</td></tr>
 <tr class="memdesc:afa92c2328bd25f31d9ef003a7a044575"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel the ongoing blip, if any. <br /></td></tr>
 <tr class="separator:afa92c2328bd25f31d9ef003a7a044575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63a04ea10e3c25d0d88c9f1c4725e36a"><td class="memItemLeft" align="right" valign="top"><a id="a63a04ea10e3c25d0d88c9f1c4725e36a" name="a63a04ea10e3c25d0d88c9f1c4725e36a"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>end_blackout</b> () const</td></tr>
+<tr class="memdesc:a63a04ea10e3c25d0d88c9f1c4725e36a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop the strip blackout of a blip (indexable only, no-op otherwise) <br /></td></tr>
+<tr class="separator:a63a04ea10e3c25d0d88c9f1c4725e36a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5520cf70541e1419ab6bf0e28e08927"><td class="memItemLeft" align="right" valign="top"><a id="aa5520cf70541e1419ab6bf0e28e08927" name="aa5520cf70541e1419ab6bf0e28e08927"></a>
 bool LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>is_bliping</b> () const</td></tr>
 <tr class="memdesc:aa5520cf70541e1419ab6bf0e28e08927"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if the output is in a blip state <br /></td></tr>
 <tr class="separator:aa5520cf70541e1419ab6bf0e28e08927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad404079883a2ef5d836cb08934028670"><td class="memItemLeft" align="right" valign="top"><a id="ad404079883a2ef5d836cb08934028670" name="ad404079883a2ef5d836cb08934028670"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>set_steps_mask</b> (uint8_t newValue)</td></tr>
+<tr class="memdesc:ad404079883a2ef5d836cb08934028670"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the value of the half step mask, from 0 to maxMaskStep. <br /></td></tr>
+<tr class="separator:ad404079883a2ef5d836cb08934028670"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4cf7fbff66a5b76347da1a6965f8ed4"><td class="memItemLeft" align="right" valign="top"><a id="ab4cf7fbff66a5b76347da1a6965f8ed4" name="ab4cf7fbff66a5b76347da1a6965f8ed4"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>cancel_step_mask</b> ()</td></tr>
+<tr class="memdesc:ab4cf7fbff66a5b76347da1a6965f8ed4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Diasble the step mask. <br /></td></tr>
+<tr class="separator:ab4cf7fbff66a5b76347da1a6965f8ed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4cbed8ac88edf6e6e31001ffb41de330"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4cbed8ac88edf6e6e31001ffb41de330">setBrightness</a> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> newBrightness, const bool skipCallbacks=true, const bool skipUpdateBrightness=false, const bool updateSavedBrightess=false)</td></tr>
 <tr class="memdesc:a4cbed8ac88edf6e6e31001ffb41de330"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set brightness of the lamp.  <br /></td></tr>
 <tr class="separator:a4cbed8ac88edf6e6e31001ffb41de330"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,9 +131,11 @@ bool LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>is_blipin
 void&#160;</td><td class="memItemRight" valign="bottom"><b>align_internal_to_system_brightness</b> ()</td></tr>
 <tr class="memdesc:a055e192ef1ba2830f59e193acd6aae96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Special call to update the internal brightness values to the system brightness. <br /></td></tr>
 <tr class="separator:a055e192ef1ba2830f59e193acd6aae96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ee901eec1ea481cb226366f1f165254"><td class="memItemLeft" align="right" valign="top"><a id="a5ee901eec1ea481cb226366f1f165254" name="a5ee901eec1ea481cb226366f1f165254"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>enforce_internal_brightness_limits</b> ()</td></tr>
-<tr class="memdesc:a5ee901eec1ea481cb226366f1f165254"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enforce the brightness limits, if getMaxBrightness changed. Will call <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4cbed8ac88edf6e6e31001ffb41de330">setBrightness</a>. <br /></td></tr>
+<tr class="memitem:a36ff8c81058e4ecd6014b21b2ccdc483"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a36ff8c81058e4ecd6014b21b2ccdc483">align_internal_to_system_brightness</a> (const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> systemBrightness)</td></tr>
+<tr class="memdesc:a36ff8c81058e4ecd6014b21b2ccdc483"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the internal brightness values to a new system brightness.  <br /></td></tr>
+<tr class="separator:a36ff8c81058e4ecd6014b21b2ccdc483"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ee901eec1ea481cb226366f1f165254"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a5ee901eec1ea481cb226366f1f165254">enforce_internal_brightness_limits</a> ()</td></tr>
+<tr class="memdesc:a5ee901eec1ea481cb226366f1f165254"><td class="mdescLeft">&#160;</td><td class="mdescRight">Follow the system brightness and enforce its limits, if they changed. Will call <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4cbed8ac88edf6e6e31001ffb41de330">setBrightness</a>.  <br /></td></tr>
 <tr class="separator:a5ee901eec1ea481cb226366f1f165254"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b6801130ec81a68e43f10160647c3bd"><td class="memItemLeft" align="right" valign="top"><a id="a1b6801130ec81a68e43f10160647c3bd" name="a1b6801130ec81a68e43f10160647c3bd"></a>
 <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>getMaxBrightness</b> () const</td></tr>
@@ -144,30 +158,36 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>enforce_internal_brig
 void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>restoreBrightness</b> ()</td></tr>
 <tr class="memdesc:a221edd69101aa0f25ce0821924f46694"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset brightness to internal saved brightness, skip callbacks. <br /></td></tr>
 <tr class="separator:a221edd69101aa0f25ce0821924f46694"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54cca13c647df0401d173c0f56c98180"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a54cca13c647df0401d173c0f56c98180">restoreBrightnessNow</a> ()</td></tr>
+<tr class="memdesc:a54cca13c647df0401d173c0f56c98180"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a221edd69101aa0f25ce0821924f46694" title="Reset brightness to internal saved brightness, skip callbacks.">restoreBrightness()</a>, but ignores the brightness update rate limit.  <br /></td></tr>
+<tr class="separator:a54cca13c647df0401d173c0f56c98180"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdbd1be5a182ba29c605da0aaad31600"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#afdbd1be5a182ba29c605da0aaad31600">fadeToBlackBy</a> (uint8_t fadeBy)</td></tr>
 <tr class="memdesc:afdbd1be5a182ba29c605da0aaad31600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fade currently displayed content by <code>fadeBy</code> units.  <br /></td></tr>
 <tr class="separator:afdbd1be5a182ba29c605da0aaad31600"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a281bec1f9b610a2f15640f16fd123dbf"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a281bec1f9b610a2f15640f16fd123dbf">blur</a> (uint8_t blurBy)</td></tr>
 <tr class="memdesc:a281bec1f9b610a2f15640f16fd123dbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blur currently displayed content by <code>blurBy</code> units /!\ Only applied along the strip, not in 2D /!.  <br /></td></tr>
 <tr class="separator:a281bec1f9b610a2f15640f16fd123dbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab91ecae4babc656ef6ab78147965fcd3"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#ab91ecae4babc656ef6ab78147965fcd3">apply_low_brightness_mask</a> ()</td></tr>
+<tr class="memdesc:ab91ecae4babc656ef6ab78147965fcd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the optional low level brightnes dithering.  <br /></td></tr>
+<tr class="separator:ab91ecae4babc656ef6ab78147965fcd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04740441ed7eb7a5ec76057a85ba095c"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a04740441ed7eb7a5ec76057a85ba095c">fill</a> (uint32_t color, uint16_t start, uint16_t end)</td></tr>
 <tr class="memdesc:a04740441ed7eb7a5ec76057a85ba095c"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color, from start to end  <br /></td></tr>
 <tr class="separator:a04740441ed7eb7a5ec76057a85ba095c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a0cee140ba5208c2db1f824ed40791e"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a3a0cee140ba5208c2db1f824ed40791e">fill</a> (uint32_t color, uint16_t start, uint16_t end, const BufferTy &amp;shouldDisplay)</td></tr>
-<tr class="memdesc:a3a0cee140ba5208c2db1f824ed40791e"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color, from start to end. Apply a mask to display leds  <br /></td></tr>
-<tr class="separator:a3a0cee140ba5208c2db1f824ed40791e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae749b7b4fc849d97dd021a557d9e6f76"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#ae749b7b4fc849d97dd021a557d9e6f76">fill</a> (uint32_t color)</td></tr>
 <tr class="memdesc:ae749b7b4fc849d97dd021a557d9e6f76"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color  <br /></td></tr>
 <tr class="separator:ae749b7b4fc849d97dd021a557d9e6f76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c8f75915673505e0a193036fc79e302"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4c8f75915673505e0a193036fc79e302">fill</a> (uint32_t color, const BufferTy &amp;shouldDisplay)</td></tr>
-<tr class="memdesc:a4c8f75915673505e0a193036fc79e302"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target color, with a mask  <br /></td></tr>
-<tr class="separator:a4c8f75915673505e0a193036fc79e302"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf7fba22afc60e9f0e3e75bfcef38135"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#adf7fba22afc60e9f0e3e75bfcef38135">fill</a> (const <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ab0b738b7bd4c80ccb2a8f444bba12dd4">colors::PaletteTy</a> &amp;palette, uint16_t start, uint16_t end)</td></tr>
 <tr class="memdesc:adf7fba22afc60e9f0e3e75bfcef38135"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target palette, from start to end  <br /></td></tr>
 <tr class="separator:adf7fba22afc60e9f0e3e75bfcef38135"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f4b5db5f920d7a4dab4d4d7e1bbd2b0"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4f4b5db5f920d7a4dab4d4d7e1bbd2b0">fill</a> (const <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ab0b738b7bd4c80ccb2a8f444bba12dd4">colors::PaletteTy</a> &amp;palette)</td></tr>
 <tr class="memdesc:a4f4b5db5f920d7a4dab4d4d7e1bbd2b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Fill lamp with target palette  <br /></td></tr>
 <tr class="separator:a4f4b5db5f920d7a4dab4d4d7e1bbd2b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ba3b07115b9631efcb4b863f3c1713f"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7ba3b07115b9631efcb4b863f3c1713f">mask_led_at_index</a> (const size_t n, const bool shouldMask)</td></tr>
+<tr class="memdesc:a7ba3b07115b9631efcb4b863f3c1713f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a led to be masked at the next show.  <br /></td></tr>
+<tr class="separator:a7ba3b07115b9631efcb4b863f3c1713f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb6e77c7f9d26e38f66956e0d242cb68"><td class="memItemLeft" align="right" valign="top"><a id="acb6e77c7f9d26e38f66956e0d242cb68" name="acb6e77c7f9d26e38f66956e0d242cb68"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>mask_led_at_XY</b> (uint16_t X, uint16_t Y, const bool shouldMask)</td></tr>
+<tr class="separator:acb6e77c7f9d26e38f66956e0d242cb68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bf149c14e698e5a2dec8ce967217839"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7bf149c14e698e5a2dec8ce967217839">setPixelColor</a> (uint16_t n, uint32_t color)</td></tr>
 <tr class="memdesc:a7bf149c14e698e5a2dec8ce967217839"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Set the n-th LED color  <br /></td></tr>
 <tr class="separator:a7bf149c14e698e5a2dec8ce967217839"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -239,6 +259,10 @@ volatile <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a338189
 volatile <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>temporary_brightness</b></td></tr>
 <tr class="memdesc:a504379130fb65007fef50ce4a665c2a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define a localy consistant temporary brightness. <br /></td></tr>
 <tr class="separator:a504379130fb65007fef50ce4a665c2a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed2f3c2a293403f0608fd415614f5b6f"><td class="memItemLeft" align="right" valign="top"><a id="aed2f3c2a293403f0608fd415614f5b6f" name="aed2f3c2a293403f0608fd415614f5b6f"></a>
+volatile <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>last_system_brightness</b></td></tr>
+<tr class="memdesc:aed2f3c2a293403f0608fd415614f5b6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value of the system brightness when the local saved brightness last followed it. <br /></td></tr>
+<tr class="separator:aed2f3c2a293403f0608fd415614f5b6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bafa7f06c8a03fb2bbfba53b8830b5a"><td class="memItemLeft" align="right" valign="top">volatile const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7bafa7f06c8a03fb2bbfba53b8830b5a">now</a></td></tr>
 <tr class="memdesc:a7bafa7f06c8a03fb2bbfba53b8830b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">(physical) The "now" on milliseconds, updated just before loop.  <br /></td></tr>
 <tr class="separator:a7bafa7f06c8a03fb2bbfba53b8830b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -248,9 +272,20 @@ volatile <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a338189
 <tr class="memitem:af44ee7df27e950c783886bb202de9e1e"><td class="memItemLeft" align="right" valign="top">volatile const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#af44ee7df27e950c783886bb202de9e1e">raw_frame_count</a></td></tr>
 <tr class="memdesc:af44ee7df27e950c783886bb202de9e1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">(physical) Raw frame count, incremented at an undefined rate  <br /></td></tr>
 <tr class="separator:af44ee7df27e950c783886bb202de9e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50259eb749be404f00078fbab8550a24"><td class="memItemLeft" align="right" valign="top"><a id="a50259eb749be404f00078fbab8550a24" name="a50259eb749be404f00078fbab8550a24"></a>
+volatile const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>currentMaskStep</b> = 0</td></tr>
+<tr class="memdesc:a50259eb749be404f00078fbab8550a24"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, only a proportion of the leds will be available to control If 1, all leds are available, goes up to maxMaskStep. <br /></td></tr>
+<tr class="separator:a50259eb749be404f00078fbab8550a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5d1ae97ea7eec2c031f2e59d1f9bfd3"><td class="memItemLeft" align="right" valign="top"><a id="ac5d1ae97ea7eec2c031f2e59d1f9bfd3" name="ac5d1ae97ea7eec2c031f2e59d1f9bfd3"></a>
+volatile bool&#160;</td><td class="memItemRight" valign="bottom"><b>forceDisableLedDitherMask</b> = false</td></tr>
+<tr class="memdesc:ac5d1ae97ea7eec2c031f2e59d1f9bfd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">set to true to lock led mask brightness control <br /></td></tr>
+<tr class="separator:ac5d1ae97ea7eec2c031f2e59d1f9bfd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
+<tr class="memitem:a4db67c6558339ca6a52b91b36a398a9c"><td class="memItemLeft" align="right" valign="top"><a id="a4db67c6558339ca6a52b91b36a398a9c" name="a4db67c6558339ca6a52b91b36a398a9c"></a>
+static constexpr <a class="el" href="structlampda_1_1helixmask_1_1Params.html">helixmask::Params</a>&#160;</td><td class="memItemRight" valign="bottom"><b>helixMaskParameters</b> = {}</td></tr>
+<tr class="separator:a4db67c6558339ca6a52b91b36a398a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb37532c7a05baa05dbac7d0870c3958"><td class="memItemLeft" align="right" valign="top"><a id="acb37532c7a05baa05dbac7d0870c3958" name="acb37532c7a05baa05dbac7d0870c3958"></a>
 static constexpr <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819">LampTypes</a>&#160;</td><td class="memItemRight" valign="bottom"><b>flavor</b> = <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a966a2c60c7cb902f0b1c4352f2c30ea3">lampType</a></td></tr>
 <tr class="memdesc:acb37532c7a05baa05dbac7d0870c3958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which lamp flavor is currently used by the implementation? <br /></td></tr>
@@ -327,11 +362,73 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lam
 <tr class="memitem:aeeebdcd018557dee77f4c4d1f9e59207"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#aeeebdcd018557dee77f4c4d1f9e59207">nbBuffers</a> = _nbBuffers</td></tr>
 <tr class="memdesc:aeeebdcd018557dee77f4c4d1f9e59207"><td class="mdescLeft">&#160;</td><td class="mdescRight">(indexable) Number of color buffers available for direct access  <br /></td></tr>
 <tr class="separator:aeeebdcd018557dee77f4c4d1f9e59207"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a939a82b6a7a249414970636d9bc22b4f"><td class="memItemLeft" align="right" valign="top"><a id="a939a82b6a7a249414970636d9bc22b4f" name="a939a82b6a7a249414970636d9bc22b4f"></a>
+static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxMaskStep</b> = helixMaskParameters.max_level</td></tr>
+<tr class="separator:a939a82b6a7a249414970636d9bc22b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac96baf26c7809d5cabcf6cff144bf301"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#ac96baf26c7809d5cabcf6cff144bf301">ledMasking_brightnessThreshold</a></td></tr>
+<tr class="memdesc:ac96baf26c7809d5cabcf6cff144bf301"><td class="mdescLeft">&#160;</td><td class="mdescRight">below this, the system will enable the led masking  <br /></td></tr>
+<tr class="separator:ac96baf26c7809d5cabcf6cff144bf301"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main interface between the user and the hardware of the lamp. </p>
-<p>TODO: write recipes for best practices when doing Simple/CCT/Indexable </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a36ff8c81058e4ecd6014b21b2ccdc483" name="a36ff8c81058e4ecd6014b21b2ccdc483"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36ff8c81058e4ecd6014b21b2ccdc483">&#9670;&#160;</a></span>align_internal_to_system_brightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::modes::hardware::LampTy::align_internal_to_system_brightness </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td>
+          <td class="paramname"><em>systemBrightness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the internal brightness values to a new system brightness. </p>
+<p>Used by the system brightness callback: the system saves the brightness after this callback, so <a class="el" href="namespacelampda_1_1logic_1_1brightness.html#ac1a33cf62bc41615558a30d2334f87da" title="Return the saved brightness level, with the user brightness scale applied. This is the level that the...">logic::brightness::get_scaled_saved_brightness()</a> still holds the previous level at this point. </p>
+
+</div>
+</div>
+<a id="ab91ecae4babc656ef6ab78147965fcd3" name="ab91ecae4babc656ef6ab78147965fcd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab91ecae4babc656ef6ab78147965fcd3">&#9670;&#160;</a></span>apply_low_brightness_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::apply_low_brightness_mask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply the optional low level brightnes dithering. </p>
+<p>public API (indexable-only) </p>
+
+</div>
+</div>
 <a id="a990ae4eb0219306dd4148e0d082d2c63" name="a990ae4eb0219306dd4148e0d082d2c63"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a990ae4eb0219306dd4148e0d082d2c63">&#9670;&#160;</a></span>blip()</h2>
 
@@ -358,7 +455,7 @@ static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lam
 
 <p>blip the power gate for set time </p>
 <p>If <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958" title="Which lamp flavor is currently used by the implementation?">LampTy::flavor</a> is <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819a3e9616f66ee9536fe327116244382f86" title="Equivalent to LMBD_LAMP_TYPE__INDEXABLE.">LampTypes::indexable</a> then:</p><ul>
-<li>clear LED strip with black pixels Else</li>
+<li>black out the LED strip, until <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a63a04ea10e3c25d0d88c9f1c4725e36a" title="Stop the strip blackout of a blip (indexable only, no-op otherwise)">end_blackout()</a> or <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#afa92c2328bd25f31d9ef003a7a044575" title="Cancel the ongoing blip, if any.">cancel_blip()</a> Else</li>
 <li>disable output power for a duration </li>
 </ul>
 
@@ -461,6 +558,34 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 
 </div>
 </div>
+<a id="a5ee901eec1ea481cb226366f1f165254" name="a5ee901eec1ea481cb226366f1f165254"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee901eec1ea481cb226366f1f165254">&#9670;&#160;</a></span>enforce_internal_brightness_limits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::modes::hardware::LampTy::enforce_internal_brightness_limits </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Follow the system brightness and enforce its limits, if they changed. Will call <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a4cbed8ac88edf6e6e31001ffb41de330">setBrightness</a>. </p>
+<p>A mode may have moved the saved brightness below the system one (see jumpBrightness). To keep this offset without a visible jump, a rise is added to the saved brightness, and a fall only limits it. A temporary brightness set by a mode is left to this mode, unless it is above the limit: writing to it would show as a flash until the next frame of the mode. </p>
+
+</div>
+</div>
 <a id="afdbd1be5a182ba29c605da0aaad31600" name="afdbd1be5a182ba29c605da0aaad31600"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afdbd1be5a182ba29c605da0aaad31600">&#9670;&#160;</a></span>fadeToBlackBy()</h2>
 
@@ -496,7 +621,7 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div>
 </div>
 <a id="a4f4b5db5f920d7a4dab4d4d7e1bbd2b0" name="a4f4b5db5f920d7a4dab4d4d7e1bbd2b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f4b5db5f920d7a4dab4d4d7e1bbd2b0">&#9670;&#160;</a></span>fill() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f4b5db5f920d7a4dab4d4d7e1bbd2b0">&#9670;&#160;</a></span>fill() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -527,7 +652,7 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div>
 </div>
 <a id="adf7fba22afc60e9f0e3e75bfcef38135" name="adf7fba22afc60e9f0e3e75bfcef38135"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf7fba22afc60e9f0e3e75bfcef38135">&#9670;&#160;</a></span>fill() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adf7fba22afc60e9f0e3e75bfcef38135">&#9670;&#160;</a></span>fill() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -575,7 +700,7 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div>
 </div>
 <a id="ae749b7b4fc849d97dd021a557d9e6f76" name="ae749b7b4fc849d97dd021a557d9e6f76"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae749b7b4fc849d97dd021a557d9e6f76">&#9670;&#160;</a></span>fill() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae749b7b4fc849d97dd021a557d9e6f76">&#9670;&#160;</a></span>fill() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -603,47 +728,8 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 
 </div>
 </div>
-<a id="a4c8f75915673505e0a193036fc79e302" name="a4c8f75915673505e0a193036fc79e302"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c8f75915673505e0a193036fc79e302">&#9670;&#160;</a></span>fill() <span class="overload">[4/6]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::fill </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>color</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const BufferTy &amp;&#160;</td>
-          <td class="paramname"><em>shouldDisplay</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>(indexable) Fill lamp with target color, with a mask </p>
-<p>See <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5" title="Return color (r, g, b) as a single uint32_t integer.">modes::colors::fromRGB()</a> to set <code>color</code> </p>
-
-</div>
-</div>
 <a id="a04740441ed7eb7a5ec76057a85ba095c" name="a04740441ed7eb7a5ec76057a85ba095c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04740441ed7eb7a5ec76057a85ba095c">&#9670;&#160;</a></span>fill() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a04740441ed7eb7a5ec76057a85ba095c">&#9670;&#160;</a></span>fill() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -683,60 +769,6 @@ template&lt;uint8_t dstBufIdx, uint8_t srcBufIdx&gt; </div>
 </div><div class="memdoc">
 
 <p>(indexable) Fill lamp with target color, from start to end </p>
-<ul>
-<li>See <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#abf31f9518c734ee79389ef1d92d6b8df" title="(indexable) Return a led count in 0-ledCount scaled by scale">toLedCount()</a> to set <code>start</code> and <code>end</code> </li>
-<li>See <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5" title="Return color (r, g, b) as a single uint32_t integer.">modes::colors::fromRGB()</a> to set <code>color</code> </li>
-</ul>
-
-</div>
-</div>
-<a id="a3a0cee140ba5208c2db1f824ed40791e" name="a3a0cee140ba5208c2db1f824ed40791e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3a0cee140ba5208c2db1f824ed40791e">&#9670;&#160;</a></span>fill() <span class="overload">[6/6]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::fill </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>color</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>start</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>end</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const BufferTy &amp;&#160;</td>
-          <td class="paramname"><em>shouldDisplay</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>(indexable) Fill lamp with target color, from start to end. Apply a mask to display leds </p>
 <ul>
 <li>See <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#abf31f9518c734ee79389ef1d92d6b8df" title="(indexable) Return a led count in 0-ledCount scaled by scale">toLedCount()</a> to set <code>start</code> and <code>end</code> </li>
 <li>See <a class="el" href="namespacelampda_1_1modes_1_1colors.html#ac2bf35faa6f46fd27b3148dc508b18b5" title="Return color (r, g, b) as a single uint32_t integer.">modes::colors::fromRGB()</a> to set <code>color</code> </li>
@@ -963,6 +995,79 @@ template&lt;uint8_t bufIdx = 0&gt; </div>
 
 </div>
 </div>
+<a id="a7ba3b07115b9631efcb4b863f3c1713f" name="a7ba3b07115b9631efcb4b863f3c1713f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ba3b07115b9631efcb4b863f3c1713f">&#9670;&#160;</a></span>mask_led_at_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::mask_led_at_index </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>shouldMask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mark a led to be masked at the next show. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Index of the led to disable </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shouldMask</td><td>If true, the led wont be displayed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a54cca13c647df0401d173c0f56c98180" name="a54cca13c647df0401d173c0f56c98180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54cca13c647df0401d173c0f56c98180">&#9670;&#160;</a></span>restoreBrightnessNow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LMBD_INLINE lampda::modes::hardware::LampTy::restoreBrightnessNow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Same as <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a221edd69101aa0f25ce0821924f46694" title="Reset brightness to internal saved brightness, skip callbacks.">restoreBrightness()</a>, but ignores the brightness update rate limit. </p>
+<p>For the callers that will not try again: a rate limited update would leave the system on the temporary brightness </p>
+
+</div>
+</div>
 <a id="a4cbed8ac88edf6e6e31001ffb41de330" name="a4cbed8ac88edf6e6e31001ffb41de330"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4cbed8ac88edf6e6e31001ffb41de330">&#9670;&#160;</a></span>setBrightness()</h2>
 
@@ -1021,9 +1126,8 @@ template&lt;uint8_t bufIdx = 0&gt; </div>
 <li>if <code>skipUpdateBrightness</code> is true, only set strip object brightness, or do nothing if <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958" title="Which lamp flavor is currently used by the implementation?">LampTy::flavor</a> is not <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819a3e9616f66ee9536fe327116244382f86" title="Equivalent to LMBD_LAMP_TYPE__INDEXABLE.">LampTypes::indexable</a></li>
 <li>if <code>updateSavedBrightess</code> is true, save brightness and next time user navigate brightness, use it as starting point (see tempBrightness)</li>
 </ul>
-<p>Note that calls to <code><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#a155cf705c29fd57d1c543fefc7a419ba" title="update the internal brightness values">logic::brightness::update_brightness</a></code> are throttled to once in every 50ms to avoid freezing user brightness navigation.</p>
+<p>Note that calls to <code><a class="el" href="namespacelampda_1_1logic_1_1brightness.html#aaba2023be50b8fda43f8cb735edb7592" title="update the internal brightness values">logic::brightness::update_brightness</a></code> are throttled to once in every 50ms to avoid freezing user brightness navigation.</p>
 <p>Note that <code>skipUpdateBrightness</code> implies <code>skipCallbacks</code> implicitly </p>
-<dl class="section warning"><dt>Warning</dt><dd>: this is actually heavy to run</dd></dl>
 
 </div>
 </div>
@@ -1128,7 +1232,12 @@ template&lt;uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1&gt; </div>
 </div><div class="memdoc">
 
 <p>(indexable) Set the n-th LED color </p>
-<p>See modes::fromRGB() to set <code>color</code> </p>
+<p>See modes::fromRGB() to set <code>color</code> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">forceSet</td><td>Force set the pixel color, ignoring all check and masks rules </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1265,6 +1374,33 @@ template&lt;typename T &gt; </div>
 
 <p>(indexable) Count of indexable LEDs on the lamp </p>
 <p>Equal to <code>LED_COUNT</code> if <a class="el" href="namespacelampda_1_1modes_1_1hardware.html#a4a59d53a8125e83721ba8b38597a3819a3e9616f66ee9536fe327116244382f86" title="Equivalent to LMBD_LAMP_TYPE__INDEXABLE.">LampTypes::indexable</a> or else 512 </p>
+
+</div>
+</div>
+<a id="ac96baf26c7809d5cabcf6cff144bf301" name="ac96baf26c7809d5cabcf6cff144bf301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac96baf26c7809d5cabcf6cff144bf301">&#9670;&#160;</a></span>ledMasking_brightnessThreshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> lampda::modes::hardware::LampTy::ledMasking_brightnessThreshold</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">          ::lampda::brightness::absoluteMaximumBrightness *</div>
+<div class="line">          0.25f</div>
+</div><!-- fragment -->
+<p>below this, the system will enable the led masking </p>
 
 </div>
 </div>

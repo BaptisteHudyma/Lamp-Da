@@ -107,6 +107,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>on_exit_mode</
 <tr class="memitem:ac701bf52f656f57a46938a66621a9a3a"><td class="memItemLeft" align="right" valign="top"><a id="ac701bf52f656f57a46938a66621a9a3a" name="ac701bf52f656f57a46938a66621a9a3a"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_update</b> (auto &amp;ctx, float progress)</td></tr>
 <tr class="separator:ac701bf52f656f57a46938a66621a9a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9a5a2489d9e59ef101e61678dc8fee4"><td class="memItemLeft" align="right" valign="top"><a id="ae9a5a2489d9e59ef101e61678dc8fee4" name="ae9a5a2489d9e59ef101e61678dc8fee4"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>sunrise_update</b> (auto &amp;ctx, float progress)</td></tr>
+<tr class="separator:ae9a5a2489d9e59ef101e61678dc8fee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ea6dd780f9c4da592189d1db8fdfd7d"><td class="memItemLeft" align="right" valign="top"><a id="a1ea6dd780f9c4da592189d1db8fdfd7d" name="a1ea6dd780f9c4da592189d1db8fdfd7d"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>brightness_update</b> (auto &amp;ctx, brightness_t brightness)</td></tr>
 <tr class="separator:a1ea6dd780f9c4da592189d1db8fdfd7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,6 +168,18 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>isGr
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
 <tr class="memdesc:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> callback. <br /></td></tr>
 <tr class="separator:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac10c4957f2fd6e61c29f15f51c1c5ec1"><td class="memItemLeft" align="right" valign="top"><a id="ac10c4957f2fd6e61c29f15f51c1c5ec1" name="ac10c4957f2fd6e61c29f15f51c1c5ec1"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>usesSunsetGravityDissolveMode</b> = false</td></tr>
+<tr class="memdesc:ac10c4957f2fd6e61c29f15f51c1c5ec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">If hasSunsetAnimation is true, this can be used to toggle an internal handling that dissolve the current animation during the sunset. <br /></td></tr>
+<tr class="separator:ac10c4957f2fd6e61c29f15f51c1c5ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a896518d5cc59cc8bc42fdda3e2bd40ea"><td class="memItemLeft" align="right" valign="top"><a id="a896518d5cc59cc8bc42fdda3e2bd40ea" name="a896518d5cc59cc8bc42fdda3e2bd40ea"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunriseAnimation</b> = false</td></tr>
+<tr class="memdesc:a896518d5cc59cc8bc42fdda3e2bd40ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#adb4c99096799587b1bc7d94815016070" title="Custom callback when sunrise mode is updated (optional)">BasicMode::sunrise_update()</a> callback. <br /></td></tr>
+<tr class="separator:a896518d5cc59cc8bc42fdda3e2bd40ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a714cecf207c24eba97bf3a0465ce4fa2"><td class="memItemLeft" align="right" valign="top"><a id="a714cecf207c24eba97bf3a0465ce4fa2" name="a714cecf207c24eba97bf3a0465ce4fa2"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>usesSunriseGravityAppearMode</b> = false</td></tr>
+<tr class="memdesc:a714cecf207c24eba97bf3a0465ce4fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">If hasSunriseAnimation is true, this can be used to toggle an internal handling that make the current animation appear with dropped particles during sunrise. <br /></td></tr>
+<tr class="separator:a714cecf207c24eba97bf3a0465ce4fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d76bc8d1882571ab35a8f81fdf0ab9b"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a8d76bc8d1882571ab35a8f81fdf0ab9b">storeId</a> = 0</td></tr>
 <tr class="memdesc:a8d76bc8d1882571ab35a8f81fdf0ab9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store identifier for persistent storage (optional)  <br /></td></tr>
 <tr class="separator:a8d76bc8d1882571ab35a8f81fdf0ab9b"><td class="memSeparator" colspan="2">&#160;</td></tr>

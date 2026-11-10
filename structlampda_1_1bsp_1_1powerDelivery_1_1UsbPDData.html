@@ -91,10 +91,10 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> ()</td></tr>
 <tr class="memdesc:aaf556ed0e04a820e17fb7eacd7487342"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the values and update status. <br /></td></tr>
 <tr class="separator:aaf556ed0e04a820e17fb7eacd7487342"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7764e16ff8b273e4fcc47fd31f38569"><td class="memItemLeft" align="right" valign="top"><a id="af7764e16ff8b273e4fcc47fd31f38569" name="af7764e16ff8b273e4fcc47fd31f38569"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>serial_show</b> ()</td></tr>
-<tr class="memdesc:af7764e16ff8b273e4fcc47fd31f38569"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug to serial output. <br /></td></tr>
-<tr class="separator:af7764e16ff8b273e4fcc47fd31f38569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae47be5e34211dc9b18bc5966acb83b2f"><td class="memItemLeft" align="right" valign="top"><a id="ae47be5e34211dc9b18bc5966acb83b2f" name="ae47be5e34211dc9b18bc5966acb83b2f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>serial_show</b> (const bool forceContract=false)</td></tr>
+<tr class="memdesc:ae47be5e34211dc9b18bc5966acb83b2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug to serial output. The contract is shown on change only, unless forced. <br /></td></tr>
+<tr class="separator:ae47be5e34211dc9b18bc5966acb83b2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -122,10 +122,14 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxInputCurrent</
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>maxInputVoltage</b></td></tr>
 <tr class="memdesc:a58e8dd476224cf61a2cba7c8812a49c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">max input voltage, in millivolts <br /></td></tr>
 <tr class="separator:a58e8dd476224cf61a2cba7c8812a49c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a170ed31678e0bc355754f2e8148df076"><td class="memItemLeft" align="right" valign="top"><a id="a170ed31678e0bc355754f2e8148df076" name="a170ed31678e0bc355754f2e8148df076"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>pdAlgoStatus</b></td></tr>
-<tr class="memdesc:a170ed31678e0bc355754f2e8148df076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug status for the algorithm. <br /></td></tr>
-<tr class="separator:a170ed31678e0bc355754f2e8148df076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8e969526a56215cd1d66917cb993285"><td class="memItemLeft" align="right" valign="top"><a id="ac8e969526a56215cd1d66917cb993285" name="ac8e969526a56215cd1d66917cb993285"></a>
+etl::string&lt; 32 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pdAlgoStatus</b></td></tr>
+<tr class="memdesc:ac8e969526a56215cd1d66917cb993285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug status for the algorithm. <br /></td></tr>
+<tr class="separator:ac8e969526a56215cd1d66917cb993285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5e386850584afbae8fa521f7c7bf3e7"><td class="memItemLeft" align="right" valign="top"><a id="ae5e386850584afbae8fa521f7c7bf3e7" name="ae5e386850584afbae8fa521f7c7bf3e7"></a>
+char&#160;</td><td class="memItemRight" valign="bottom"><b>lastContract</b> [64] = {0}</td></tr>
+<tr class="memdesc:ae5e386850584afbae8fa521f7c7bf3e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">last contract shown <br /></td></tr>
+<tr class="separator:ae5e386850584afbae8fa521f7c7bf3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb07786f71f6c0234f25743916af56b9"><td class="memItemLeft" align="right" valign="top"><a id="adb07786f71f6c0234f25743916af56b9" name="adb07786f71f6c0234f25743916af56b9"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasChanged</b> = false</td></tr>
 <tr class="memdesc:adb07786f71f6c0234f25743916af56b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">when true, this struct has changed ! <br /></td></tr>

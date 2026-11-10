@@ -123,6 +123,9 @@ template&lt;typename NewLocalMode &gt; </td></tr>
 <tr class="memitem:ad54782eea310146594cae2b09eed2f5b"><td class="memTemplItemLeft" align="right" valign="top">auto LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>context_as</b> ()</td></tr>
 <tr class="memdesc:ad54782eea310146594cae2b09eed2f5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the same context, but for another mode, see <a class="el" href="namespacelampda_1_1modes.html#ab874c161b8d6abdb230f01b569c3238f" title="Bind provided context to another modes::BasicMode.">modes::context_as()</a> <br /></td></tr>
 <tr class="separator:ad54782eea310146594cae2b09eed2f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b35b17bd80d04a449405660e173bbb1"><td class="memItemLeft" align="right" valign="top"><a id="a9b35b17bd80d04a449405660e173bbb1" name="a9b35b17bd80d04a449405660e173bbb1"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>jump_to_new_active_index</b> (const auto &amp;newActiveIndex, const bool ignoreRampAndIndex=false, const bool quitFavoriteGroup=false)</td></tr>
+<tr class="separator:a9b35b17bd80d04a449405660e173bbb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcbf08f5b754e42a8fb55ea0de875d88"><td class="memItemLeft" align="right" valign="top"><a id="adcbf08f5b754e42a8fb55ea0de875d88" name="adcbf08f5b754e42a8fb55ea0de875d88"></a>
 uint8_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>get_active_group</b> (uint8_t maxValueWrap=255) const</td></tr>
 <tr class="memdesc:adcbf08f5b754e42a8fb55ea0de875d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">(getter) Get active group index <br /></td></tr>
@@ -142,6 +145,14 @@ uint8_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>set_ac
 <tr class="memitem:a564db4beda8a2ed705c6d4188287bd68"><td class="memItemLeft" align="right" valign="top">uint8_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ContextTy.html#a564db4beda8a2ed705c6d4188287bd68">get_active_custom_ramp</a> () const</td></tr>
 <tr class="memdesc:a564db4beda8a2ed705c6d4188287bd68"><td class="mdescLeft">&#160;</td><td class="mdescRight">(getter) Get active custom ramp value (as configured by user)  <br /></td></tr>
 <tr class="separator:a564db4beda8a2ed705c6d4188287bd68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a52de56e6248566d915218b481ab1ee"><td class="memItemLeft" align="right" valign="top"><a id="a1a52de56e6248566d915218b481ab1ee" name="a1a52de56e6248566d915218b481ab1ee"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_sunset_drop_animation</b> (float progress)</td></tr>
+<tr class="memdesc:a1a52de56e6248566d915218b481ab1ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the sunset timer drop animation. <br /></td></tr>
+<tr class="separator:a1a52de56e6248566d915218b481ab1ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9c9fbec19a72e5d6c2c2cd759fe5282"><td class="memItemLeft" align="right" valign="top"><a id="ac9c9fbec19a72e5d6c2c2cd759fe5282" name="ac9c9fbec19a72e5d6c2c2cd759fe5282"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_sunrise_drop_animation</b> (float progress)</td></tr>
+<tr class="memdesc:ac9c9fbec19a72e5d6c2c2cd759fe5282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the sunrise timer drop animation. <br /></td></tr>
+<tr class="separator:ac9c9fbec19a72e5d6c2c2cd759fe5282"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c8932f27a4d91a58025b8615bd6275a"><td class="memItemLeft" align="right" valign="top">uint8_t LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ContextTy.html#a4c8932f27a4d91a58025b8615bd6275a">set_active_custom_ramp</a> (uint8_t value)</td></tr>
 <tr class="memdesc:a4c8932f27a4d91a58025b8615bd6275a"><td class="mdescLeft">&#160;</td><td class="mdescRight">(setter) Set active custom ramp value (overrides user choice)  <br /></td></tr>
 <tr class="separator:a4c8932f27a4d91a58025b8615bd6275a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -177,9 +188,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>cancel_blip</b> () co
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_bliping</b> () const</td></tr>
 <tr class="memdesc:a773a25b28647614333a7354098635674"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the systems is currently bliping the output. <br /></td></tr>
 <tr class="separator:a773a25b28647614333a7354098635674"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6fd1b1b3a6cbe8769b88e54ce1736530"><td class="memItemLeft" align="right" valign="top">void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1ContextTy.html#a6fd1b1b3a6cbe8769b88e54ce1736530">skipFirstLedsForFrames</a> (uint8_t amount, uint8_t count=1)</td></tr>
-<tr class="memdesc:a6fd1b1b3a6cbe8769b88e54ce1736530"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skip the first few LEDs update during several frames.  <br /></td></tr>
-<tr class="separator:a6fd1b1b3a6cbe8769b88e54ce1736530"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26928fa653e23d803a2b22ab2a1b8c09"><td class="memItemLeft" align="right" valign="top"><a id="a26928fa653e23d803a2b22ab2a1b8c09" name="a26928fa653e23d803a2b22ab2a1b8c09"></a>
 void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>enter_group</b> (const uint8_t value)</td></tr>
 <tr class="memdesc:a26928fa653e23d803a2b22ab2a1b8c09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call when entering a group. <br /></td></tr>
@@ -212,6 +220,26 @@ void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>on_exit_m
 void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_update</b> (LMBD_USED float progress)</td></tr>
 <tr class="memdesc:ac9723eb83074e717ca6feb8e479986f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> <br /></td></tr>
 <tr class="separator:ac9723eb83074e717ca6feb8e479986f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a581aaae460aa468b9ea547c28e44d5fc"><td class="memItemLeft" align="right" valign="top"><a id="a581aaae460aa468b9ea547c28e44d5fc" name="a581aaae460aa468b9ea547c28e44d5fc"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>sunrise_update</b> (LMBD_USED float progress)</td></tr>
+<tr class="memdesc:a581aaae460aa468b9ea547c28e44d5fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#adb4c99096799587b1bc7d94815016070" title="Custom callback when sunrise mode is updated (optional)">BasicMode::sunrise_update()</a> <br /></td></tr>
+<tr class="separator:a581aaae460aa468b9ea547c28e44d5fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a287dc904f9f152d8a1c63d70e823899c"><td class="memItemLeft" align="right" valign="top"><a id="a287dc904f9f152d8a1c63d70e823899c" name="a287dc904f9f152d8a1c63d70e823899c"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_timer_animation_internal_loop</b> ()</td></tr>
+<tr class="memdesc:a287dc904f9f152d8a1c63d70e823899c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the internal sunset animation loop. <br /></td></tr>
+<tr class="separator:a287dc904f9f152d8a1c63d70e823899c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87c809776d38e6697be3c2430cf4312a"><td class="memItemLeft" align="right" valign="top"><a id="a87c809776d38e6697be3c2430cf4312a" name="a87c809776d38e6697be3c2430cf4312a"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>sunrise_timer_animation_internal_loop</b> ()</td></tr>
+<tr class="memdesc:a87c809776d38e6697be3c2430cf4312a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run the internal sunrise animation loop. <br /></td></tr>
+<tr class="separator:a87c809776d38e6697be3c2430cf4312a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42d5736e191cdb7224e42d6e80482e2b"><td class="memItemLeft" align="right" valign="top"><a id="a42d5736e191cdb7224e42d6e80482e2b" name="a42d5736e191cdb7224e42d6e80482e2b"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>sunset_timer_internal_reset</b> ()</td></tr>
+<tr class="memdesc:a42d5736e191cdb7224e42d6e80482e2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a end of sunset timer event. <br /></td></tr>
+<tr class="separator:a42d5736e191cdb7224e42d6e80482e2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcd4ed956a4bf8566329c231260a9154"><td class="memItemLeft" align="right" valign="top"><a id="adcd4ed956a4bf8566329c231260a9154" name="adcd4ed956a4bf8566329c231260a9154"></a>
+void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>sunrise_timer_internal_reset</b> ()</td></tr>
+<tr class="memdesc:adcd4ed956a4bf8566329c231260a9154"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a end of sunrise timer event. <br /></td></tr>
+<tr class="separator:adcd4ed956a4bf8566329c231260a9154"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20eab60ade006184eeff55269cb2fb20"><td class="memItemLeft" align="right" valign="top"><a id="a20eab60ade006184eeff55269cb2fb20" name="a20eab60ade006184eeff55269cb2fb20"></a>
 void LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>brightness_update</b> (LMBD_USED <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brightness)</td></tr>
 <tr class="memdesc:a20eab60ade006184eeff55269cb2fb20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds to local <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7" title="Custom callback when brightness changes (optional)">BasicMode::brightness_update()</a> <br /></td></tr>
@@ -238,14 +266,17 @@ template&lt;bool displayFavoriteNumber = true&gt; </td></tr>
 <tr class="memitem:a0e5719f271b83f5b459b01928796f7fc"><td class="memItemLeft" align="right" valign="top"><a id="a0e5719f271b83f5b459b01928796f7fc" name="a0e5719f271b83f5b459b01928796f7fc"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>get_number_of_allowed_favorites</b> ()</td></tr>
 <tr class="separator:a0e5719f271b83f5b459b01928796f7fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a477a98c0f676ed42c03ba8e57516f6a3"><td class="memTemplParams" colspan="2"><a id="a477a98c0f676ed42c03ba8e57516f6a3" name="a477a98c0f676ed42c03ba8e57516f6a3"></a>
+<tr class="memitem:a4d1beb30d6fda5cb7b7ae55f4315b326"><td class="memItemLeft" align="right" valign="top"><a id="a4d1beb30d6fda5cb7b7ae55f4315b326" name="a4d1beb30d6fda5cb7b7ae55f4315b326"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_in_favorite_group</b> ()</td></tr>
+<tr class="separator:a4d1beb30d6fda5cb7b7ae55f4315b326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad97552daf207bf4fcf777e7b19af7788"><td class="memTemplParams" colspan="2"><a id="ad97552daf207bf4fcf777e7b19af7788" name="ad97552daf207bf4fcf777e7b19af7788"></a>
 template&lt;bool displayFavoriteNumber = true&gt; </td></tr>
-<tr class="memitem:a477a98c0f676ed42c03ba8e57516f6a3"><td class="memTemplItemLeft" align="right" valign="top">auto LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>animate_favorite_pick</b> (float holdDuration, float stepSize)</td></tr>
-<tr class="separator:a477a98c0f676ed42c03ba8e57516f6a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca6690a851372f7e239db83a22eea07c"><td class="memTemplParams" colspan="2"><a id="aca6690a851372f7e239db83a22eea07c" name="aca6690a851372f7e239db83a22eea07c"></a>
+<tr class="memitem:ad97552daf207bf4fcf777e7b19af7788"><td class="memTemplItemLeft" align="right" valign="top">auto LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>animate_favorite_pick</b> (float holdDuration, float stepSize, bool isEndOfHold)</td></tr>
+<tr class="separator:ad97552daf207bf4fcf777e7b19af7788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1cb891f1f61ba6f03101e301f4e3538"><td class="memTemplParams" colspan="2"><a id="ab1cb891f1f61ba6f03101e301f4e3538" name="ab1cb891f1f61ba6f03101e301f4e3538"></a>
 template&lt;bool displayFavoriteNumber = true&gt; </td></tr>
-<tr class="memitem:aca6690a851372f7e239db83a22eea07c"><td class="memTemplItemLeft" align="right" valign="top">auto LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>animate_favorite_delete</b> (float holdDuration, float stepSize)</td></tr>
-<tr class="separator:aca6690a851372f7e239db83a22eea07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1cb891f1f61ba6f03101e301f4e3538"><td class="memTemplItemLeft" align="right" valign="top">auto LMBD_INLINE&#160;</td><td class="memTemplItemRight" valign="bottom"><b>animate_favorite_delete</b> (float holdDuration, float stepSize, bool isEndOfHold)</td></tr>
+<tr class="separator:ab1cb891f1f61ba6f03101e301f4e3538"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af380011b222e4b7e2ac619f30700aa33"><td class="memItemLeft" align="right" valign="top"><a id="af380011b222e4b7e2ac619f30700aa33" name="af380011b222e4b7e2ac619f30700aa33"></a>
 auto LMBD_INLINE&#160;</td><td class="memItemRight" valign="bottom"><b>get_custom_ramp_default_value</b> ()</td></tr>
 <tr class="memdesc:af380011b222e4b7e2ac619f30700aa33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the default ramp values for all the modes under this group. <br /></td></tr>
@@ -497,48 +528,6 @@ template&lt;<a class="el" href="namespacelampda_1_1modes.html#a8e277f0206f22ab9e
 
 <p>(setter) Set a configurable integer (u32) to target <code>value</code> </p>
 <p>See <a class="el" href="namespacelampda_1_1modes.html#a8e277f0206f22ab9eda52580929bdb17" title="Keys to enable modes to change configuration at runtime.">modes::ConfigKeys</a> for documentation of configurable (u32) integers. </p>
-
-</div>
-</div>
-<a id="a6fd1b1b3a6cbe8769b88e54ce1736530" name="a6fd1b1b3a6cbe8769b88e54ce1736530"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6fd1b1b3a6cbe8769b88e54ce1736530">&#9670;&#160;</a></span>skipFirstLedsForFrames()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename LocalBasicMode , typename <a class="el" href="structlampda_1_1modes_1_1ContextTy.html#a4ab6246737407f28bdab6cb4846ded33">ModeManager</a> &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void LMBD_INLINE <a class="el" href="structlampda_1_1modes_1_1ContextTy.html">lampda::modes::ContextTy</a>&lt; LocalBasicMode, <a class="el" href="structlampda_1_1modes_1_1ContextTy.html#a4ab6246737407f28bdab6cb4846ded33">ModeManager</a> &gt;::skipFirstLedsForFrames </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>amount</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>count</em> = <code>1</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Skip the first few LEDs update during several frames. </p>
-<p>Next calls to <a class="el" href="structlampda_1_1modes_1_1hardware_1_1LampTy.html#a7bf149c14e698e5a2dec8ce967217839">modes::hardware::LampTy::setPixelColor()</a> no longer write on the <code>amount</code> first lower LEDs, making them static.</p>
-<p>See modes::colors::rampColorRing </p>
 
 </div>
 </div>

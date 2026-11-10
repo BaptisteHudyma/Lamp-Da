@@ -13,12 +13,14 @@ var searchData=
   ['tick_10',['tick',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#a6d5524a331c508bd77085ca10348c910',1,'lampda::modes::hardware::LampTy']]],
   ['time_11',['time',['../structlampda_1_1bsp_1_1charger_1_1Measurments.html#a3f8528f887a5d1197792fc93afde9266',1,'lampda::bsp::charger::Measurments']]],
   ['timeout_5fms_12',['timeout_ms',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a8ac6c2371e06e4a53bbfa23d4584e07c',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['timesinceotgcurrentuse_13',['timeSinceOTGCurrentUse',['../namespacelampda_1_1logic_1_1power.html#af31880e7d1b322e3533f490ce54e9b19',1,'lampda::logic::power']]],
-  ['timesinceotgnocurrentuse_14',['timeSinceOTGNoCurrentUse',['../namespacelampda_1_1logic_1_1power.html#acca4b06fe1362379f279587fa5bf0ea7',1,'lampda::logic::power']]],
-  ['totalcons_5fwatt_15',['totalCons_Watt',['../namespacelampda.html#ad043cec810b8319390f8802a87197a15',1,'lampda']]],
-  ['translation_16',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
-  ['transmit_17',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
-  ['truebrightnessrampdowntime_5fms_18',['trueBrightnessRampDownTime_ms',['../namespacelampda_1_1logic_1_1sunset.html#a99011391098fedf6d6523bd8bf7f5946',1,'lampda::logic::sunset']]],
-  ['type_19',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement']]],
-  ['typicalliionvoltage_5fmv_20',['typicalLiionVoltage_mV',['../namespacelampda.html#ade87cbd4b1366e64f87e966d75f7922c',1,'lampda']]]
+  ['timeout_5fs_13',['timeout_s',['../group__HAL__BLE__GAP__ADDR__TYPES.html#ga75ff2b8cc33856d0fd32b5ece80a50de',1,'lampda::hal::ble::hal_ble_adv_params_t']]],
+  ['timesincelastpddetected_5fms_14',['timeSinceLastPdDetected_ms',['../structlampda_1_1bsp_1_1powerDelivery_1_1policy_1_1SourceStatus.html#ac0cfeb3c1ba671a10906d4f628611b87',1,'lampda::bsp::powerDelivery::policy::SourceStatus']]],
+  ['timesinceotgcurrentuse_15',['timeSinceOTGCurrentUse',['../namespacelampda_1_1logic_1_1power.html#af31880e7d1b322e3533f490ce54e9b19',1,'lampda::logic::power']]],
+  ['timesinceotgnocurrentuse_16',['timeSinceOTGNoCurrentUse',['../namespacelampda_1_1logic_1_1power.html#acca4b06fe1362379f279587fa5bf0ea7',1,'lampda::logic::power']]],
+  ['timesincesourcedetected_5fms_17',['timeSinceSourceDetected_ms',['../structlampda_1_1bsp_1_1powerDelivery_1_1policy_1_1SourceStatus.html#a14f76346d929c55fa1a8dfb54f8cdc4d',1,'lampda::bsp::powerDelivery::policy::SourceStatus']]],
+  ['totalcons_5fwatt_18',['totalCons_Watt',['../namespacelampda_1_1physical__constants.html#aa903179995a047a31b285f1928be3bb9',1,'lampda::physical_constants']]],
+  ['translation_19',['translation',['../structlampda_1_1utils_1_1TransformationMatrix.html#ad24fbc8a3543bfcd5d7bf92bd68aae2a',1,'lampda::utils::TransformationMatrix']]],
+  ['transmit_20',['transmit',['../structtcpm__drv.html#a6b503778ad8dbbca6cc67e46d7363694',1,'tcpm_drv']]],
+  ['type_21',['type',['../structlampda_1_1modes_1_1draw_1_1overlay_1_1____private_1_1UIElement.html#a5c4790ffca306a285685889472e9e257',1,'lampda::modes::draw::overlay::__private::UIElement::type()'],['../group__HAL__BLE__GAP__ADDR__TYPES.html#gade3c10683d4fa8e699bd2ad5f81a4a0e',1,'lampda::hal::ble::gap_addr_t::type()']]],
+  ['typicalliionvoltage_5fmv_22',['typicalLiionVoltage_mV',['../namespacelampda_1_1physical__constants.html#add4120b9647c94e5cfe9c16b774c95e4',1,'lampda::physical_constants']]]
 ];

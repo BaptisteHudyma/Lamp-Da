@@ -96,6 +96,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>raise</b> (const <a c
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> (const <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a> type)</td></tr>
 <tr class="memdesc:aadd31d81bd9d6b77206118f72a0889b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear an alert. <br /></td></tr>
 <tr class="separator:aadd31d81bd9d6b77206118f72a0889b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada5e046fa015cd6d3bd56ffe17e8ad4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada5e046fa015cd6d3bd56ffe17e8ad4f">clear_unless_refreshed</a> (const <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a> type, const std::atomic&lt; uint32_t &gt; &amp;refreshCount, const uint32_t refreshCountAtDecision)</td></tr>
+<tr class="memdesc:ada5e046fa015cd6d3bd56ffe17e8ad4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear an alert, unless it was refreshed by a <a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada19e3ad7735e286c3157e8d5b8652c4" title="Raise an alert.">raise()</a> since the clear decision was taken.  <br /></td></tr>
+<tr class="separator:ada5e046fa015cd6d3bd56ffe17e8ad4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afad97221a68c79c1aaab9c4164c3b00f"><td class="memItemLeft" align="right" valign="top"><a id="afad97221a68c79c1aaab9c4164c3b00f" name="afad97221a68c79c1aaab9c4164c3b00f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_raised</b> (const <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a> type) const</td></tr>
 <tr class="memdesc:afad97221a68c79c1aaab9c4164c3b00f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the target alert is raised. <br /></td></tr>
@@ -120,10 +123,62 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_charge_battery</b
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_use_usb_port</b> () const</td></tr>
 <tr class="memdesc:a62485b7f5d9b4a1e37652824a5bca727"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if no raised alerts block the use of power through USB port. <br /></td></tr>
 <tr class="separator:a62485b7f5d9b4a1e37652824a5bca727"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18a6a85eda838d11df24281598b09828"><td class="memItemLeft" align="right" valign="top"><a id="a18a6a85eda838d11df24281598b09828" name="a18a6a85eda838d11df24281598b09828"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>AlertManager_t</b> (const <a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html">AlertManager_t</a> &amp;)=delete</td></tr>
+<tr class="separator:a18a6a85eda838d11df24281598b09828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7c32c63ac2a36a12f8449e3c52b30de"><td class="memItemLeft" align="right" valign="top"><a id="ab7c32c63ac2a36a12f8449e3c52b30de" name="ab7c32c63ac2a36a12f8449e3c52b30de"></a>
+<a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html">AlertManager_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html">AlertManager_t</a> const &amp;)=delete</td></tr>
+<tr class="separator:ab7c32c63ac2a36a12f8449e3c52b30de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handle the whole alerts logic. Use this to raise and clear alerts, and make decisions based on those alerts. Alerts can be raised and cleared on their own. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ada5e046fa015cd6d3bd56ffe17e8ad4f" name="ada5e046fa015cd6d3bd56ffe17e8ad4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada5e046fa015cd6d3bd56ffe17e8ad4f">&#9670;&#160;</a></span>clear_unless_refreshed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::logic::alerts::AlertManager_t::clear_unless_refreshed </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa">Type</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::atomic&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>refreshCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>refreshCountAtDecision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear an alert, unless it was refreshed by a <a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada19e3ad7735e286c3157e8d5b8652c4" title="Raise an alert.">raise()</a> since the clear decision was taken. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>The alert to clear </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refreshCount</td><td>The refresh counter of this alert, incremented by every <a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada19e3ad7735e286c3157e8d5b8652c4" title="Raise an alert.">raise()</a> of a raised alert </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refreshCountAtDecision</td><td>Value of <code>refreshCount</code> read before deciding to clear the alert </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the alert was cleared </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/system/logic/<a class="el" href="alerts_8h_source.html">alerts.h</a></li>
 <li>src/system/logic/alerts.cpp</li>
 </ul>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['type_0',['Type',['../classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428f',1,'lampda::common::UserCommand::Type()'],['../namespacelampda_1_1common_1_1elk.html#acaa45e95815f1bc5db6a0affa837a566',1,'lampda::common::elk::Type()'],['../namespacelampda_1_1logic_1_1alerts.html#a13b290ef7ec43fd80aa08e37a53b2bfa',1,'lampda::logic::alerts::Type()']]]
+  ['setresult_0',['SetResult',['../namespacelampda_1_1logic_1_1button__bindings.html#a5355ec46c9c365122b0834a5679d9232',1,'lampda::logic::button_bindings']]],
+  ['status_5ft_1',['Status_t',['../namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61',1,'lampda::bsp::charger']]]
 ];

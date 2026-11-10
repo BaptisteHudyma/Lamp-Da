@@ -128,20 +128,27 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>on_lowered</b
 <tr class="memitem:abbea6de5d00deb35f06e5bb0459ff934"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#abbea6de5d00deb35f06e5bb0459ff934">should_be_raised</a> () const</td></tr>
 <tr class="memdesc:abbea6de5d00deb35f06e5bb0459ff934"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be raised  <br /></td></tr>
 <tr class="separator:abbea6de5d00deb35f06e5bb0459ff934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac78014e92a026835d9e7b3cce9e54cd3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ac78014e92a026835d9e7b3cce9e54cd3">max_brightness</a> () const</td></tr>
+<tr class="memdesc:ac78014e92a026835d9e7b3cce9e54cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum output brightness allowed while this alert is raised. The system limit is the lowest of the raised alerts limits, see <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#ab6f8e270ad87c32139571d749506da3a" title="handle the behavior for all alerts. Must be called often">handle_all()</a>  <br /></td></tr>
+<tr class="separator:ac78014e92a026835d9e7b3cce9e54cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad384deb112bc1fc5fe2d9ffe4cb3cb45"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ad384deb112bc1fc5fe2d9ffe4cb3cb45">should_be_cleared</a> () const</td></tr>
 <tr class="memdesc:ad384deb112bc1fc5fe2d9ffe4cb3cb45"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this alert type should be cleared  <br /></td></tr>
 <tr class="separator:ad384deb112bc1fc5fe2d9ffe4cb3cb45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8bb28416b6a40056026199ca2507f95e"><td class="memItemLeft" align="right" valign="top"><a id="a8bb28416b6a40056026199ca2507f95e" name="a8bb28416b6a40056026199ca2507f95e"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_shutdown_system</b> (const uint32_t time) final</td></tr>
-<tr class="memdesc:a8bb28416b6a40056026199ca2507f95e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the system should shutdown from this alert. <br /></td></tr>
-<tr class="separator:a8bb28416b6a40056026199ca2507f95e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fe9029d4f18a0e0a0504a2be8e979f7"><td class="memItemLeft" align="right" valign="top"><a id="a8fe9029d4f18a0e0a0504a2be8e979f7" name="a8fe9029d4f18a0e0a0504a2be8e979f7"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_shutdown_system</b> () final</td></tr>
+<tr class="memdesc:a8fe9029d4f18a0e0a0504a2be8e979f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the system should shutdown from this alert. <br /></td></tr>
+<tr class="separator:a8fe9029d4f18a0e0a0504a2be8e979f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9ff3e584cafc7f9698ea9704449d2e"><td class="memItemLeft" align="right" valign="top"><a id="a7e9ff3e584cafc7f9698ea9704449d2e" name="a7e9ff3e584cafc7f9698ea9704449d2e"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>time_since_raised</b> () const</td></tr>
+<tr class="memdesc:a7e9ff3e584cafc7f9698ea9704449d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time elapsed since the latest raise (or refresh) of this alert, 0 if the raise time is not set. Synchronized with the raise time refreshes. Can be called from any thread. <br /></td></tr>
+<tr class="separator:a7e9ff3e584cafc7f9698ea9704449d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8795df5a0b70f2fb39ad8df454bbb19a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a8795df5a0b70f2fb39ad8df454bbb19a">handle_raised_state</a> (const uint32_t time)</td></tr>
 <tr class="memdesc:a8795df5a0b70f2fb39ad8df454bbb19a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handler for the raised state of the alert. If the alert is not raised, raise the alert.  <br /></td></tr>
 <tr class="separator:a8795df5a0b70f2fb39ad8df454bbb19a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cfd51c74c346957331f607a47c3376e"><td class="memItemLeft" align="right" valign="top"><a id="a2cfd51c74c346957331f607a47c3376e" name="a2cfd51c74c346957331f607a47c3376e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>update_raise_time</b> (const uint32_t time)</td></tr>
-<tr class="memdesc:a2cfd51c74c346957331f607a47c3376e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the raised time of this alert. An alert continuously firing as to be updated. <br /></td></tr>
-<tr class="separator:a2cfd51c74c346957331f607a47c3376e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac04cea659611c61346577a120ec2eb5f"><td class="memItemLeft" align="right" valign="top"><a id="ac04cea659611c61346577a120ec2eb5f" name="ac04cea659611c61346577a120ec2eb5f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>update_raise_time_locked</b> ()</td></tr>
+<tr class="memdesc:ac04cea659611c61346577a120ec2eb5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the raised time of this alert. An alert continuously firing as to be updated. Call it with _raiseTimeMutex held (see <a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada19e3ad7735e286c3157e8d5b8652c4" title="Raise an alert.">AlertManager_t::raise</a>). <br /></td></tr>
+<tr class="separator:ac04cea659611c61346577a120ec2eb5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac37bd05f63da077b6a46253957c05891"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#ac37bd05f63da077b6a46253957c05891">handle_lowered_state</a> (const uint32_t time)</td></tr>
 <tr class="memdesc:ac37bd05f63da077b6a46253957c05891"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handler for the lowered state of the alert. If the alert is raised, lower the alert.  <br /></td></tr>
 <tr class="separator:ac37bd05f63da077b6a46253957c05891"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -158,8 +165,16 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isLoweredHandled</b>
 <tr class="separator:ad307dfb7cb8730a81f2030abd850afda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e56280bf66ac2966405d8eefaf58fe1"><td class="memItemLeft" align="right" valign="top"><a id="a7e56280bf66ac2966405d8eefaf58fe1" name="a7e56280bf66ac2966405d8eefaf58fe1"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>raisedTime</b> = 0</td></tr>
-<tr class="memdesc:a7e56280bf66ac2966405d8eefaf58fe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert raise() was called. <br /></td></tr>
+<tr class="memdesc:a7e56280bf66ac2966405d8eefaf58fe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert raise() was called, 0 if not set. Refreshed by raise() from other threads, while the main loop reads it for the timeout decisions: only access it under _raiseTimeMutex (see <a class="el" href="structlampda_1_1logic_1_1alerts_1_1AlertBase.html#a7e9ff3e584cafc7f9698ea9704449d2e" title="Time elapsed since the latest raise (or refresh) of this alert, 0 if the raise time is not set....">time_since_raised()</a>) <br /></td></tr>
 <tr class="separator:a7e56280bf66ac2966405d8eefaf58fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a477b7d6e14b7aa33d62a7980fc728065"><td class="memItemLeft" align="right" valign="top"><a id="a477b7d6e14b7aa33d62a7980fc728065" name="a477b7d6e14b7aa33d62a7980fc728065"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isRaisedTimeSet</b> = false</td></tr>
+<tr class="memdesc:a477b7d6e14b7aa33d62a7980fc728065"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if raisedTime holds a raise time (that can be 0). Only access it under _raiseTimeMutex. <br /></td></tr>
+<tr class="separator:a477b7d6e14b7aa33d62a7980fc728065"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57adc21fb3537f981d1a0959a4992379"><td class="memItemLeft" align="right" valign="top"><a id="a57adc21fb3537f981d1a0959a4992379" name="a57adc21fb3537f981d1a0959a4992379"></a>
+std::atomic&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>refreshCount</b> {0}</td></tr>
+<tr class="memdesc:a57adc21fb3537f981d1a0959a4992379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Incremented on every raise() refresh of the raised alert, under _raiseTimeMutex. See <a class="el" href="classlampda_1_1logic_1_1alerts_1_1AlertManager__t.html#ada5e046fa015cd6d3bd56ffe17e8ad4f" title="Clear an alert, unless it was refreshed by a raise() since the clear decision was taken.">AlertManager_t::clear_unless_refreshed</a>. <br /></td></tr>
+<tr class="separator:a57adc21fb3537f981d1a0959a4992379"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06020206f9ae99ffd48515c7daba02c1"><td class="memItemLeft" align="right" valign="top"><a id="a06020206f9ae99ffd48515c7daba02c1" name="a06020206f9ae99ffd48515c7daba02c1"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> = 0</td></tr>
 <tr class="memdesc:a06020206f9ae99ffd48515c7daba02c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the latest time at which this alert lower() was called. <br /></td></tr>
@@ -281,6 +296,35 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>loweredTime</b> =
 
 <p>Handler for the raised state of the alert. If the alert is not raised, raise the alert. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the alert was raised by this function call </dd></dl>
+
+</div>
+</div>
+<a id="ac78014e92a026835d9e7b3cce9e54cd3" name="ac78014e92a026835d9e7b3cce9e54cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac78014e92a026835d9e7b3cce9e54cd3">&#9670;&#160;</a></span>max_brightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> lampda::logic::alerts::AlertBase::max_brightness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum output brightness allowed while this alert is raised. The system limit is the lowest of the raised alerts limits, see <a class="el" href="namespacelampda_1_1logic_1_1alerts.html#ab6f8e270ad87c32139571d749506da3a" title="handle the behavior for all alerts. Must be called often">handle_all()</a> </p>
+
+<p>Reimplemented in <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__BatteryLow.html#a265d562d13470c3b72141b3d63bb076a">lampda::logic::alerts::Alert_BatteryLow</a>, and <a class="el" href="structlampda_1_1logic_1_1alerts_1_1Alert__TempTooHigh.html#adec838c6c0bc992c8b68363a94729676">lampda::logic::alerts::Alert_TempTooHigh</a>.</p>
 
 </div>
 </div>

@@ -119,6 +119,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::mi
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::microphone::disable_after_non_use</b> ()</td></tr>
 <tr class="memdesc:a8d492ad85caef5bea15b80a1fe68fc30"><td class="mdescLeft">&#160;</td><td class="mdescRight">disable microphone if last used a target time ago <br /></td></tr>
 <tr class="separator:a8d492ad85caef5bea15b80a1fe68fc30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6359c39b9e6897de118f025ebe61063e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a6359c39b9e6897de118f025ebe61063e">lampda::component::microphone::set_sensitivity</a> (const uint8_t sensitivity)</td></tr>
+<tr class="memdesc:a6359c39b9e6897de118f025ebe61063e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the microphone sensitivity, applied as a gain on the raw samples (FFT, sound level and auto gain input). The gain is logarithmic: 0 is minSensitivityGain, defaultSensitivity is no gain, maxSensitivity is maxSensitivityGain. Not saved: restored to defaultSensitivity on reboot.  <br /></td></tr>
+<tr class="separator:a6359c39b9e6897de118f025ebe61063e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147d34fcba11602e8fe2ec73a0664ac1"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a147d34fcba11602e8fe2ec73a0664ac1">lampda::component::microphone::get_sensitivity</a> ()</td></tr>
+<tr class="memdesc:a147d34fcba11602e8fe2ec73a0664ac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the microphone sensitivity.  <br /></td></tr>
+<tr class="separator:a147d34fcba11602e8fe2ec73a0664ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d896c4c77fe0a3e699c5dc21ee53e7d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a8d896c4c77fe0a3e699c5dc21ee53e7d">lampda::component::microphone::sensitivity_to_gain</a> (const uint8_t sensitivity)</td></tr>
+<tr class="memdesc:a8d896c4c77fe0a3e699c5dc21ee53e7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the gain applied to the raw samples for a sensitivity.  <br /></td></tr>
+<tr class="separator:a8d896c4c77fe0a3e699c5dc21ee53e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a915c2efcd25dc7210e4475f55f0e2949"><td class="memItemLeft" align="right" valign="top">SoundStruct &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1component_1_1microphone.html#a915c2efcd25dc7210e4475f55f0e2949">lampda::component::microphone::get_sound_characteristics</a> ()</td></tr>
 <tr class="memdesc:a915c2efcd25dc7210e4475f55f0e2949"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute and process sound data.  <br /></td></tr>
 <tr class="separator:a915c2efcd25dc7210e4475f55f0e2949"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,6 +150,22 @@ constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::co
 constexpr int16_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::microphone::gainedSignalTarget</b> = INT16_MAX * desiredoutput</td></tr>
 <tr class="memdesc:a101022e31a4acd2a2620b16c4875ac41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Desired output of the auto gain (0-INT16_MAX) <br /></td></tr>
 <tr class="separator:a101022e31a4acd2a2620b16c4875ac41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60cf7af4bf877dff9e9c6e8f483e6196"><td class="memItemLeft" align="right" valign="top"><a id="a60cf7af4bf877dff9e9c6e8f483e6196" name="a60cf7af4bf877dff9e9c6e8f483e6196"></a>
+constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::microphone::defaultSensitivity</b> = 50</td></tr>
+<tr class="memdesc:a60cf7af4bf877dff9e9c6e8f483e6196"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default microphone sensitivity: no gain applied to the samples. <br /></td></tr>
+<tr class="separator:a60cf7af4bf877dff9e9c6e8f483e6196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4775a629386635d7c3b7f37681d4f38"><td class="memItemLeft" align="right" valign="top"><a id="ab4775a629386635d7c3b7f37681d4f38" name="ab4775a629386635d7c3b7f37681d4f38"></a>
+constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::microphone::maxSensitivity</b> = 100</td></tr>
+<tr class="memdesc:ab4775a629386635d7c3b7f37681d4f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum microphone sensitivity. <br /></td></tr>
+<tr class="separator:ab4775a629386635d7c3b7f37681d4f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d9dbcfcdfe447f9ef27c64955f416e1"><td class="memItemLeft" align="right" valign="top"><a id="a3d9dbcfcdfe447f9ef27c64955f416e1" name="a3d9dbcfcdfe447f9ef27c64955f416e1"></a>
+constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::microphone::minSensitivityGain</b> = 0.1f</td></tr>
+<tr class="memdesc:a3d9dbcfcdfe447f9ef27c64955f416e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain applied to the samples at the minimum sensitivity (0) <br /></td></tr>
+<tr class="separator:a3d9dbcfcdfe447f9ef27c64955f416e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a782adbc4b2084175cfa8a53e9f9eb592"><td class="memItemLeft" align="right" valign="top"><a id="a782adbc4b2084175cfa8a53e9f9eb592" name="a782adbc4b2084175cfa8a53e9f9eb592"></a>
+constexpr float&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::component::microphone::maxSensitivityGain</b> = 10.0f</td></tr>
+<tr class="memdesc:a782adbc4b2084175cfa8a53e9f9eb592"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain applied to the samples at the maximum sensitivity (maxSensitivity) <br /></td></tr>
+<tr class="separator:a782adbc4b2084175cfa8a53e9f9eb592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the physical components of the microphone. </p>

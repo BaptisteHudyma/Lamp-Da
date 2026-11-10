@@ -110,6 +110,18 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a288f4b7e32e1e4c1326dfd26e645805f"><td class="memItemLeft" align="right" valign="top"><a id="a288f4b7e32e1e4c1326dfd26e645805f" name="a288f4b7e32e1e4c1326dfd26e645805f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::__private::pop_button_event</b> (ButtonEvent &amp;event)</td></tr>
+<tr class="memdesc:a288f4b7e32e1e4c1326dfd26e645805f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop the oldest button event. Thread safe. Return false if there is no event. <br /></td></tr>
+<tr class="separator:a288f4b7e32e1e4c1326dfd26e645805f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accc2b893e8ea73679cc6e0a8db1d0870"><td class="memItemLeft" align="right" valign="top"><a id="accc2b893e8ea73679cc6e0a8db1d0870" name="accc2b893e8ea73679cc6e0a8db1d0870"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::__private::get_button_event_count</b> ()</td></tr>
+<tr class="memdesc:accc2b893e8ea73679cc6e0a8db1d0870"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of stored button events. Thread safe. <br /></td></tr>
+<tr class="separator:accc2b893e8ea73679cc6e0a8db1d0870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a741f0b60fb52a9636e33e2d93f3692a9"><td class="memItemLeft" align="right" valign="top"><a id="a741f0b60fb52a9636e33e2d93f3692a9" name="a741f0b60fb52a9636e33e2d93f3692a9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::__private::clear_button_events</b> ()</td></tr>
+<tr class="memdesc:a741f0b60fb52a9636e33e2d93f3692a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop all stored button events. Thread safe. <br /></td></tr>
+<tr class="separator:a741f0b60fb52a9636e33e2d93f3692a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8ff174bb6fdac784b4bc45901ddf868"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1inputs.html#af8ff174bb6fdac784b4bc45901ddf868">lampda::logic::inputs::init</a> (const bool wasPoweredByUserInterrupt)</td></tr>
 <tr class="memdesc:af8ff174bb6fdac784b4bc45901ddf868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once on system start.  <br /></td></tr>
 <tr class="separator:af8ff174bb6fdac784b4bc45901ddf868"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,14 +137,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::is_button_usermode_enabled</b> ()</td></tr>
 <tr class="memdesc:a3f63f0a5c31e13142e3365879f23150c"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if custom user modes are enabled <br /></td></tr>
 <tr class="separator:a3f63f0a5c31e13142e3365879f23150c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10c071ed628e3d42a056bab89f059def"><td class="memItemLeft" align="right" valign="top"><a id="a10c071ed628e3d42a056bab89f059def" name="a10c071ed628e3d42a056bab89f059def"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::add_button_click_event</b> (uint32_t clickCount)</td></tr>
-<tr class="memdesc:a10c071ed628e3d42a056bab89f059def"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button click event. <br /></td></tr>
-<tr class="separator:a10c071ed628e3d42a056bab89f059def"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e1ebaed35f9b932a8ae73bd6f0ea43a"><td class="memItemLeft" align="right" valign="top"><a id="a3e1ebaed35f9b932a8ae73bd6f0ea43a" name="a3e1ebaed35f9b932a8ae73bd6f0ea43a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::add_button_press_event</b> (uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)</td></tr>
-<tr class="memdesc:a3e1ebaed35f9b932a8ae73bd6f0ea43a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button press event. <br /></td></tr>
-<tr class="separator:a3e1ebaed35f9b932a8ae73bd6f0ea43a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1782ee746297dd16c16c8f31d3750f6"><td class="memItemLeft" align="right" valign="top"><a id="ae1782ee746297dd16c16c8f31d3750f6" name="ae1782ee746297dd16c16c8f31d3750f6"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::add_button_click_event</b> (uint8_t clickCount)</td></tr>
+<tr class="memdesc:ae1782ee746297dd16c16c8f31d3750f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button click event. <br /></td></tr>
+<tr class="separator:ae1782ee746297dd16c16c8f31d3750f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefa5fecb0b3de75944006eb3f7be3594"><td class="memItemLeft" align="right" valign="top"><a id="aefa5fecb0b3de75944006eb3f7be3594" name="aefa5fecb0b3de75944006eb3f7be3594"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::logic::inputs::add_button_press_event</b> (uint8_t clickCount, uint32_t pressDuration, bool isEndOfPress)</td></tr>
+<tr class="memdesc:aefa5fecb0b3de75944006eb3f7be3594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal a button press event. <br /></td></tr>
+<tr class="separator:aefa5fecb0b3de75944006eb3f7be3594"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

@@ -107,6 +107,17 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>charger_ic</b> = <a 
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:a704ebc4fc18e86b1d7cb3a4fe3ba4b1e"><td class="memItemLeft" align="right" valign="top"><a id="a704ebc4fc18e86b1d7cb3a4fe3ba4b1e" name="a704ebc4fc18e86b1d7cb3a4fe3ba4b1e"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>ChargerErrorCodeMask</b> : uint32_t { <br />
+&#160;&#160;<b>InputOverVoltage</b> = 0
+, <b>InputOverCurrent</b> = 1
+, <b>BatteryOverCurrent</b> = 2
+, <b>SystemOverVoltage</b> = 3
+, <br />
+&#160;&#160;<b>OtgOverVoltage</b> = 4
+, <b>OtgOverCurrent</b> = 5
+<br />
+ }</td></tr>
+<tr class="separator:a704ebc4fc18e86b1d7cb3a4fe3ba4b1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a285cda25f36b8e6f8ccef2d03ffcee61"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61">Status_t</a> { <br />
 &#160;&#160;<a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61add652546039b18970b8dcf2cff824268">UNINITIALIZED</a>
 , <a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61aaa2fa3fb4786079a4f8107ea393d609e">NOMINAL</a>
@@ -128,16 +139,20 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a22c9c2e4104f775963c3a9ef62215931"><td class="memItemLeft" align="right" valign="top"><a id="a22c9c2e4104f775963c3a9ef62215931" name="a22c9c2e4104f775963c3a9ef62215931"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_software_error_message</b> ()</td></tr>
-<tr class="memdesc:a22c9c2e4104f775963c3a9ef62215931"><td class="mdescLeft">&#160;</td><td class="mdescRight">contains details on software error if any <br /></td></tr>
-<tr class="separator:a22c9c2e4104f775963c3a9ef62215931"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ab32155c153004cec6db2679a06deb4"><td class="memItemLeft" align="right" valign="top"><a id="a5ab32155c153004cec6db2679a06deb4" name="a5ab32155c153004cec6db2679a06deb4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_software_error_message</b> (const std::string &amp;msg)</td></tr>
-<tr class="separator:a5ab32155c153004cec6db2679a06deb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9724816ba49651873be2acd4d9aed08e"><td class="memItemLeft" align="right" valign="top"><a id="a9724816ba49651873be2acd4d9aed08e" name="a9724816ba49651873be2acd4d9aed08e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>run_fault_detection</b> ()</td></tr>
-<tr class="separator:a9724816ba49651873be2acd4d9aed08e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3814a6a4ab684fbf18ff06b9ef43804"><td class="memItemLeft" align="right" valign="top"><a id="ab3814a6a4ab684fbf18ff06b9ef43804" name="ab3814a6a4ab684fbf18ff06b9ef43804"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>read_charge_option3</b> ()</td></tr>
+<tr class="memdesc:ab3814a6a4ab684fbf18ff06b9ef43804"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read ChargeOption3 into the cached registers, without its command bits. RESET_VINDPM and RESET_REG are commands, that read as 1 while the IC executes them (a VINDPM measurement disables the converter). Keeping them in the cache would trigger them again on the next write of this register, and the frequent writes would then keep the converter disabled forever. <br /></td></tr>
+<tr class="separator:ab3814a6a4ab684fbf18ff06b9ef43804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b54ee0b6c88977ced024c16695a5d40"><td class="memItemLeft" align="right" valign="top"><a id="a3b54ee0b6c88977ced024c16695a5d40" name="a3b54ee0b6c88977ced024c16695a5d40"></a>
+etl::string&lt; 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_software_error_message</b> ()</td></tr>
+<tr class="memdesc:a3b54ee0b6c88977ced024c16695a5d40"><td class="mdescLeft">&#160;</td><td class="mdescRight">contains details on software error if any <br /></td></tr>
+<tr class="separator:a3b54ee0b6c88977ced024c16695a5d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af89068b5bbf76961894b71b8d0106854"><td class="memItemLeft" align="right" valign="top"><a id="af89068b5bbf76961894b71b8d0106854" name="af89068b5bbf76961894b71b8d0106854"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_software_error_message</b> (const etl::string&lt; 64 &gt; &amp;msg)</td></tr>
+<tr class="separator:af89068b5bbf76961894b71b8d0106854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c67999e3052a8ef7c1054691b53159f"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a9c67999e3052a8ef7c1054691b53159f">run_fault_detection</a> ()</td></tr>
+<tr class="memdesc:a9c67999e3052a8ef7c1054691b53159f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect the faults on the charger status.  <br /></td></tr>
+<tr class="separator:a9c67999e3052a8ef7c1054691b53159f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe83a17ddd718de644fa761f2790dfd2"><td class="memItemLeft" align="right" valign="top"><a id="afe83a17ddd718de644fa761f2790dfd2" name="afe83a17ddd718de644fa761f2790dfd2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>run_status_update</b> ()</td></tr>
 <tr class="separator:afe83a17ddd718de644fa761f2790dfd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -208,10 +223,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_in_OTG</b> ()</td>
 <a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61">Status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_status</b> ()</td></tr>
 <tr class="memdesc:a29d36152223a8069c3c2b9aadc941c87"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the status of the component <br /></td></tr>
 <tr class="separator:a29d36152223a8069c3c2b9aadc941c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a119620cd6e02f218924c7f425054716d"><td class="memItemLeft" align="right" valign="top"><a id="a119620cd6e02f218924c7f425054716d" name="a119620cd6e02f218924c7f425054716d"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>get_status_detail</b> ()</td></tr>
-<tr class="memdesc:a119620cd6e02f218924c7f425054716d"><td class="mdescLeft">&#160;</td><td class="mdescRight">return a string with details on the error status <br /></td></tr>
-<tr class="separator:a119620cd6e02f218924c7f425054716d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef33d809e61177e98b3dd9ab69ca8100"><td class="memItemLeft" align="right" valign="top"><a id="aef33d809e61177e98b3dd9ab69ca8100" name="aef33d809e61177e98b3dd9ab69ca8100"></a>
+etl::string&lt; 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_status_detail</b> ()</td></tr>
+<tr class="memdesc:aef33d809e61177e98b3dd9ab69ca8100"><td class="mdescLeft">&#160;</td><td class="mdescRight">return a string with details on the error status <br /></td></tr>
+<tr class="separator:aef33d809e61177e98b3dd9ab69ca8100"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e56383516173fc4d715fd80aa6c74fd"><td class="memItemLeft" align="right" valign="top"><a id="a5e56383516173fc4d715fd80aa6c74fd" name="a5e56383516173fc4d715fd80aa6c74fd"></a>
 <a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a2d28371feea835576b29fe2d25557ec3">ChargeStatus_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_charge_status</b> ()</td></tr>
 <tr class="memdesc:a5e56383516173fc4d715fd80aa6c74fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the charge status object of the battery <br /></td></tr>
@@ -240,9 +255,9 @@ static <a class="el" href="structlampda_1_1bsp_1_1charger_1_1Battery.html">Batte
 <tr class="memitem:ace261d0aea0c89a6c8044d614d0f493d"><td class="memItemLeft" align="right" valign="top"><a id="ace261d0aea0c89a6c8044d614d0f493d" name="ace261d0aea0c89a6c8044d614d0f493d"></a>
 static <a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61">Status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>status_s</b> = <a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a285cda25f36b8e6f8ccef2d03ffcee61add652546039b18970b8dcf2cff824268">Status_t::UNINITIALIZED</a></td></tr>
 <tr class="separator:ace261d0aea0c89a6c8044d614d0f493d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8381d0639d56c78cb7d69279182bc0d7"><td class="memItemLeft" align="right" valign="top"><a id="a8381d0639d56c78cb7d69279182bc0d7" name="a8381d0639d56c78cb7d69279182bc0d7"></a>
-static std::string&#160;</td><td class="memItemRight" valign="bottom"><b>status_error</b> = &quot;&quot;</td></tr>
-<tr class="separator:a8381d0639d56c78cb7d69279182bc0d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab127c47deabd6d1d64d7899e1ddebfd"><td class="memItemLeft" align="right" valign="top"><a id="aab127c47deabd6d1d64d7899e1ddebfd" name="aab127c47deabd6d1d64d7899e1ddebfd"></a>
+static etl::string&lt; 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>status_error</b> = &quot;&quot;</td></tr>
+<tr class="separator:aab127c47deabd6d1d64d7899e1ddebfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00586a5edab41bed122a189a614a9dfd"><td class="memItemLeft" align="right" valign="top"><a id="a00586a5edab41bed122a189a614a9dfd" name="a00586a5edab41bed122a189a614a9dfd"></a>
 static <a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a2d28371feea835576b29fe2d25557ec3">ChargeStatus_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>chargeStatus_s</b> = <a class="el" href="namespacelampda_1_1bsp_1_1charger.html#a2d28371feea835576b29fe2d25557ec3a88559a0cfd8250c9d65970cc145c92d4">ChargeStatus_t::OFF</a></td></tr>
 <tr class="separator:a00586a5edab41bed122a189a614a9dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -255,9 +270,9 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isChargeEnable
 <tr class="memitem:a82bd95bca91067c5a7d73267d459afe1"><td class="memItemLeft" align="right" valign="top"><a id="a82bd95bca91067c5a7d73267d459afe1" name="a82bd95bca91067c5a7d73267d459afe1"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInOtg_s</b> = false</td></tr>
 <tr class="separator:a82bd95bca91067c5a7d73267d459afe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a898936ddb55f6c6d11b661c92fd69a42"><td class="memItemLeft" align="right" valign="top"><a id="a898936ddb55f6c6d11b661c92fd69a42" name="a898936ddb55f6c6d11b661c92fd69a42"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>softwareError_detail</b> = &quot;&quot;</td></tr>
-<tr class="separator:a898936ddb55f6c6d11b661c92fd69a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabc41da6a0eaa6af1aa60440947ba0e8"><td class="memItemLeft" align="right" valign="top"><a id="aabc41da6a0eaa6af1aa60440947ba0e8" name="aabc41da6a0eaa6af1aa60440947ba0e8"></a>
+etl::string&lt; 64 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>softwareError_detail</b> = &quot;&quot;</td></tr>
+<tr class="separator:aabc41da6a0eaa6af1aa60440947ba0e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52bb13b0103dc9c6fb843422529ab839"><td class="memItemLeft" align="right" valign="top"><a id="a52bb13b0103dc9c6fb843422529ab839" name="a52bb13b0103dc9c6fb843422529ab839"></a>
 static <a class="el" href="structlampda_1_1bsp_1_1charger_1_1PowerLimits.html">PowerLimits</a>&#160;</td><td class="memItemRight" valign="bottom"><b>powerLimits_s</b></td></tr>
 <tr class="memdesc:a52bb13b0103dc9c6fb843422529ab839"><td class="mdescLeft">&#160;</td><td class="mdescRight">define the power limits for input power <br /></td></tr>
@@ -447,6 +462,26 @@ static <a class="el" href="structlampda_1_1bsp_1_1charger_1_1PowerLimits.html">P
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a9c67999e3052a8ef7c1054691b53159f" name="a9c67999e3052a8ef7c1054691b53159f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c67999e3052a8ef7c1054691b53159f">&#9670;&#160;</a></span>run_fault_detection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t lampda::bsp::charger::run_fault_detection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Detect the faults on the charger status. </p>
+<dl class="section return"><dt>Returns</dt><dd>A binary mask of the faults </dd></dl>
 
 </div>
 </div>

@@ -7,6 +7,7 @@ var searchData=
   ['indexable_5fbehavior_2ehpp_4',['indexable_behavior.hpp',['../indexable__behavior_8hpp.html',1,'']]],
   ['indicator_2eh_5',['indicator.h',['../indicator_8h.html',1,'']]],
   ['input_5foutput_2eh_6',['input_output.h',['../input__output_8h.html',1,'']]],
-  ['inputs_2eh_7',['inputs.h',['../inputs_8h.html',1,'']]],
-  ['inputs_5fbluetooth_2eh_8',['inputs_bluetooth.h',['../inputs__bluetooth_8h.html',1,'']]]
+  ['input_5fpower_5fpolicy_2eh_7',['input_power_policy.h',['../input__power__policy_8h.html',1,'']]],
+  ['inputs_2eh_8',['inputs.h',['../inputs_8h.html',1,'']]],
+  ['inputs_5fbluetooth_2eh_9',['inputs_bluetooth.h',['../inputs__bluetooth_8h.html',1,'']]]
 ];

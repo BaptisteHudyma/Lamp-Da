@@ -129,6 +129,9 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>perlin_display
 <tr class="memitem:afaeae8fbc41264a3f75723f9a688da45"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45">sunset_update</a> (auto &amp;ctx, float progress)</td></tr>
 <tr class="memdesc:afaeae8fbc41264a3f75723f9a688da45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when sunset mode is updated (optional)  <br /></td></tr>
 <tr class="separator:afaeae8fbc41264a3f75723f9a688da45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb4c99096799587b1bc7d94815016070"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#adb4c99096799587b1bc7d94815016070">sunrise_update</a> (auto &amp;ctx, float progress)</td></tr>
+<tr class="memdesc:adb4c99096799587b1bc7d94815016070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when sunrise mode is updated (optional)  <br /></td></tr>
+<tr class="separator:adb4c99096799587b1bc7d94815016070"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9622baec04f2dd7dc396e210551919b7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7">brightness_update</a> (auto &amp;ctx, <a class="el" href="namespacelampda.html#ad34e2e456962094642d880a33818962f">brightness_t</a> brightness)</td></tr>
 <tr class="memdesc:a9622baec04f2dd7dc396e210551919b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom callback when brightness changes (optional)  <br /></td></tr>
 <tr class="separator:a9622baec04f2dd7dc396e210551919b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,13 +170,22 @@ static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>b
 <tr class="memitem:a9ffc85df05aa9b2c32b471bb0345940f"><td class="memItemLeft" align="right" valign="top"><a id="a9ffc85df05aa9b2c32b471bb0345940f" name="a9ffc85df05aa9b2c32b471bb0345940f"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>everyNIndex</b> = 2</td></tr>
 <tr class="separator:a9ffc85df05aa9b2c32b471bb0345940f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6530adb18cd57f6875039ec26dcd343"><td class="memItemLeft" align="right" valign="top"><a id="af6530adb18cd57f6875039ec26dcd343" name="af6530adb18cd57f6875039ec26dcd343"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = true</td></tr>
+<tr class="memdesc:af6530adb18cd57f6875039ec26dcd343"><td class="mdescLeft">&#160;</td><td class="mdescRight">sunset animation on the fixed modes <br /></td></tr>
+<tr class="separator:af6530adb18cd57f6875039ec26dcd343"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03105d7cf1bdab6a96aece62e4bf8c33"><td class="memItemLeft" align="right" valign="top"><a id="a03105d7cf1bdab6a96aece62e4bf8c33" name="a03105d7cf1bdab6a96aece62e4bf8c33"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunriseAnimation</b> = true</td></tr>
+<tr class="separator:a03105d7cf1bdab6a96aece62e4bf8c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43af491154056fea411d936f4532229a"><td class="memItemLeft" align="right" valign="top"><a id="a43af491154056fea411d936f4532229a" name="a43af491154056fea411d936f4532229a"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>usesSunsetGravityDissolveMode</b> = true</td></tr>
+<tr class="separator:a43af491154056fea411d936f4532229a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21f80f55942c8f644a202c1db309d695"><td class="memItemLeft" align="right" valign="top"><a id="a21f80f55942c8f644a202c1db309d695" name="a21f80f55942c8f644a202c1db309d695"></a>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>usesSunriseGravityAppearMode</b> = true</td></tr>
+<tr class="separator:a21f80f55942c8f644a202c1db309d695"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3ff09556dbf251003831caed6c07def"><td class="memItemLeft" align="right" valign="top"><a id="ad3ff09556dbf251003831caed6c07def" name="ad3ff09556dbf251003831caed6c07def"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>isGroupManager</b> = false</td></tr>
 <tr class="separator:ad3ff09556dbf251003831caed6c07def"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memItemLeft" align="right" valign="top"><a id="ad879076f6462e4f274f5c4e12fc6c1f0" name="ad879076f6462e4f274f5c4e12fc6c1f0"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasSunsetAnimation</b> = false</td></tr>
-<tr class="memdesc:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#afaeae8fbc41264a3f75723f9a688da45" title="Custom callback when sunset mode is updated (optional)">BasicMode::sunset_update()</a> callback. <br /></td></tr>
-<tr class="separator:ad879076f6462e4f274f5c4e12fc6c1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="memItemLeft" align="right" valign="top"><a id="ae2df3e9f204ee899bd972b6ca4b0a2e8" name="ae2df3e9f204ee899bd972b6ca4b0a2e8"></a>
 static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasBrightCallback</b> = false</td></tr>
 <tr class="memdesc:ae2df3e9f204ee899bd972b6ca4b0a2e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the use of custom <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a9622baec04f2dd7dc396e210551919b7" title="Custom callback when brightness changes (optional)">BasicMode::brightness_update()</a> callback. <br /></td></tr>
@@ -539,6 +551,52 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasB
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>The current context </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="adb4c99096799587b1bc7d94815016070" name="adb4c99096799587b1bc7d94815016070"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb4c99096799587b1bc7d94815016070">&#9670;&#160;</a></span>sunrise_update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void lampda::modes::BasicMode::sunrise_update </td>
+          <td>(</td>
+          <td class="paramtype">auto &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>progress</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Custom callback when sunrise mode is updated (optional) </p>
+<p>Callback active only if <a class="el" href="structlampda_1_1modes_1_1BasicMode.html#a896518d5cc59cc8bc42fdda3e2bd40ea" title="Toggles the use of custom BasicMode::sunrise_update() callback.">BasicMode::hasSunriseAnimation</a> is True</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ctx</td><td>The current context </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">progress</td><td>Between 0 and 1, progress of the sunrise. At 1, the system is fully on </td></tr>
   </table>
   </dd>
 </dl>

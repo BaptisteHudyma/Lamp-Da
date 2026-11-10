@@ -87,6 +87,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1component_1_1button_1_1ButtonStateLock.html">ButtonStateLock</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hold _buttonStateMutex for the scope.  <a href="structlampda_1_1component_1_1button_1_1ButtonStateLock.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1component_1_1button_1_1ButtonStateTy.html">ButtonStateTy</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the button status and characteristics.  <a href="structlampda_1_1component_1_1button_1_1ButtonStateTy.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -108,6 +111,14 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>get_button_pin_RAW</b>
 <tr class="memitem:ab7b4826ceac7920369353b356589c57f"><td class="memItemLeft" align="right" valign="top"><a id="ab7b4826ceac7920369353b356589c57f" name="ab7b4826ceac7920369353b356589c57f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_button_pressed</b> ()</td></tr>
 <tr class="separator:ab7b4826ceac7920369353b356589c57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1081989093d1613930eedfd5c618d24"><td class="memItemLeft" align="right" valign="top"><a id="ac1081989093d1613930eedfd5c618d24" name="ac1081989093d1613930eedfd5c618d24"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_press_locked</b> (const uint32_t pressTime)</td></tr>
+<tr class="memdesc:ac1081989093d1613930eedfd5c618d24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a button press at <code>pressTime</code>. Call with _buttonStateMutex held. Return true if a new click was counted. <br /></td></tr>
+<tr class="separator:ac1081989093d1613930eedfd5c618d24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad649a390eff2c7cae3f9fe6a34f4bfdb"><td class="memItemLeft" align="right" valign="top"><a id="ad649a390eff2c7cae3f9fe6a34f4bfdb" name="ad649a390eff2c7cae3f9fe6a34f4bfdb"></a>
+static bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_pending_press_locked</b> ()</td></tr>
+<tr class="memdesc:ad649a390eff2c7cae3f9fe6a34f4bfdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the press deferred by the interrupt, if any. Call with _buttonStateMutex held. Return true if a new click was counted. <br /></td></tr>
+<tr class="separator:ad649a390eff2c7cae3f9fe6a34f4bfdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9c718f3e8154e89fa7954a014ceb968"><td class="memItemLeft" align="right" valign="top"><a id="ad9c718f3e8154e89fa7954a014ceb968" name="ad9c718f3e8154e89fa7954a014ceb968"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>button_state_interrupt</b> ()</td></tr>
 <tr class="separator:ad9c718f3e8154e89fa7954a014ceb968"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,10 +157,28 @@ hal::gpio::DigitalPin::GPIO&#160;</td><td class="memItemRight" valign="bottom"><
 <tr class="separator:a3de69f3a1052b3569c05d59b53aff47c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2db40c48bccc5cd8f6e9e326d283dfef"><td class="memItemLeft" align="right" valign="top"><a id="a2db40c48bccc5cd8f6e9e326d283dfef" name="a2db40c48bccc5cd8f6e9e326d283dfef"></a>
 static <a class="el" href="structlampda_1_1component_1_1button_1_1ButtonStateTy.html">ButtonStateTy</a>&#160;</td><td class="memItemRight" valign="bottom"><b>buttonState</b> = <a class="el" href="structlampda_1_1component_1_1button_1_1ButtonStateTy.html">ButtonStateTy</a>()</td></tr>
+<tr class="memdesc:a2db40c48bccc5cd8f6e9e326d283dfef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Button pressed states. Shared by the button interrupt, the button thread and the readers (main loop): only access it under _buttonStateMutex. <br /></td></tr>
 <tr class="separator:a2db40c48bccc5cd8f6e9e326d283dfef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20c544f89863f45e580935b0c7ed4209"><td class="memItemLeft" align="right" valign="top"><a id="a20c544f89863f45e580935b0c7ed4209" name="a20c544f89863f45e580935b0c7ed4209"></a>
-static volatile bool&#160;</td><td class="memItemRight" valign="bottom"><b>wasButtonPressedDetected</b> = false</td></tr>
-<tr class="separator:a20c544f89863f45e580935b0c7ed4209"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb402fb20a4506e69780d73f3d66d925"><td class="memItemLeft" align="right" valign="top"><a id="abb402fb20a4506e69780d73f3d66d925" name="abb402fb20a4506e69780d73f3d66d925"></a>
+static <a class="el" href="structlampda_1_1hal_1_1mutex_1_1hal__mutex.html">hal::mutex::hal_mutex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_buttonStateMutex</b></td></tr>
+<tr class="memdesc:abb402fb20a4506e69780d73f3d66d925"><td class="mdescLeft">&#160;</td><td class="mdescRight">Guards buttonState. The interrupt never blocks on it, see button_state_interrupt(). Not recursive. <br /></td></tr>
+<tr class="separator:abb402fb20a4506e69780d73f3d66d925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3144f46d4af4320e6f3ba1d798f7b1ba"><td class="memItemLeft" align="right" valign="top"><a id="a3144f46d4af4320e6f3ba1d798f7b1ba" name="a3144f46d4af4320e6f3ba1d798f7b1ba"></a>
+static const bool&#160;</td><td class="memItemRight" valign="bottom"><b>_isButtonStateMutexInit</b> = (hal::mutex::hal_mutex_init(&amp;<a class="el" href="namespacelampda_1_1component_1_1button.html#abb402fb20a4506e69780d73f3d66d925">_buttonStateMutex</a>), true)</td></tr>
+<tr class="memdesc:a3144f46d4af4320e6f3ba1d798f7b1ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialized at program start: the state is read before the button init. <br /></td></tr>
+<tr class="separator:a3144f46d4af4320e6f3ba1d798f7b1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a4615006d77c2d7b6f7034c981a9a58"><td class="memItemLeft" align="right" valign="top"><a id="a4a4615006d77c2d7b6f7034c981a9a58" name="a4a4615006d77c2d7b6f7034c981a9a58"></a>
+static std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>wasButtonPressedDetected</b> {false}</td></tr>
+<tr class="memdesc:a4a4615006d77c2d7b6f7034c981a9a58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set by the interrupt on each pin change. <br /></td></tr>
+<tr class="separator:a4a4615006d77c2d7b6f7034c981a9a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cae97e18e782aba7c42388255dfb75f"><td class="memItemLeft" align="right" valign="top"><a id="a1cae97e18e782aba7c42388255dfb75f" name="a1cae97e18e782aba7c42388255dfb75f"></a>
+static std::atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>isPressPending</b> {false}</td></tr>
+<tr class="memdesc:a1cae97e18e782aba7c42388255dfb75f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A press seen by the interrupt while buttonState was locked: registered later by the button thread. <br /></td></tr>
+<tr class="separator:a1cae97e18e782aba7c42388255dfb75f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c570041dce24791b7ee9537ee3db572"><td class="memItemLeft" align="right" valign="top"><a id="a5c570041dce24791b7ee9537ee3db572" name="a5c570041dce24791b7ee9537ee3db572"></a>
+static std::atomic&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>pendingPressTime_ms</b> {0}</td></tr>
+<tr class="memdesc:a5c570041dce24791b7ee9537ee3db572"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time of the pending press, valid when isPressPending is set. <br /></td></tr>
+<tr class="separator:a5c570041dce24791b7ee9537ee3db572"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a427df5f0dacc5957ae84e7879e300a16"><td class="memItemLeft" align="right" valign="top"><a id="a427df5f0dacc5957ae84e7879e300a16" name="a427df5f0dacc5957ae84e7879e300a16"></a>
 static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>thread_throttle_time_ms</b> = 5</td></tr>
 <tr class="memdesc:a427df5f0dacc5957ae84e7879e300a16"><td class="mdescLeft">&#160;</td><td class="mdescRight">thread run frequency timing <br /></td></tr>

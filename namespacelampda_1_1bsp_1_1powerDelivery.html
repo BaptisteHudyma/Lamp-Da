@@ -75,6 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
@@ -85,6 +86,12 @@ $(function() {
 <p>Handles the power delivery capabilities (USB-PD).  
 <a href="namespacelampda_1_1bsp_1_1powerDelivery.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacelampda_1_1bsp_1_1powerDelivery_1_1policy"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1powerDelivery_1_1policy.html">policy</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1bsp_1_1powerDelivery_1_1policy"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input power rules, from a snapshot of the source status. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlampda_1_1bsp_1_1powerDelivery_1_1OTGParameters.html">OTGParameters</a></td></tr>
@@ -103,6 +110,10 @@ Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>suspend_pd_state_machine</b> ()</td></tr>
 <tr class="memdesc:a4170cf372a74cd8c11d5759870f51c71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspend the execution of the power delivery state machine. <br /></td></tr>
 <tr class="separator:a4170cf372a74cd8c11d5759870f51c71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95758df3330044d50c9ab6b86533fcbd"><td class="memItemLeft" align="right" valign="top"><a id="a95758df3330044d50c9ab6b86533fcbd" name="a95758df3330044d50c9ab6b86533fcbd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>allow_source_resets</b> (const bool allow)</td></tr>
+<tr class="memdesc:a95758df3330044d50c9ab6b86533fcbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow the sink to reset the source, when the source capabilities were missed. A hard reset makes the source drop VBUS for up to ~2s. Forbid it when the battery cannot power the board (recovery mode), or this browns it out: the source is then used as a standard 5V port. Forbidden until allowed. Allowing it later starts the reset of a source waiting for its capabilities. <br /></td></tr>
+<tr class="separator:a95758df3330044d50c9ab6b86533fcbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae98231b0f187f8d0142e130f0b72e71a"><td class="memItemLeft" align="right" valign="top"><a id="ae98231b0f187f8d0142e130f0b72e71a" name="ae98231b0f187f8d0142e130f0b72e71a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>resume_pd_state_machine</b> ()</td></tr>
 <tr class="memdesc:ae98231b0f187f8d0142e130f0b72e71a"><td class="mdescLeft">&#160;</td><td class="mdescRight">resume the execution of the power delivery state machine <br /></td></tr>
@@ -111,12 +122,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>resume_pd_state_machi
 int&#160;</td><td class="memItemRight" valign="bottom"><b>get_vbus_voltage</b> ()</td></tr>
 <tr class="memdesc:aa053c16268adb42a7e47ed32b2bf21a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">use the vbus measure from negociator (close to USBC, 0 to N volts) <br /></td></tr>
 <tr class="separator:aa053c16268adb42a7e47ed32b2bf21a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a384234edd70893238f21387440cf8d59"><td class="memItemLeft" align="right" valign="top"><a id="a384234edd70893238f21387440cf8d59" name="a384234edd70893238f21387440cf8d59"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_use_PD_full_power</b> ()</td></tr>
-<tr class="separator:a384234edd70893238f21387440cf8d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a695a5180bd4373cfa4548271efd4d4fb"><td class="memItemLeft" align="right" valign="top"><a id="a695a5180bd4373cfa4548271efd4d4fb" name="a695a5180bd4373cfa4548271efd4d4fb"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_usb_pd</b> ()</td></tr>
 <tr class="separator:a695a5180bd4373cfa4548271efd4d4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a259a0092eb37a5a8bf9b2627fe998558"><td class="memItemLeft" align="right" valign="top"><a id="a259a0092eb37a5a8bf9b2627fe998558" name="a259a0092eb37a5a8bf9b2627fe998558"></a>
+<a class="el" href="structlampda_1_1bsp_1_1powerDelivery_1_1policy_1_1SourceStatus.html">policy::SourceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_source_status</b> ()</td></tr>
+<tr class="separator:a259a0092eb37a5a8bf9b2627fe998558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a384234edd70893238f21387440cf8d59"><td class="memItemLeft" align="right" valign="top"><a id="a384234edd70893238f21387440cf8d59" name="a384234edd70893238f21387440cf8d59"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_use_PD_full_power</b> ()</td></tr>
+<tr class="separator:a384234edd70893238f21387440cf8d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af610f9d4e2d760baf6bb961ac6b169ad"><td class="memItemLeft" align="right" valign="top"><a id="af610f9d4e2d760baf6bb961ac6b169ad" name="af610f9d4e2d760baf6bb961ac6b169ad"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_standard_port</b> ()</td></tr>
 <tr class="memdesc:af610f9d4e2d760baf6bb961ac6b169ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true if this voltage source is from a standard non pd port <br /></td></tr>
@@ -124,9 +138,17 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_standard_port</b> 
 <tr class="memitem:adf2932f982366cfffffe5ead035d4476"><td class="memItemLeft" align="right" valign="top"><a id="adf2932f982366cfffffe5ead035d4476" name="adf2932f982366cfffffe5ead035d4476"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ic_interrupt</b> ()</td></tr>
 <tr class="separator:adf2932f982366cfffffe5ead035d4476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ef7604f00eda254e079531e86317737"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1powerDelivery.html#a3ef7604f00eda254e079531e86317737">is_ic_interrupt_pending</a> ()</td></tr>
+<tr class="separator:a3ef7604f00eda254e079531e86317737"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb237b415523ff96e91fd581b801cac2"><td class="memItemLeft" align="right" valign="top"><a id="acb237b415523ff96e91fd581b801cac2" name="acb237b415523ff96e91fd581b801cac2"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_vbus_powered</b> ()</td></tr>
 <tr class="separator:acb237b415523ff96e91fd581b801cac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac824a0316af8124bf18caae1aaf45230"><td class="memItemLeft" align="right" valign="top"><a id="ac824a0316af8124bf18caae1aaf45230" name="ac824a0316af8124bf18caae1aaf45230"></a>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><b>cc_level_str</b> (const int level)</td></tr>
+<tr class="separator:ac824a0316af8124bf18caae1aaf45230"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e47e14717d4516da9aedff4948168df"><td class="memItemLeft" align="right" valign="top"><a id="a4e47e14717d4516da9aedff4948168df" name="a4e47e14717d4516da9aedff4948168df"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>show_pd_contract</b> ()</td></tr>
+<tr class="separator:a4e47e14717d4516da9aedff4948168df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31ba2f89b8be2e2c2b55b5ddf2c2a9b4"><td class="memItemLeft" align="right" valign="top"><a id="a31ba2f89b8be2e2c2b55b5ddf2c2a9b4" name="a31ba2f89b8be2e2c2b55b5ddf2c2a9b4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>show_pd_status</b> ()</td></tr>
 <tr class="memdesc:a31ba2f89b8be2e2c2b55b5ddf2c2a9b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug power delivery status. <br /></td></tr>
@@ -176,14 +198,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>force_set_to_source_m
 void&#160;</td><td class="memItemRight" valign="bottom"><b>allow_otg</b> (const bool)</td></tr>
 <tr class="memdesc:a04570769028b103c32d54cd725f5f232"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call to allow or forbid OTG mode. <br /></td></tr>
 <tr class="separator:a04570769028b103c32d54cd725f5f232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5d65c328ad0e0b0e5cbf1d602abd4ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1powerDelivery.html#ad5d65c328ad0e0b0e5cbf1d602abd4ab">want_source_role_by_swap</a> (const bool wanted)</td></tr>
+<tr class="memdesc:ad5d65c328ad0e0b0e5cbf1d602abd4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">As a sink, ask the partner for the source role (power role swap), and do not use its power meanwhile.  <br /></td></tr>
+<tr class="separator:ad5d65c328ad0e0b0e5cbf1d602abd4ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a605fbf16aeac128a67e10e662dd1541a"><td class="memItemLeft" align="right" valign="top"><a id="a605fbf16aeac128a67e10e662dd1541a" name="a605fbf16aeac128a67e10e662dd1541a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_attached_as_sink</b> ()</td></tr>
+<tr class="memdesc:a605fbf16aeac128a67e10e662dd1541a"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when the PD state machine is attached to a partner, as a sink <br /></td></tr>
+<tr class="separator:a605fbf16aeac128a67e10e662dd1541a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab51e055970f00cb437a8595a54a9149f"><td class="memItemLeft" align="right" valign="top"><a id="ab51e055970f00cb437a8595a54a9149f" name="ab51e055970f00cb437a8595a54a9149f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>retry_source_role_swap</b> ()</td></tr>
+<tr class="memdesc:ab51e055970f00cb437a8595a54a9149f"><td class="mdescLeft">&#160;</td><td class="mdescRight">As a ready sink wanting the source role (want_source_role_by_swap), ask for the power role swap again. <br /></td></tr>
+<tr class="separator:ab51e055970f00cb437a8595a54a9149f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4ab780cf1f873039a188d0092e0050"><td class="memItemLeft" align="right" valign="top"><a id="aaf4ab780cf1f873039a188d0092e0050" name="aaf4ab780cf1f873039a188d0092e0050"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_source_contract_ready</b> ()</td></tr>
+<tr class="memdesc:aaf4ab780cf1f873039a188d0092e0050"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when we are a source, with a contract in place (PS_RDY sent): the sink can use the power <br /></td></tr>
+<tr class="separator:aaf4ab780cf1f873039a188d0092e0050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae24d08d71cd52a7a1f34b4204a791168"><td class="memItemLeft" align="right" valign="top"><a id="ae24d08d71cd52a7a1f34b4204a791168" name="ae24d08d71cd52a7a1f34b4204a791168"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_switching_to_otg</b> ()</td></tr>
 <tr class="memdesc:ae24d08d71cd52a7a1f34b4204a791168"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true is the system is prepaping to switch to OTG mode <br /></td></tr>
 <tr class="separator:ae24d08d71cd52a7a1f34b4204a791168"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7ad6b783bb49cb04ffcbbe2563d3ddd"><td class="memItemLeft" align="right" valign="top"><a id="ab7ad6b783bb49cb04ffcbbe2563d3ddd" name="ab7ad6b783bb49cb04ffcbbe2563d3ddd"></a>
-std::vector&lt; <a class="el" href="structlampda_1_1bsp_1_1powerDelivery_1_1PDOTypes.html">PDOTypes</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_available_pd</b> ()</td></tr>
-<tr class="memdesc:ab7ad6b783bb49cb04ffcbbe2563d3ddd"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the charger is PD compatible, return it's capabilities. <br /></td></tr>
-<tr class="separator:ab7ad6b783bb49cb04ffcbbe2563d3ddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ce7ada43aa27253e4ade128249a4f1"><td class="memItemLeft" align="right" valign="top"><a id="a25ce7ada43aa27253e4ade128249a4f1" name="a25ce7ada43aa27253e4ade128249a4f1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_source_hard_resetting</b> ()</td></tr>
+<tr class="memdesc:a25ce7ada43aa27253e4ade128249a4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when we are a source in a hard reset: VBUS must be cut until the end of the recovery time <br /></td></tr>
+<tr class="separator:a25ce7ada43aa27253e4ade128249a4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b51e4dcd2a65324a110bc3e8546cc22"><td class="memItemLeft" align="right" valign="top"><a id="a7b51e4dcd2a65324a110bc3e8546cc22" name="a7b51e4dcd2a65324a110bc3e8546cc22"></a>
+std::array&lt; <a class="el" href="structlampda_1_1bsp_1_1powerDelivery_1_1PDOTypes.html">PDOTypes</a>, 5 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_available_pd</b> ()</td></tr>
+<tr class="memdesc:a7b51e4dcd2a65324a110bc3e8546cc22"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the charger is PD compatible, return it's capabilities. <br /></td></tr>
+<tr class="separator:a7b51e4dcd2a65324a110bc3e8546cc22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -199,12 +240,18 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_run_pd_
 <tr class="memitem:a631688e007ed657ad614272cfd4948c1"><td class="memItemLeft" align="right" valign="top"><a id="a631688e007ed657ad614272cfd4948c1" name="a631688e007ed657ad614272cfd4948c1"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>lastPDdetected</b> = 0</td></tr>
 <tr class="separator:a631688e007ed657ad614272cfd4948c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8436cd1ffffe37aa390d566358495c73"><td class="memItemLeft" align="right" valign="top"><a id="a8436cd1ffffe37aa390d566358495c73" name="a8436cd1ffffe37aa390d566358495c73"></a>
-<a class="el" href="structlampda_1_1bsp_1_1powerDelivery_1_1UsbPDData.html">UsbPDData</a>&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
-<tr class="separator:a8436cd1ffffe37aa390d566358495c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22450b474f6bdac5810cff696ac6d31e"><td class="memItemLeft" align="right" valign="top"><a id="a22450b474f6bdac5810cff696ac6d31e" name="a22450b474f6bdac5810cff696ac6d31e"></a>
 static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSetup</b> = false</td></tr>
 <tr class="separator:a22450b474f6bdac5810cff696ac6d31e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a100d588e6c942ee3c34736c4d8d739e4"><td class="memItemLeft" align="right" valign="top"><a id="a100d588e6c942ee3c34736c4d8d739e4" name="a100d588e6c942ee3c34736c4d8d739e4"></a>
+static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>interruptStuckKicks_s</b> = 0</td></tr>
+<tr class="separator:a100d588e6c942ee3c34736c4d8d739e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5026a75b614ff8bb334e9ecc55966854"><td class="memItemLeft" align="right" valign="top"><a id="a5026a75b614ff8bb334e9ecc55966854" name="a5026a75b614ff8bb334e9ecc55966854"></a>
+static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>interruptAlertReruns_s</b> = 0</td></tr>
+<tr class="separator:a5026a75b614ff8bb334e9ecc55966854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8436cd1ffffe37aa390d566358495c73"><td class="memItemLeft" align="right" valign="top"><a id="a8436cd1ffffe37aa390d566358495c73" name="a8436cd1ffffe37aa390d566358495c73"></a>
+<a class="el" href="structlampda_1_1bsp_1_1powerDelivery_1_1UsbPDData.html">UsbPDData</a>&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
+<tr class="separator:a8436cd1ffffe37aa390d566358495c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handles the power delivery capabilities (USB-PD). </p>
@@ -224,6 +271,50 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>isSetup</b> = 
       </table>
 </div><div class="memdoc">
 <p>HEADER FUNCTIONS BELOW </p>
+
+</div>
+</div>
+<a id="a3ef7604f00eda254e079531e86317737" name="a3ef7604f00eda254e079531e86317737"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ef7604f00eda254e079531e86317737">&#9670;&#160;</a></span>is_ic_interrupt_pending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::bsp::powerDelivery::is_ic_interrupt_pending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The FUSB302 interrupt line is level triggered (active low, until all interrupt registers are read), but we only get a callback on the falling edge. If an interrupt is raised before the callback is attached (VBUS and CC are already there at boot, the CC lines have a permanent Rd), or while another one is pending, there is no new falling edge: the line stays low forever, no message is received and no transmission completes (issue #633). So service the interrupt on the line level. </p>
+
+</div>
+</div>
+<a id="ad5d65c328ad0e0b0e5cbf1d602abd4ab" name="ad5d65c328ad0e0b0e5cbf1d602abd4ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5d65c328ad0e0b0e5cbf1d602abd4ab">&#9670;&#160;</a></span>want_source_role_by_swap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lampda::bsp::powerDelivery::want_source_role_by_swap </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>wanted</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>As a sink, ask the partner for the source role (power role swap), and do not use its power meanwhile. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">wanted</td><td>false to go back to the normal sink behavior </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

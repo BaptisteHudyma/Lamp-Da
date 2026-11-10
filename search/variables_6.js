@@ -5,7 +5,7 @@ var searchData=
   ['favorites_2',['favorites',['../structlampda_1_1modes_1_1ModeManagerTy_1_1StateTy.html#ad9190023acb969feb716c4d36b06697b',1,'lampda::modes::ModeManagerTy::StateTy']]],
   ['fft_5flog_3',['fft_log',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#acb4d531d63244f6489cedec120c57369',1,'lampda::modes::audio::SoundEventTy::fft_log()'],['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#a37eb9bb45fdfec0cb623e28ba760fdde',1,'lampda::component::microphone::SoundStruct::fft_log()']]],
   ['fft_5flog_5fend_5ffrequencies_4',['fft_log_end_frequencies',['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#a4f696c6d73d70898f03483c3e389016a',1,'lampda::component::microphone::SoundStruct']]],
-  ['fft_5fraw_5',['fft_raw',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#a66a0b2f79418c05cbef7025054ae7f7a',1,'lampda::modes::audio::SoundEventTy::fft_raw()'],['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#a8f2ada5420cf444afb06b67cf3905af9',1,'lampda::component::microphone::SoundStruct::fft_raw()']]],
+  ['fft_5fraw_5',['fft_raw',['../structlampda_1_1component_1_1microphone_1_1SoundStruct.html#a8f2ada5420cf444afb06b67cf3905af9',1,'lampda::component::microphone::SoundStruct']]],
   ['fftbin_6',['fftBin',['../classlampda_1_1common_1_1fft_1_1FftAnalyzer.html#a2840a35813b9aa148f7ccffaec3fca18',1,'lampda::common::fft::FftAnalyzer']]],
   ['fftlog_7',['fftLog',['../classlampda_1_1common_1_1fft_1_1FftAnalyzer.html#abe611929b9445f7ed1227115c87cc970',1,'lampda::common::fft::FftAnalyzer']]],
   ['fftresolutionhz_8',['fftResolutionHz',['../structlampda_1_1modes_1_1audio_1_1SoundEventTy.html#ae97465062bccf0bf0d39abfa91911a36',1,'lampda::modes::audio::SoundEventTy']]],
@@ -15,6 +15,9 @@ var searchData=
   ['firstpixelhue_12',['firstPixelHue',['../structlampda_1_1modes_1_1default__modes_1_1RainbowSwirlMode_1_1StateTy.html#aaac10fc578f9642c667376672745a759',1,'lampda::modes::default_modes::RainbowSwirlMode::StateTy']]],
   ['flavor_13',['flavor',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#acb37532c7a05baa05dbac7d0870c3958',1,'lampda::modes::hardware::LampTy']]],
   ['foam_5fcolor_14',['foam_color',['../structlampda_1_1modes_1_1custom_1_1nudz_1_1NudzBeerGlassMode_1_1StateTy.html#acec371496880489e0dbb99ac5ad66cae',1,'lampda::modes::custom::nudz::NudzBeerGlassMode::StateTy']]],
-  ['fps_15',['fps',['../structsimulator_1_1defaultSimulation.html#a3b18598ee769fd2d3fd422d3545e38af',1,'simulator::defaultSimulation']]],
-  ['framedurationms_16',['frameDurationMs',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#ace043fe2419a18f25dc066526103c634',1,'lampda::modes::hardware::LampTy']]]
+  ['force_15',['force',['../structlampda_1_1logic_1_1user__signals_1_1detail_1_1Slot.html#a876c2a4e167db15f31fa2f8623c2c236',1,'lampda::logic::user_signals::detail::Slot']]],
+  ['forcedisableleddithermask_16',['forceDisableLedDitherMask',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#ac5d1ae97ea7eec2c031f2e59d1f9bfd3',1,'lampda::modes::hardware::LampTy']]],
+  ['fps_17',['fps',['../structsimulator_1_1defaultSimulation.html#a3b18598ee769fd2d3fd422d3545e38af',1,'simulator::defaultSimulation']]],
+  ['framedurationms_18',['frameDurationMs',['../structlampda_1_1modes_1_1hardware_1_1LampTy.html#ace043fe2419a18f25dc066526103c634',1,'lampda::modes::hardware::LampTy']]],
+  ['fulllevel_19',['fullLevel',['../namespacelampda_1_1component_1_1charger_1_1policy.html#a55e1c4580fe3e47cec03b12f7beef273',1,'lampda::component::charger::policy']]]
 ];

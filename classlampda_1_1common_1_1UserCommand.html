@@ -101,11 +101,22 @@ Public Types</h2></td></tr>
 &#160;&#160;<a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fab456f74540e23a21eb8dddc98de528b7">OnOff</a>
 , <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa303656b70021a464ac1e2e20dcb01d06">SetRealTime</a>
 , <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa077f27d60aabfaf0d3e0bd6731dea53a">SetSunsetToTime</a>
-, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa548b8192e4af53bfece38bf5cbd9ba71">SetBleCustomColorMode</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fae791ec38d23dc2a522e79a8599ffbb23">SetSunriseToTime</a>
 , <br />
-&#160;&#160;<a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa4575d96fff96f4b3d4bf66f987fc50f5">SetBleMode</a>
+&#160;&#160;<a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa548b8192e4af53bfece38bf5cbd9ba71">SetBleCustomColorMode</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa4575d96fff96f4b3d4bf66f987fc50f5">SetBleMode</a>
 , <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428faff1f8b6c130cb37b955c1a580ca9d3c4">GoToFavoriteIndex</a>
 , <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa7df8cd7e38bc290d1b7ee0052364aff5">SetFavoriteIndex</a>
+, <br />
+&#160;&#160;<a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fad0a2fb80984e1d7114ef599cf156fde0">SignalSunsetProgress</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa0bc3a8223db25a5129f4a124cd145e44">SignalSunriseProgress</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fad3b157d65430e2e97102cf773de62c5e">SignalSuntimerCancel</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fab58baffa071954cc0ef67a12dc44a690">BlipOutput</a>
+, <br />
+&#160;&#160;<a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa2029d0bf39f0e09986da5738c6306215">PrintStatus</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa72cce0866f81a19b147792a497e683e4">PrintFavorites</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fa8c9a28334d32f9eeb02c5bcf9b69432f">DisableSunTimer</a>
+, <a class="el" href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428fab9ff8550f4ff77a33708ae1ed12ca476">SetMicSensitivity</a>
 <br />
  }</td></tr>
 <tr class="memdesc:a681ddf33c64c6631b62fdf4912d9428f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Command type.  <a href="classlampda_1_1common_1_1UserCommand.html#a681ddf33c64c6631b62fdf4912d9428f">More...</a><br /></td></tr>
@@ -134,6 +145,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1e3b3ba632a405c64f017c8cf7c75368"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a1e3b3ba632a405c64f017c8cf7c75368">parse_set_sunset_to_time_command</a> (<a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">component::time::RealTime</a> &amp;time) const</td></tr>
 <tr class="memdesc:a1e3b3ba632a405c64f017c8cf7c75368"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a set sunset to time value.  <br /></td></tr>
 <tr class="separator:a1e3b3ba632a405c64f017c8cf7c75368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bab7d4a8850c38c46b3ddd9f5e30e7f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a3bab7d4a8850c38c46b3ddd9f5e30e7f">parse_set_sunrise_to_time_command</a> (<a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">component::time::RealTime</a> &amp;time) const</td></tr>
+<tr class="memdesc:a3bab7d4a8850c38c46b3ddd9f5e30e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a set sunrise to time value.  <br /></td></tr>
+<tr class="separator:a3bab7d4a8850c38c46b3ddd9f5e30e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c0ff172b467dbb393c1395b3f924998"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a9c0ff172b467dbb393c1395b3f924998">parse_set_ble_custom_color_mode_command</a> (uint32_t &amp;color) const</td></tr>
 <tr class="memdesc:a9c0ff172b467dbb393c1395b3f924998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a set current mode to BLE custom color.  <br /></td></tr>
 <tr class="separator:a9c0ff172b467dbb393c1395b3f924998"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,6 +160,30 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a007f17fe9a0499c77257d9a9e1a24c5d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a007f17fe9a0499c77257d9a9e1a24c5d">parse_set_favorite_command</a> (uint8_t &amp;index) const</td></tr>
 <tr class="memdesc:a007f17fe9a0499c77257d9a9e1a24c5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a set favorite.  <br /></td></tr>
 <tr class="separator:a007f17fe9a0499c77257d9a9e1a24c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a2c5479a4b2b31776d9a06559449fca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a5a2c5479a4b2b31776d9a06559449fca">parse_signal_sunset_progress_command</a> (float &amp;progress) const</td></tr>
+<tr class="memdesc:a5a2c5479a4b2b31776d9a06559449fca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a sunset update signal.  <br /></td></tr>
+<tr class="separator:a5a2c5479a4b2b31776d9a06559449fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2081aa4ef5cc797e0942e2a0f894b1c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#aa2081aa4ef5cc797e0942e2a0f894b1c">parse_signal_sunrise_progress_command</a> (float &amp;progress) const</td></tr>
+<tr class="memdesc:aa2081aa4ef5cc797e0942e2a0f894b1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a sunrise update signal.  <br /></td></tr>
+<tr class="separator:aa2081aa4ef5cc797e0942e2a0f894b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ed7f4f4aa2d4ac92c26ccf2eb205e9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a2ed7f4f4aa2d4ac92c26ccf2eb205e9d">parse_signal_suntimer_cancel_command</a> () const</td></tr>
+<tr class="memdesc:a2ed7f4f4aa2d4ac92c26ccf2eb205e9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a suntimer cancel signal.  <br /></td></tr>
+<tr class="separator:a2ed7f4f4aa2d4ac92c26ccf2eb205e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6f0f67f6050fdacaaa2d60c40d4dc98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#aa6f0f67f6050fdacaaa2d60c40d4dc98">parse_disable_sun_timer_command</a> (bool &amp;isSunrise) const</td></tr>
+<tr class="memdesc:aa6f0f67f6050fdacaaa2d60c40d4dc98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a sun timer disable.  <br /></td></tr>
+<tr class="separator:aa6f0f67f6050fdacaaa2d60c40d4dc98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4e979146b961fec8f98b27e5c546413"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#ad4e979146b961fec8f98b27e5c546413">parse_set_mic_sensitivity_command</a> (uint8_t &amp;sensitivity) const</td></tr>
+<tr class="memdesc:ad4e979146b961fec8f98b27e5c546413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a microphone sensitivity change.  <br /></td></tr>
+<tr class="separator:ad4e979146b961fec8f98b27e5c546413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1222fb3ca5afda50e45700edea736a55"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a1222fb3ca5afda50e45700edea736a55">parse_blip_output_command</a> (uint32_t &amp;duration_ms) const</td></tr>
+<tr class="memdesc:a1222fb3ca5afda50e45700edea736a55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for an output blip.  <br /></td></tr>
+<tr class="separator:a1222fb3ca5afda50e45700edea736a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b381515d0ab68fe1a2e3f1835f0bc7b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a3b381515d0ab68fe1a2e3f1835f0bc7b">parse_print_status_command</a> () const</td></tr>
+<tr class="memdesc:a3b381515d0ab68fe1a2e3f1835f0bc7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a status print.  <br /></td></tr>
+<tr class="separator:a3b381515d0ab68fe1a2e3f1835f0bc7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad910ef6aa43ba8ab072957ed5bca8aa2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#ad910ef6aa43ba8ab072957ed5bca8aa2">parse_print_favorites_command</a> () const</td></tr>
+<tr class="memdesc:ad910ef6aa43ba8ab072957ed5bca8aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the current command for a favorites print.  <br /></td></tr>
+<tr class="separator:ad910ef6aa43ba8ab072957ed5bca8aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -167,6 +205,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a5ccfa838d67cc66b63d3486de39f7c7e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a5ccfa838d67cc66b63d3486de39f7c7e">make_set_sunset_to_time_command</a> (const <a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">component::time::RealTime</a> &amp;time)</td></tr>
 <tr class="memdesc:a5ccfa838d67cc66b63d3486de39f7c7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to set sunset to real time.  <br /></td></tr>
 <tr class="separator:a5ccfa838d67cc66b63d3486de39f7c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8ff27ff87aa52182ca1816f5e47b7f8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#ae8ff27ff87aa52182ca1816f5e47b7f8">make_set_sunrise_to_time_command</a> (const <a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">component::time::RealTime</a> &amp;time)</td></tr>
+<tr class="memdesc:ae8ff27ff87aa52182ca1816f5e47b7f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to set sunrise to real time.  <br /></td></tr>
+<tr class="separator:ae8ff27ff87aa52182ca1816f5e47b7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeed8b76a5d80bea48f4e2a38eec8649d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#aeed8b76a5d80bea48f4e2a38eec8649d">make_set_ble_custom_color_mode_command</a> (const uint8_t red, const uint8_t green, const uint8_t blue)</td></tr>
 <tr class="memdesc:aeed8b76a5d80bea48f4e2a38eec8649d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to set ble custom color.  <br /></td></tr>
 <tr class="separator:aeed8b76a5d80bea48f4e2a38eec8649d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,6 +220,30 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a6b16d7f716a7fda36953c05fae5b58bc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a6b16d7f716a7fda36953c05fae5b58bc">make_set_favorite_command</a> (const uint8_t index)</td></tr>
 <tr class="memdesc:a6b16d7f716a7fda36953c05fae5b58bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to set favorite.  <br /></td></tr>
 <tr class="separator:a6b16d7f716a7fda36953c05fae5b58bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a902ec7495c85ae44bd20d9ae077e35c6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a902ec7495c85ae44bd20d9ae077e35c6">make_signal_sunset_progress_command</a> (const float progress)</td></tr>
+<tr class="memdesc:a902ec7495c85ae44bd20d9ae077e35c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to signal a sunset update.  <br /></td></tr>
+<tr class="separator:a902ec7495c85ae44bd20d9ae077e35c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a182137453d3b3e3b5c8b89d213e5c84b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a182137453d3b3e3b5c8b89d213e5c84b">make_signal_sunrise_progress_command</a> (const float progress)</td></tr>
+<tr class="memdesc:a182137453d3b3e3b5c8b89d213e5c84b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to signal a sunrise update.  <br /></td></tr>
+<tr class="separator:a182137453d3b3e3b5c8b89d213e5c84b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b29310e1d5bfff167239fae1b40331"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#aa9b29310e1d5bfff167239fae1b40331">make_signal_suntimer_cancel_command</a> ()</td></tr>
+<tr class="memdesc:aa9b29310e1d5bfff167239fae1b40331"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to signal a suntimer cancel event.  <br /></td></tr>
+<tr class="separator:aa9b29310e1d5bfff167239fae1b40331"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a9767a31d6f9343e37cfb6b432cacb9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a2a9767a31d6f9343e37cfb6b432cacb9">make_disable_sun_timer_command</a> (const bool isSunrise)</td></tr>
+<tr class="memdesc:a2a9767a31d6f9343e37cfb6b432cacb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this command to disable a sun timer. A disabled sunrise keeps the brightness it reached, as for a user brightness change.  <br /></td></tr>
+<tr class="separator:a2a9767a31d6f9343e37cfb6b432cacb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a131deec840500f80f775547794b21bb5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a131deec840500f80f775547794b21bb5">make_set_mic_sensitivity_command</a> (const uint8_t sensitivity)</td></tr>
+<tr class="memdesc:a131deec840500f80f775547794b21bb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this command to set the microphone sensitivity.  <br /></td></tr>
+<tr class="separator:a131deec840500f80f775547794b21bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19f2c7808e2f5c02042d21b176957785"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a19f2c7808e2f5c02042d21b176957785">make_blip_output_command</a> (const uint32_t duration_ms)</td></tr>
+<tr class="memdesc:a19f2c7808e2f5c02042d21b176957785"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to blip the output.  <br /></td></tr>
+<tr class="separator:a19f2c7808e2f5c02042d21b176957785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad5ff7c6695a340901aaaf1fc6cd9e03"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#aad5ff7c6695a340901aaaf1fc6cd9e03">make_print_status_command</a> ()</td></tr>
+<tr class="memdesc:aad5ff7c6695a340901aaaf1fc6cd9e03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to print the user status line.  <br /></td></tr>
+<tr class="separator:aad5ff7c6695a340901aaaf1fc6cd9e03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8340351898244895da1f34cece536e49"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classlampda_1_1common_1_1UserCommand.html#a8340351898244895da1f34cece536e49">make_print_favorites_command</a> ()</td></tr>
+<tr class="memdesc:a8340351898244895da1f34cece536e49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set this commant to print the favorite modes infos.  <br /></td></tr>
+<tr class="separator:a8340351898244895da1f34cece536e49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -232,6 +297,8 @@ Protected Member Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa077f27d60aabfaf0d3e0bd6731dea53a" name="a681ddf33c64c6631b62fdf4912d9428fa077f27d60aabfaf0d3e0bd6731dea53a"></a>SetSunsetToTime&#160;</td><td class="fielddoc"><p>set the sunset to a target real time </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fae791ec38d23dc2a522e79a8599ffbb23" name="a681ddf33c64c6631b62fdf4912d9428fae791ec38d23dc2a522e79a8599ffbb23"></a>SetSunriseToTime&#160;</td><td class="fielddoc"><p>set the sunrise to a target real time </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa548b8192e4af53bfece38bf5cbd9ba71" name="a681ddf33c64c6631b62fdf4912d9428fa548b8192e4af53bfece38bf5cbd9ba71"></a>SetBleCustomColorMode&#160;</td><td class="fielddoc"><p>switch to BLE custom color mode </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa4575d96fff96f4b3d4bf66f987fc50f5" name="a681ddf33c64c6631b62fdf4912d9428fa4575d96fff96f4b3d4bf66f987fc50f5"></a>SetBleMode&#160;</td><td class="fielddoc"><p>switch to a target BLE mode </p>
@@ -240,11 +307,62 @@ Protected Member Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa7df8cd7e38bc290d1b7ee0052364aff5" name="a681ddf33c64c6631b62fdf4912d9428fa7df8cd7e38bc290d1b7ee0052364aff5"></a>SetFavoriteIndex&#160;</td><td class="fielddoc"><p>Set the current mode to the target favorite index. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fad0a2fb80984e1d7114ef599cf156fde0" name="a681ddf33c64c6631b62fdf4912d9428fad0a2fb80984e1d7114ef599cf156fde0"></a>SignalSunsetProgress&#160;</td><td class="fielddoc"><p>Signal a sunset update event. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa0bc3a8223db25a5129f4a124cd145e44" name="a681ddf33c64c6631b62fdf4912d9428fa0bc3a8223db25a5129f4a124cd145e44"></a>SignalSunriseProgress&#160;</td><td class="fielddoc"><p>Signal a sunrise update event. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fad3b157d65430e2e97102cf773de62c5e" name="a681ddf33c64c6631b62fdf4912d9428fad3b157d65430e2e97102cf773de62c5e"></a>SignalSuntimerCancel&#160;</td><td class="fielddoc"><p>Signal that a suntimer was canceled. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fab58baffa071954cc0ef67a12dc44a690" name="a681ddf33c64c6631b62fdf4912d9428fab58baffa071954cc0ef67a12dc44a690"></a>BlipOutput&#160;</td><td class="fielddoc"><p>Turn off the output for a short time. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa2029d0bf39f0e09986da5738c6306215" name="a681ddf33c64c6631b62fdf4912d9428fa2029d0bf39f0e09986da5738c6306215"></a>PrintStatus&#160;</td><td class="fielddoc"><p>Print the current mode, group, ramp, brightness and favorite state on one line. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa72cce0866f81a19b147792a497e683e4" name="a681ddf33c64c6631b62fdf4912d9428fa72cce0866f81a19b147792a497e683e4"></a>PrintFavorites&#160;</td><td class="fielddoc"><p>Print the favorite mode count. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fa8c9a28334d32f9eeb02c5bcf9b69432f" name="a681ddf33c64c6631b62fdf4912d9428fa8c9a28334d32f9eeb02c5bcf9b69432f"></a>DisableSunTimer&#160;</td><td class="fielddoc"><p>Disable the sunset or the sunrise timer. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a681ddf33c64c6631b62fdf4912d9428fab9ff8550f4ff77a33708ae1ed12ca476" name="a681ddf33c64c6631b62fdf4912d9428fab9ff8550f4ff77a33708ae1ed12ca476"></a>SetMicSensitivity&#160;</td><td class="fielddoc"><p>Set the microphone sensitivity. </p>
+</td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a19f2c7808e2f5c02042d21b176957785" name="a19f2c7808e2f5c02042d21b176957785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19f2c7808e2f5c02042d21b176957785">&#9670;&#160;</a></span>make_blip_output_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_blip_output_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint32_t&#160;</td>
+          <td class="paramname"><em>duration_ms</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to blip the output. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">duration_ms</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
 <a id="aa8adf60bdf33a5f69253311295d4f5cc" name="aa8adf60bdf33a5f69253311295d4f5cc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8adf60bdf33a5f69253311295d4f5cc">&#9670;&#160;</a></span>make_brightness_command()</h2>
 
@@ -273,6 +391,41 @@ Protected Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">brightness</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="a2a9767a31d6f9343e37cfb6b432cacb9" name="a2a9767a31d6f9343e37cfb6b432cacb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a9767a31d6f9343e37cfb6b432cacb9">&#9670;&#160;</a></span>make_disable_sun_timer_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_disable_sun_timer_command </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>isSunrise</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this command to disable a sun timer. A disabled sunrise keeps the brightness it reached, as for a user brightness change. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">isSunrise</td><td>True to disable the sunrise timer, false for the sunset timer </td></tr>
   </table>
   </dd>
 </dl>
@@ -311,6 +464,62 @@ Protected Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="a8340351898244895da1f34cece536e49" name="a8340351898244895da1f34cece536e49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8340351898244895da1f34cece536e49">&#9670;&#160;</a></span>make_print_favorites_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_print_favorites_command </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to print the favorite modes infos. </p>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="aad5ff7c6695a340901aaaf1fc6cd9e03" name="aad5ff7c6695a340901aaaf1fc6cd9e03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad5ff7c6695a340901aaaf1fc6cd9e03">&#9670;&#160;</a></span>make_print_status_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_print_status_command </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to print the user status line. </p>
 <dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
 
 </div>
@@ -438,6 +647,41 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a131deec840500f80f775547794b21bb5" name="a131deec840500f80f775547794b21bb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a131deec840500f80f775547794b21bb5">&#9670;&#160;</a></span>make_set_mic_sensitivity_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_set_mic_sensitivity_command </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>sensitivity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this command to set the microphone sensitivity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sensitivity</td><td>Sensitivity, see <a class="el" href="namespacelampda_1_1component_1_1microphone.html#a6359c39b9e6897de118f025ebe61063e" title="Set the microphone sensitivity, applied as a gain on the raw samples (FFT, sound level and auto gain ...">component::microphone::set_sensitivity</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
 <a id="a06d5fafd38d6f8b4fc5d31f562c1237d" name="a06d5fafd38d6f8b4fc5d31f562c1237d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a06d5fafd38d6f8b4fc5d31f562c1237d">&#9670;&#160;</a></span>make_set_mode_command()</h2>
 
@@ -554,6 +798,41 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ae8ff27ff87aa52182ca1816f5e47b7f8" name="ae8ff27ff87aa52182ca1816f5e47b7f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8ff27ff87aa52182ca1816f5e47b7f8">&#9670;&#160;</a></span>make_set_sunrise_to_time_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_set_sunrise_to_time_command </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">component::time::RealTime</a> &amp;&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to set sunrise to real time. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">time</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
 <a id="a5ccfa838d67cc66b63d3486de39f7c7e" name="a5ccfa838d67cc66b63d3486de39f7c7e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5ccfa838d67cc66b63d3486de39f7c7e">&#9670;&#160;</a></span>make_set_sunset_to_time_command()</h2>
 
@@ -585,6 +864,104 @@ Protected Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="a182137453d3b3e3b5c8b89d213e5c84b" name="a182137453d3b3e3b5c8b89d213e5c84b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a182137453d3b3e3b5c8b89d213e5c84b">&#9670;&#160;</a></span>make_signal_sunrise_progress_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_signal_sunrise_progress_command </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>progress</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to signal a sunrise update. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">progress</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="a902ec7495c85ae44bd20d9ae077e35c6" name="a902ec7495c85ae44bd20d9ae077e35c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a902ec7495c85ae44bd20d9ae077e35c6">&#9670;&#160;</a></span>make_signal_sunset_progress_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_signal_sunset_progress_command </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>progress</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to signal a sunset update. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">progress</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
+
+</div>
+</div>
+<a id="aa9b29310e1d5bfff167239fae1b40331" name="aa9b29310e1d5bfff167239fae1b40331"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b29310e1d5bfff167239fae1b40331">&#9670;&#160;</a></span>make_signal_suntimer_cancel_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classlampda_1_1common_1_1UserCommand.html">UserCommand</a> lampda::common::UserCommand::make_signal_suntimer_cancel_command </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set this commant to signal a suntimer cancel event. </p>
 <dl class="section return"><dt>Returns</dt><dd>The correct user command </dd></dl>
 
 </div>
@@ -624,6 +1001,33 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a1222fb3ca5afda50e45700edea736a55" name="a1222fb3ca5afda50e45700edea736a55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1222fb3ca5afda50e45700edea736a55">&#9670;&#160;</a></span>parse_blip_output_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_blip_output_command </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t &amp;&#160;</td>
+          <td class="paramname"><em>duration_ms</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for an output blip. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">duration_ms</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
 <a id="a81f3ca212387438d8bc56b2f595ed273" name="a81f3ca212387438d8bc56b2f595ed273"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a81f3ca212387438d8bc56b2f595ed273">&#9670;&#160;</a></span>parse_brightness()</h2>
 
@@ -644,6 +1048,33 @@ Protected Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">brightness</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
+<a id="aa6f0f67f6050fdacaaa2d60c40d4dc98" name="aa6f0f67f6050fdacaaa2d60c40d4dc98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6f0f67f6050fdacaaa2d60c40d4dc98">&#9670;&#160;</a></span>parse_disable_sun_timer_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_disable_sun_timer_command </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>isSunrise</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a sun timer disable. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">isSunrise</td><td>True if the sunrise timer must be disabled, false for the sunset timer </td></tr>
   </table>
   </dd>
 </dl>
@@ -675,6 +1106,46 @@ Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
+<a id="ad910ef6aa43ba8ab072957ed5bca8aa2" name="ad910ef6aa43ba8ab072957ed5bca8aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad910ef6aa43ba8ab072957ed5bca8aa2">&#9670;&#160;</a></span>parse_print_favorites_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_print_favorites_command </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a favorites print. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid </dd></dl>
+
+</div>
+</div>
+<a id="a3b381515d0ab68fe1a2e3f1835f0bc7b" name="a3b381515d0ab68fe1a2e3f1835f0bc7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b381515d0ab68fe1a2e3f1835f0bc7b">&#9670;&#160;</a></span>parse_print_status_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_print_status_command </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a status print. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid </dd></dl>
 
 </div>
 </div>
@@ -786,6 +1257,33 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ad4e979146b961fec8f98b27e5c546413" name="ad4e979146b961fec8f98b27e5c546413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4e979146b961fec8f98b27e5c546413">&#9670;&#160;</a></span>parse_set_mic_sensitivity_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_set_mic_sensitivity_command </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t &amp;&#160;</td>
+          <td class="paramname"><em>sensitivity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a microphone sensitivity change. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">sensitivity</td><td>The requested sensitivity </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
 <a id="a2e3f89ea03dda8f03dc93958c6372d73" name="a2e3f89ea03dda8f03dc93958c6372d73"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2e3f89ea03dda8f03dc93958c6372d73">&#9670;&#160;</a></span>parse_set_mode()</h2>
 
@@ -851,6 +1349,33 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a3bab7d4a8850c38c46b3ddd9f5e30e7f" name="a3bab7d4a8850c38c46b3ddd9f5e30e7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bab7d4a8850c38c46b3ddd9f5e30e7f">&#9670;&#160;</a></span>parse_set_sunrise_to_time_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_set_sunrise_to_time_command </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structlampda_1_1component_1_1time_1_1RealTime.html">component::time::RealTime</a> &amp;&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a set sunrise to time value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">time</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
 <a id="a1e3b3ba632a405c64f017c8cf7c75368" name="a1e3b3ba632a405c64f017c8cf7c75368"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1e3b3ba632a405c64f017c8cf7c75368">&#9670;&#160;</a></span>parse_set_sunset_to_time_command()</h2>
 
@@ -874,6 +1399,80 @@ Protected Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
+<a id="aa2081aa4ef5cc797e0942e2a0f894b1c" name="aa2081aa4ef5cc797e0942e2a0f894b1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2081aa4ef5cc797e0942e2a0f894b1c">&#9670;&#160;</a></span>parse_signal_sunrise_progress_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_signal_sunrise_progress_command </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>progress</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a sunrise update signal. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">progress</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
+<a id="a5a2c5479a4b2b31776d9a06559449fca" name="a5a2c5479a4b2b31776d9a06559449fca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a2c5479a4b2b31776d9a06559449fca">&#9670;&#160;</a></span>parse_signal_sunset_progress_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_signal_sunset_progress_command </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>progress</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a sunset update signal. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">progress</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
+
+</div>
+</div>
+<a id="a2ed7f4f4aa2d4ac92c26ccf2eb205e9d" name="a2ed7f4f4aa2d4ac92c26ccf2eb205e9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ed7f4f4aa2d4ac92c26ccf2eb205e9d">&#9670;&#160;</a></span>parse_signal_suntimer_cancel_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool lampda::common::UserCommand::parse_signal_suntimer_cancel_command </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the current command for a suntimer cancel signal. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the current message is valid, and parameter is set </dd></dl>
 
 </div>

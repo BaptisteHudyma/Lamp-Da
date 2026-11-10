@@ -101,6 +101,10 @@ constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Comm
 <tr class="memitem:a10303291e05b4146b5e036559b4ddb89"><td class="memItemLeft" align="right" valign="top"><a id="a10303291e05b4146b5e036559b4ddb89" name="a10303291e05b4146b5e036559b4ddb89"></a>
 const char *&#160;</td><td class="memItemRight" valign="bottom"><b>boolToString</b> (bool b)</td></tr>
 <tr class="separator:a10303291e05b4146b5e036559b4ddb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb42a0d8aea829f002bd7e26afc87f6d"><td class="memItemLeft" align="right" valign="top"><a id="acb42a0d8aea829f002bd7e26afc87f6d" name="acb42a0d8aea829f002bd7e26afc87f6d"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>print_command_description</b> (const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> &amp;cmd, const char *parent)</td></tr>
+<tr class="memdesc:acb42a0d8aea829f002bd7e26afc87f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display the usage and description of a command, with <code>parent</code> the name of its command group, if any. <br /></td></tr>
+<tr class="separator:acb42a0d8aea829f002bd7e26afc87f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa07bc051a6d5dbdb17ad001a22dcaa53"><td class="memTemplParams" colspan="2"><a id="aa07bc051a6d5dbdb17ad001a22dcaa53" name="aa07bc051a6d5dbdb17ad001a22dcaa53"></a>
 template&lt;size_t N&gt; </td></tr>
 <tr class="memitem:aa07bc051a6d5dbdb17ad001a22dcaa53"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handleCommand</b> (const <a class="el" href="structlampda_1_1common_1_1cli_1_1ParsedCommand.html">common::cli::ParsedCommand</a> &amp;command, const <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>(&amp;commandsToParse)[N], const char *calledCommand=nullptr)</td></tr>
@@ -125,12 +129,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>handleSerialEvents</b
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#abc7d8cba36ffe1ac02cc03d63c969c37">_main_commands_s</a> []</td></tr>
-<tr class="memdesc:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the CLI commands here.  <br /></td></tr>
+<tr class="memitem:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="memItemLeft" align="right" valign="top"><a id="abc7d8cba36ffe1ac02cc03d63c969c37" name="abc7d8cba36ffe1ac02cc03d63c969c37"></a>
+constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_main_commands_s</b> []</td></tr>
+<tr class="memdesc:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the CLI commands here. <br /></td></tr>
 <tr class="separator:abc7d8cba36ffe1ac02cc03d63c969c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae713c10ebcc95de7a4cb60ad378b4206"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#ae713c10ebcc95de7a4cb60ad378b4206">_sys_commands_s</a> []</td></tr>
 <tr class="memdesc:ae713c10ebcc95de7a4cb60ad378b4206"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to interact with the low level system  <br /></td></tr>
 <tr class="separator:ae713c10ebcc95de7a4cb60ad378b4206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8b45acf20e605732d22c57fb92dfe38"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#af8b45acf20e605732d22c57fb92dfe38">_debug_commands_s</a> []</td></tr>
+<tr class="memdesc:af8b45acf20e605732d22c57fb92dfe38"><td class="mdescLeft">&#160;</td><td class="mdescRight">commands to debug the low level system: tasks, power, recovery, electrical buses  <br /></td></tr>
+<tr class="separator:af8b45acf20e605732d22c57fb92dfe38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab56dd95986a8052b91afda6a12d1c681"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1logic_1_1cli.html#ab56dd95986a8052b91afda6a12d1c681">_act_commands_s</a> []</td></tr>
 <tr class="memdesc:ab56dd95986a8052b91afda6a12d1c681"><td class="mdescLeft">&#160;</td><td class="mdescRight">special commands to interact with the low level system  <br /></td></tr>
 <tr class="separator:ab56dd95986a8052b91afda6a12d1c681"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,7 +179,7 @@ template&lt;size_t N&gt; </div>
 </div><div class="memdoc">
 
 <p>Check for command uniqueness. </p>
-<p>Check for command uniqueness Check for command uniqueness Check for command uniqueness hook that can read the other commands and print them out </p>
+<p>Check for command uniqueness Check for command uniqueness Check for command uniqueness Check for command uniqueness hook that can read the other commands and print them out </p>
 
 </div>
 </div>
@@ -213,8 +221,8 @@ template&lt;size_t N&gt; </div>
 
 </div>
 </div>
-<a id="abc7d8cba36ffe1ac02cc03d63c969c37" name="abc7d8cba36ffe1ac02cc03d63c969c37"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc7d8cba36ffe1ac02cc03d63c969c37">&#9670;&#160;</a></span>_main_commands_s</h2>
+<a id="af8b45acf20e605732d22c57fb92dfe38" name="af8b45acf20e605732d22c57fb92dfe38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8b45acf20e605732d22c57fb92dfe38">&#9670;&#160;</a></span>_debug_commands_s</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -223,7 +231,7 @@ template&lt;size_t N&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> lampda::logic::cli::_main_commands_s[]</td>
+          <td class="memname">constexpr <a class="el" href="structlampda_1_1logic_1_1cli_1_1Command.html">Command</a> lampda::logic::cli::_debug_commands_s[]</td>
         </tr>
       </table>
   </td>
@@ -233,32 +241,24 @@ template&lt;size_t N&gt; </div>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;this page&quot;</span>, handles::cmd_help),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;sum&quot;</span>, <span class="stringliteral">&quot;system summary&quot;</span>, handles::cmd_summary),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;v&quot;</span>, <span class="stringliteral">&quot;hardware &amp; software version&quot;</span>, handles::cmd_version),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;t&quot;</span>, <span class="stringliteral">&quot;return the lamp type&quot;</span>, handles::cmd_type),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;id&quot;</span>, <span class="stringliteral">&quot;return the board serial number&quot;</span>, handles::cmd_id),</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;set&quot;</span>,</div>
-<div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
-<div class="line">                          0,</div>
-<div class="line">                          common::cli::ParsedCommand::maxArgumentCount,</div>
-<div class="line">                          <span class="stringliteral">&quot;Set system characteristics&quot;</span>,</div>
-<div class="line">                          handles::cmd_set),</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;sys&quot;</span>,</div>
-<div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
-<div class="line">                          0,</div>
-<div class="line">                          common::cli::ParsedCommand::maxArgumentCount,</div>
-<div class="line">                          <span class="stringliteral">&quot;Read system informations&quot;</span>,</div>
-<div class="line">                          handles::cmd_sys),</div>
-<div class="line">        make_command_args(<span class="stringliteral">&quot;act&quot;</span>,</div>
-<div class="line">                          <span class="stringliteral">&quot;&lt;subcommand&gt; [&lt;arg&gt;...]&quot;</span>,</div>
-<div class="line">                          0,</div>
-<div class="line">                          common::cli::ParsedCommand::maxArgumentCount,</div>
-<div class="line">                          <span class="stringliteral">&quot;High level immediate actions (dangerous)&quot;</span>,</div>
-<div class="line">                          handles::cmd_act),</div>
+<div class="line">        make_command_args(</div>
+<div class="line">                <span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, common::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_debug_help),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;tasks&quot;</span>, <span class="stringliteral">&quot;display a debug of task usages&quot;</span>, handles::cmd_tasks),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;ble&quot;</span>, <span class="stringliteral">&quot;debug bluetooth informations&quot;</span>, handles::cmd_ble),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;pd&quot;</span>, <span class="stringliteral">&quot;display the connected PD capabilities&quot;</span>, handles::cmd_powerdelivery),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;states&quot;</span>, <span class="stringliteral">&quot;state machine states&quot;</span>, handles::cmd_states),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;recovery&quot;</span>, <span class="stringliteral">&quot;read-only startup and battery recovery diagnostics&quot;</span>, handles::cmd_recovery),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;rtrace&quot;</span>, <span class="stringliteral">&quot;read-only recovery trace only&quot;</span>, handles::cmd_recovery_trace),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;serial&quot;</span>, <span class="stringliteral">&quot;show serial infos&quot;</span>, handles::cmd_serial),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;cinfo&quot;</span>, <span class="stringliteral">&quot;charger infos&quot;</span>, handles::cmd_cinfo),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;adc&quot;</span>, <span class="stringliteral">&quot;values from the charger ADC&quot;</span>, handles::cmd_adc),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;i2c&quot;</span>, <span class="stringliteral">&quot;start an i2c presence check&quot;</span>, handles::cmd_i2c),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;stats&quot;</span>, <span class="stringliteral">&quot;display the system use statistics&quot;</span>, handles::cmd_stats),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;bind&quot;</span>, <span class="stringliteral">&quot;show which clicks trigger each configurable behavior&quot;</span>, handles::cmd_bindings),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;ind&quot;</span>, <span class="stringliteral">&quot;show the indicator level and color&quot;</span>, handles::cmd_indicator),</div>
 <div class="line">}</div>
 </div><!-- fragment -->
-<p>Define the CLI commands here. </p>
+<p>commands to debug the low level system: tasks, power, recovery, electrical buses </p>
 
 </div>
 </div>
@@ -284,17 +284,17 @@ template&lt;size_t N&gt; </div>
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
 <div class="line">        make_command_args(<span class="stringliteral">&quot;h&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 0, common::cli::ParsedCommand::maxArgumentCount, <span class="stringliteral">&quot;This page&quot;</span>, handles::cmd_sys_help),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;alerts&quot;</span>, <span class="stringliteral">&quot;show all raised alerts&quot;</span>, handles::cmd_alerts),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;stats&quot;</span>, <span class="stringliteral">&quot;display the system use statistics&quot;</span>, handles::cmd_stats),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;tasks&quot;</span>, <span class="stringliteral">&quot;display a debug of task usages&quot;</span>, handles::cmd_tasks),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;time&quot;</span>, <span class="stringliteral">&quot;show current time&quot;</span>, handles::cmd_time),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;ble&quot;</span>, <span class="stringliteral">&quot;debug bluetooth informations&quot;</span>, handles::cmd_ble),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;pd&quot;</span>, <span class="stringliteral">&quot;display the connected PD capabilities&quot;</span>, handles::cmd_powerdelivery),</div>
 <div class="line">        make_command(<span class="stringliteral">&quot;bat&quot;</span>, <span class="stringliteral">&quot; battery info/levels&quot;</span>, handles::cmd_bat),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;states&quot;</span>, <span class="stringliteral">&quot;state machine states&quot;</span>, handles::cmd_states),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;serial&quot;</span>, <span class="stringliteral">&quot;show serial infos&quot;</span>, handles::cmd_serial),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;cinfo&quot;</span>, <span class="stringliteral">&quot;charger infos&quot;</span>, handles::cmd_cinfo),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;adc&quot;</span>, <span class="stringliteral">&quot;values from the charger ADC&quot;</span>, handles::cmd_adc),</div>
-<div class="line">        make_command(<span class="stringliteral">&quot;i2c&quot;</span>, <span class="stringliteral">&quot;start an i2c presence check&quot;</span>, handles::cmd_i2c),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;ble_name&quot;</span>, <span class="stringliteral">&quot;return the current BLE device name&quot;</span>, handles::cmd_get_ble_name),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;bindings&quot;</span>, <span class="stringliteral">&quot;show which clicks trigger each configurable behavior&quot;</span>, handles::cmd_bindings),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;sun&quot;</span>, <span class="stringliteral">&quot;show the sunset and sunrise timers states&quot;</span>, handles::cmd_sun_timers),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;fav&quot;</span>, <span class="stringliteral">&quot;show the favorite mode count&quot;</span>, handles::cmd_favorites),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;status&quot;</span>,</div>
+<div class="line">                     <span class="stringliteral">&quot;one line status: $stat:g&lt;group&gt;:m&lt;mode&gt;:r&lt;ramp&gt;:&lt;F if in favorites, else X&gt; brgt:&lt;brightness&gt;&quot;</span>,</div>
+<div class="line">                     handles::cmd_status),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;bat_blink&quot;</span>, <span class="stringliteral">&quot;show if the battery level blinks are enabled&quot;</span>, handles::cmd_battery_blink),</div>
+<div class="line">        make_command(<span class="stringliteral">&quot;mic&quot;</span>, <span class="stringliteral">&quot;show the microphone sensitivity&quot;</span>, handles::cmd_mic),</div>
 <div class="line">}</div>
 </div><!-- fragment -->
 <p>special commands to interact with the low level system </p>

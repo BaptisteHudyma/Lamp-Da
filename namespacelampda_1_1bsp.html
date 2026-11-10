@@ -89,6 +89,9 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacelampda_1_1bsp_1_1balancer"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1balancer.html">balancer</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1bsp_1_1balancer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the battery balancing process. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacelampda_1_1bsp_1_1ble"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1ble.html">ble</a></td></tr>
+<tr class="memdesc:namespacelampda_1_1bsp_1_1ble"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bluetooth high level handling. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacelampda_1_1bsp_1_1charger"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1charger.html">charger</a></td></tr>
 <tr class="memdesc:namespacelampda_1_1bsp_1_1charger"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles the battery charging processes. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,9 +121,13 @@ Namespaces</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:acd052c498b51472f2e6eb530f5bf7988"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp.html#acd052c498b51472f2e6eb530f5bf7988">lampda_print_init</a> ()</td></tr>
 <tr class="separator:acd052c498b51472f2e6eb530f5bf7988"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85dd667490bf887109113d1485fc0caa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp.html#a85dd667490bf887109113d1485fc0caa">lampda_print_raw</a> (const char *format,...)</td></tr>
-<tr class="memdesc:a85dd667490bf887109113d1485fc0caa"><td class="mdescLeft">&#160;</td><td class="mdescRight">C linkage to print functions.  <br /></td></tr>
-<tr class="separator:a85dd667490bf887109113d1485fc0caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad88e12031f800b7d0d486af859216f12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp.html#ad88e12031f800b7d0d486af859216f12">lampda_print_raw</a> (const char *format,...)</td></tr>
+<tr class="memdesc:ad88e12031f800b7d0d486af859216f12"><td class="mdescLeft">&#160;</td><td class="mdescRight">C linkage to print functions.  <br /></td></tr>
+<tr class="separator:ad88e12031f800b7d0d486af859216f12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f71c6ea1498c28e58a356ab353a903"><td class="memItemLeft" align="right" valign="top"><a id="a28f71c6ea1498c28e58a356ab353a903" name="a28f71c6ea1498c28e58a356ab353a903"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>lampda_print_ble_pending</b> ()</td></tr>
+<tr class="memdesc:a28f71c6ea1498c28e58a356ab353a903"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of text chunks still waiting to be sent on the bluetooth link (0 when no link is open) <br /></td></tr>
+<tr class="separator:a28f71c6ea1498c28e58a356ab353a903"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ec510f307e6a7c09d2b40ec3505a3e9"><td class="memItemLeft" align="right" valign="top"><a id="a8ec510f307e6a7c09d2b40ec3505a3e9" name="a8ec510f307e6a7c09d2b40ec3505a3e9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda_print</b> (const char *format,...)</td></tr>
 <tr class="memdesc:a8ec510f307e6a7c09d2b40ec3505a3e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">C linkage to print functions. <br /></td></tr>
@@ -147,14 +154,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda_print</b> (con
 
 </div>
 </div>
-<a id="a85dd667490bf887109113d1485fc0caa" name="a85dd667490bf887109113d1485fc0caa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a85dd667490bf887109113d1485fc0caa">&#9670;&#160;</a></span>lampda_print_raw()</h2>
+<a id="ad88e12031f800b7d0d486af859216f12" name="ad88e12031f800b7d0d486af859216f12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad88e12031f800b7d0d486af859216f12">&#9670;&#160;</a></span>lampda_print_raw()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">EXTERNC void lampda::bsp::lampda_print_raw </td>
+          <td class="memname">EXTERNC void EXTERNC void lampda::bsp::lampda_print_raw </td>
           <td>(</td>
           <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>format</em>, </td>

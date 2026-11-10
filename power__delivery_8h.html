@@ -126,6 +126,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDel
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::shutdown</b> ()</td></tr>
 <tr class="memdesc:a1d55ca3bbe8f75b9b0983ff3a14ff9d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">call once at program end <br /></td></tr>
 <tr class="separator:a1d55ca3bbe8f75b9b0983ff3a14ff9d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95758df3330044d50c9ab6b86533fcbd"><td class="memItemLeft" align="right" valign="top"><a id="a95758df3330044d50c9ab6b86533fcbd" name="a95758df3330044d50c9ab6b86533fcbd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::allow_source_resets</b> (const bool allow)</td></tr>
+<tr class="memdesc:a95758df3330044d50c9ab6b86533fcbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow the sink to reset the source, when the source capabilities were missed. A hard reset makes the source drop VBUS for up to ~2s. Forbid it when the battery cannot power the board (recovery mode), or this browns it out: the source is then used as a standard 5V port. Forbidden until allowed. Allowing it later starts the reset of a source waiting for its capabilities. <br /></td></tr>
+<tr class="separator:a95758df3330044d50c9ab6b86533fcbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4170cf372a74cd8c11d5759870f51c71"><td class="memItemLeft" align="right" valign="top"><a id="a4170cf372a74cd8c11d5759870f51c71" name="a4170cf372a74cd8c11d5759870f51c71"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::suspend_pd_state_machine</b> ()</td></tr>
 <tr class="memdesc:a4170cf372a74cd8c11d5759870f51c71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspend the execution of the power delivery state machine. <br /></td></tr>
@@ -162,14 +166,33 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDel
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::allow_otg</b> (const bool)</td></tr>
 <tr class="memdesc:a04570769028b103c32d54cd725f5f232"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call to allow or forbid OTG mode. <br /></td></tr>
 <tr class="separator:a04570769028b103c32d54cd725f5f232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5d65c328ad0e0b0e5cbf1d602abd4ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacelampda_1_1bsp_1_1powerDelivery.html#ad5d65c328ad0e0b0e5cbf1d602abd4ab">lampda::bsp::powerDelivery::want_source_role_by_swap</a> (const bool wanted)</td></tr>
+<tr class="memdesc:ad5d65c328ad0e0b0e5cbf1d602abd4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">As a sink, ask the partner for the source role (power role swap), and do not use its power meanwhile.  <br /></td></tr>
+<tr class="separator:ad5d65c328ad0e0b0e5cbf1d602abd4ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a605fbf16aeac128a67e10e662dd1541a"><td class="memItemLeft" align="right" valign="top"><a id="a605fbf16aeac128a67e10e662dd1541a" name="a605fbf16aeac128a67e10e662dd1541a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::is_attached_as_sink</b> ()</td></tr>
+<tr class="memdesc:a605fbf16aeac128a67e10e662dd1541a"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when the PD state machine is attached to a partner, as a sink <br /></td></tr>
+<tr class="separator:a605fbf16aeac128a67e10e662dd1541a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab51e055970f00cb437a8595a54a9149f"><td class="memItemLeft" align="right" valign="top"><a id="ab51e055970f00cb437a8595a54a9149f" name="ab51e055970f00cb437a8595a54a9149f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::retry_source_role_swap</b> ()</td></tr>
+<tr class="memdesc:ab51e055970f00cb437a8595a54a9149f"><td class="mdescLeft">&#160;</td><td class="mdescRight">As a ready sink wanting the source role (want_source_role_by_swap), ask for the power role swap again. <br /></td></tr>
+<tr class="separator:ab51e055970f00cb437a8595a54a9149f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4ab780cf1f873039a188d0092e0050"><td class="memItemLeft" align="right" valign="top"><a id="aaf4ab780cf1f873039a188d0092e0050" name="aaf4ab780cf1f873039a188d0092e0050"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::is_source_contract_ready</b> ()</td></tr>
+<tr class="memdesc:aaf4ab780cf1f873039a188d0092e0050"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when we are a source, with a contract in place (PS_RDY sent): the sink can use the power <br /></td></tr>
+<tr class="separator:aaf4ab780cf1f873039a188d0092e0050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae24d08d71cd52a7a1f34b4204a791168"><td class="memItemLeft" align="right" valign="top"><a id="ae24d08d71cd52a7a1f34b4204a791168" name="ae24d08d71cd52a7a1f34b4204a791168"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::is_switching_to_otg</b> ()</td></tr>
 <tr class="memdesc:ae24d08d71cd52a7a1f34b4204a791168"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true is the system is prepaping to switch to OTG mode <br /></td></tr>
 <tr class="separator:ae24d08d71cd52a7a1f34b4204a791168"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7ad6b783bb49cb04ffcbbe2563d3ddd"><td class="memItemLeft" align="right" valign="top"><a id="ab7ad6b783bb49cb04ffcbbe2563d3ddd" name="ab7ad6b783bb49cb04ffcbbe2563d3ddd"></a>
-std::vector&lt; PDOTypes &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::get_available_pd</b> ()</td></tr>
-<tr class="memdesc:ab7ad6b783bb49cb04ffcbbe2563d3ddd"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the charger is PD compatible, return it's capabilities. <br /></td></tr>
-<tr class="separator:ab7ad6b783bb49cb04ffcbbe2563d3ddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ce7ada43aa27253e4ade128249a4f1"><td class="memItemLeft" align="right" valign="top"><a id="a25ce7ada43aa27253e4ade128249a4f1" name="a25ce7ada43aa27253e4ade128249a4f1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::is_source_hard_resetting</b> ()</td></tr>
+<tr class="memdesc:a25ce7ada43aa27253e4ade128249a4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">return true when we are a source in a hard reset: VBUS must be cut until the end of the recovery time <br /></td></tr>
+<tr class="separator:a25ce7ada43aa27253e4ade128249a4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b51e4dcd2a65324a110bc3e8546cc22"><td class="memItemLeft" align="right" valign="top"><a id="a7b51e4dcd2a65324a110bc3e8546cc22" name="a7b51e4dcd2a65324a110bc3e8546cc22"></a>
+std::array&lt; PDOTypes, 5 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::get_available_pd</b> ()</td></tr>
+<tr class="memdesc:a7b51e4dcd2a65324a110bc3e8546cc22"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the charger is PD compatible, return it's capabilities. <br /></td></tr>
+<tr class="separator:a7b51e4dcd2a65324a110bc3e8546cc22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31ba2f89b8be2e2c2b55b5ddf2c2a9b4"><td class="memItemLeft" align="right" valign="top"><a id="a31ba2f89b8be2e2c2b55b5ddf2c2a9b4" name="a31ba2f89b8be2e2c2b55b5ddf2c2a9b4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>lampda::bsp::powerDelivery::show_pd_status</b> ()</td></tr>
 <tr class="memdesc:a31ba2f89b8be2e2c2b55b5ddf2c2a9b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug power delivery status. <br /></td></tr>
