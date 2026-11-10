@@ -28,8 +28,11 @@ typedef union
 // Get the current timestamp from the system timer (in uS).
 timestamp_t get_time(void);
 
-// call in a dedicated task
-void task_scheduler(void);
+/**
+ * Convert a task wait timeout to the scheduler wait, in milliseconds.
+ * 0 is an infinite wait. A non zero timeout is rounded up, so it never becomes an infinite wait.
+ */
+uint32_t task_timeout_us_to_ms(uint64_t timeout_us);
 
 /**
  * Set a task event.

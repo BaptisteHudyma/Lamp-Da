@@ -1,0 +1,161 @@
+/**
+ * \file sun_timers.h
+ * \brief Handle the sun timers: sunset to auto shutdown the system and sunrise for auto turn on.
+ */
+
+#pragma once
+
+#include <cstdint>
+
+namespace lampda {
+namespace logic {
+
+/// Sun timer operations handler
+/// All sun operations are exclusive, thay cannot run at the same time
+template<uint32_t BrightnessSunTime> class SunTimerBase
+{
+public:
+  static constexpr uint32_t BrightnessSunTime_min = BrightnessSunTime;
+  static constexpr uint32_t BrightnessSunTime_s = BrightnessSunTime_min * 60;
+  static constexpr uint32_t BrightnessSunTime_ms = BrightnessSunTime_s * 1000;
+  static constexpr uint16_t brightnessDecreasePerLoop = 1;
+
+  /// Brightness increase per loop call during the brightness phase
+  static constexpr uint16_t brightnessIncreasePerLoop = 1;
+  /// minimum calls to the update sunset function that will be made
+  static constexpr uint16_t minimalSunUpdateCalls = 50;
+  /// Minimum time between sunset loop calls
+  static constexpr uint16_t minimalSunLoopDuration_ms = 5;
+
+  virtual ~SunTimerBase() = default;
+
+  bool is_enabled() const { return endTime_s > 0; }
+
+  /// Return the time left before the end of the timer, in seconds. 0 if the timer is not enabled
+  uint32_t get_remaining_time_s() const;
+
+  /**
+   * \brief Cancel the current active timer
+   * \return true if the timer was running. Only one caller can release a running timer, so a timer canceled from
+   * another thread never runs its end of timer handle
+   */
+  bool cancel();
+
+  /// Start the sun timer with a deadline, or prolonge the current sun timer
+  void set_deadline(const uint32_t timeshutdown_s);
+
+  /// Add some time to the current timer, or start it with a target time in minutes.
+  /// This time cannot be shorter than BrightnessSunTime_min
+  void add_time_minutes(const uint8_t time_minutes);
+
+  /// Lock the hability of the sunset timer to control the brightness
+  void lock_brightness_update(bool shouldLock) { isAllowedToControlBrightness = not shouldLock; }
+
+  /// Shortcut the whole timer to the brightness control phase
+  void shortcut_to_brightness_phase();
+
+  /// sun process task
+  /// INTERNAL USE ONLY
+  void sun_process_loop();
+
+protected:
+  /// Overloadable: A timer can refuse to start under some conditions
+  virtual bool should_accept_start() const = 0;
+
+  /// Wrapper to the custom user code to call for a sun timer update
+  /// \param[in] progress between 0 and 1
+  virtual void sun_timer_progress_update_callback(const float progress) const = 0;
+
+  /**
+   * \brief Release the timer, without restoring the brightness scale
+   * \return true if the timer was running. See \ref cancel
+   */
+  bool release();
+
+  /// Called when the timer reaches its target. The brightness scale is left as is by the release: the handle must set
+  /// it
+  virtual void end_of_timer_handle() = 0;
+
+  /// Called when the timer progresses through the brightness phase
+  virtual void timer_brightness_progress_update(const float progress) = 0;
+
+protected:
+  /// Compute the timing delay of the loop to stay at the target brightness control frequency
+  uint32_t get_loop_timing_ms() const;
+
+  /// Return the sun timer progress between 0 to 1.
+  float get_percent_of_advance() const;
+
+  /// Signal a sun timer update to consummers.
+  /// \return  the progress between 0 and 1
+  float signal_sun_update() const;
+
+  /// End of the timer operation, in the lamp time counter. 0 when the timer is not running.
+  /// Atomic: the timer task and the main loop (inputs, CLI) can both release it
+  volatile uint32_t endTime_s = 0;
+  /// Is the handler allowed to control lamp brightness
+  bool isAllowedToControlBrightness = true;
+
+private:
+  /// Duration of the sun rise/set during wich the brightness will be controled
+  uint32_t trueBrightnessSunTime_ms = BrightnessSunTime_ms;
+};
+
+/// Timer to slowly ramp down the brightness until zero then shutdown.
+class SunsetTimer : public SunTimerBase<3>
+{
+public:
+  /**
+   * \brief signal to the timer that some time may be added.
+   * Only add time if the timer is in the fadeout phase
+   */
+  void bump_timer();
+
+protected:
+  bool should_accept_start() const override;
+
+  void sun_timer_progress_update_callback(const float progress) const override;
+
+  void end_of_timer_handle() override;
+
+  void timer_brightness_progress_update(const float progress) override;
+};
+
+/// Timer to start the system and ramp up brightness until we reach back the latest user set brightness
+class SunriseTimer : public SunTimerBase<3>
+{
+public:
+  /// Cancel the timer, and keep the brightness reached by the sunrise as the new saved brightness
+  void cancel_at_current_brightness();
+
+protected:
+  bool should_accept_start() const override;
+
+  void sun_timer_progress_update_callback(const float progress) const override;
+
+  void end_of_timer_handle() override;
+
+  void timer_brightness_progress_update(const float progress) override;
+};
+
+/// object to access to control the timers
+extern SunsetTimer sunset_timer;
+extern SunriseTimer sunrise_timer;
+
+/// init all timers: call once on program start
+void sun_timers_init_all();
+
+inline void sun_timers_cancel_all()
+{
+  sunset_timer.cancel();
+  sunrise_timer.cancel();
+}
+
+inline void sun_timers_brightness_lock_all(const bool shouldLock)
+{
+  sunset_timer.lock_brightness_update(shouldLock);
+  sunrise_timer.lock_brightness_update(shouldLock);
+}
+
+} // namespace logic
+} // namespace lampda

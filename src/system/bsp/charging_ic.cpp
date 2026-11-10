@@ -36,10 +36,23 @@ static Measurments measurments_s;
 // store the battery measurments
 static Battery battery_s;
 
+/**
+ * \brief Read ChargeOption3 into the cached registers, without its command bits.
+ * RESET_VINDPM and RESET_REG are commands, that read as 1 while the IC executes them (a VINDPM measurement
+ * disables the converter). Keeping them in the cache would trigger them again on the next write of this register,
+ * and the frequent writes would then keep the converter disabled forever.
+ */
+static void read_charge_option3()
+{
+  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  chargerIcRegisters.chargeOption3.set_RESET_VINDPM(0);
+  chargerIcRegisters.chargeOption3.set_RESET_REG(0);
+}
+
 // store the component status
 inline static Status_t status_s = Status_t::UNINITIALIZED;
 // store an error message for errors
-inline static std::string status_error = "";
+inline static etl::string<64> status_error = "";
 // store the current charge status of the system
 inline static ChargeStatus_t chargeStatus_s = ChargeStatus_t::OFF;
 
@@ -50,14 +63,14 @@ inline static bool isChargeEnabled_s = false;
 // charger is in OTG state
 inline static bool isInOtg_s = false;
 
-std::string softwareError_detail = "";
-std::string get_software_error_message()
+etl::string<64> softwareError_detail = "";
+etl::string<64> get_software_error_message()
 {
   if (softwareError_detail.empty())
     return "x";
   return softwareError_detail;
 }
-void set_software_error_message(const std::string& msg)
+void set_software_error_message(const etl::string<64>& msg)
 {
   if (softwareError_detail.empty())
     softwareError_detail = msg;
@@ -86,50 +99,95 @@ struct PowerLimits
 /// define the power limits for input power
 static PowerLimits powerLimits_s;
 
-// detect the faults on the status
-void run_fault_detection()
+enum class ChargerErrorCodeMask : uint32_t
 {
-  if (chargerIcRegisters.chargerStatus.Fault_ACOV() or chargerIcRegisters.chargerStatus.Fault_BATOC() or
-      chargerIcRegisters.chargerStatus.Fault_ACOC() or chargerIcRegisters.chargerStatus.SYSOVP_STAT() or
-      chargerIcRegisters.chargerStatus.Fault_Latchoff() or chargerIcRegisters.chargerStatus.Fault_OTG_OVP() or
-      chargerIcRegisters.chargerStatus.Fault_OTG_UVP())
+  InputOverVoltage = 0,
+  InputOverCurrent = 1,
+  BatteryOverCurrent = 2,
+  SystemOverVoltage = 3,
+  OtgOverVoltage = 4,
+  OtgOverCurrent = 5,
+};
+
+/**
+ * \brief Detect the faults on the charger status
+ * \return A binary mask of the faults
+ */
+uint32_t run_fault_detection()
+{
+  static uint32_t latestErrorCodes = 0;
+  uint32_t errorCodes = chargerIcRegisters.chargerStatus.Fault_ACOV()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::InputOverVoltage) |
+                        chargerIcRegisters.chargerStatus.Fault_ACOC()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::InputOverCurrent) |
+                        chargerIcRegisters.chargerStatus.Fault_BATOC()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::BatteryOverCurrent) |
+                        chargerIcRegisters.chargerStatus.SYSOVP_STAT()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::SystemOverVoltage) |
+                        chargerIcRegisters.chargerStatus.Fault_OTG_OVP()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverVoltage) |
+                        chargerIcRegisters.chargerStatus.Fault_OTG_UVP()
+                                << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverCurrent);
+
+  if (errorCodes != 0)
   {
-    bsp::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
-                      chargerIcRegisters.chargerStatus.Fault_ACOV(),
-                      chargerIcRegisters.chargerStatus.Fault_BATOC(),
-                      chargerIcRegisters.chargerStatus.Fault_ACOC(),
-                      chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
-                      chargerIcRegisters.chargerStatus.Fault_Latchoff(),
-                      chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
-                      chargerIcRegisters.chargerStatus.Fault_OTG_UVP());
+    if (latestErrorCodes != errorCodes)
+    {
+      latestErrorCodes = errorCodes;
+      bsp::lampda_print("Charger ic faults: %d%d%d%d%d%d%d",
+                        chargerIcRegisters.chargerStatus.Fault_ACOV(),
+                        chargerIcRegisters.chargerStatus.Fault_ACOC(),
+                        chargerIcRegisters.chargerStatus.Fault_BATOC(),
+                        chargerIcRegisters.chargerStatus.SYSOVP_STAT(),
+                        chargerIcRegisters.chargerStatus.Fault_OTG_OVP(),
+                        chargerIcRegisters.chargerStatus.Fault_OTG_UVP(),
+                        chargerIcRegisters.chargerStatus.Fault_Latchoff());
+    }
     status_s = Status_t::ERROR_HAS_FAULTS;
   }
   // reset fault flag
-  else if (status_s == Status_t::ERROR_HAS_FAULTS)
+  else
   {
-    status_s = Status_t::NOMINAL;
+    // the faults are cleared: show them again if they come back
+    latestErrorCodes = 0;
+    if (status_s == Status_t::ERROR_HAS_FAULTS)
+      status_s = Status_t::NOMINAL;
   }
+  return errorCodes;
 }
 
 // update the local values of the status register
 void run_status_update()
 {
-  const byte initialReg0read = chargerIcRegisters.chargerStatus.val0;
-  const byte initialReg1read = chargerIcRegisters.chargerStatus.val1;
+  // Last status processed by the fault detection. Tracked apart from the register cache: other functions read and
+  // write the status register (try_clear_faults, is_input_source_present), and would hide a change from the cache
+  static bool hasProcessedStatus = false;
+  static byte processedReg0 = 0;
+  static byte processedReg1 = 0;
 
   chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
 
-  if (initialReg0read != chargerIcRegisters.chargerStatus.val0 or
-      initialReg1read != chargerIcRegisters.chargerStatus.val1)
+  uint32_t errorCode = 0;
+  if (not hasProcessedStatus or processedReg0 != chargerIcRegisters.chargerStatus.val0 or
+      processedReg1 != chargerIcRegisters.chargerStatus.val1)
   {
+    hasProcessedStatus = true;
+    processedReg0 = chargerIcRegisters.chargerStatus.val0;
+    processedReg1 = chargerIcRegisters.chargerStatus.val1;
     // check faults
-    run_fault_detection();
+    errorCode = run_fault_detection();
   }
 
   // handle OTG alerts
   if (isInOtg_s)
   {
-    if (chargerIcRegisters.chargerStatus.IN_OTG())
+    // OTG is in over current/voltage: raise the target alert
+    if (errorCode != 0 and (errorCode & (1 << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverCurrent)) ||
+                            errorCode & (1 << static_cast<uint32_t>(ChargerErrorCodeMask::OtgOverVoltage))))
+    {
+      logic::alerts::manager.raise(logic::alerts::Type::OTG_OVER_LIMITS);
+    }
+    else if (chargerIcRegisters.chargerStatus.IN_OTG())
     {
       logic::alerts::manager.clear(logic::alerts::Type::OTG_FAILED);
     }
@@ -190,7 +248,7 @@ void control_OTG()
 
       hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
 
-      chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+      read_charge_option3();
       // TODO test and debug LOW RANGE
       chargerIcRegisters.chargeOption3.set_OTG_RANGE_LOW(0);
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
@@ -226,7 +284,7 @@ void control_OTG()
 
       // update the in OTG status to avoid deconnection
       hal::gpio::DigitalPin(hal::gpio::DigitalPin::GPIO::Output_EnableOnTheGo).set_high(true);
-      chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+      read_charge_option3();
       chargerIcRegisters.chargeOption3.set_EN_OTG(1);
       charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
     }
@@ -271,7 +329,7 @@ void enable_input_current_optimization(const bool enable)
 {
   if (enable)
   {
-    chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+    read_charge_option3();
     // Do not reset ICO, if it is already enabled.
     if (chargerIcRegisters.chargeOption3.EN_ICO_MODE() != 0)
       return;
@@ -280,6 +338,8 @@ void enable_input_current_optimization(const bool enable)
     chargerIcRegisters.chargeOption3.set_EN_ICO_MODE(1);
     chargerIcRegisters.chargeOption3.set_RESET_VINDPM(1);
     charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
+    // one shot command: never write it again with the next updates of this register
+    chargerIcRegisters.chargeOption3.set_RESET_VINDPM(0);
   }
   else
   {
@@ -337,8 +397,7 @@ void update_battery()
   }
   else if (isInputSourcePresent)
   {
-    // TODO: check this
-    // deglitch time of deconnection ?
+    // deglitch time of deconnection
   }
   else
   {
@@ -509,7 +568,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   if (forceReset)
   {
     // write the reset flag
-    chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+    read_charge_option3();
     chargerIcRegisters.chargeOption3.set_RESET_REG(1);
     const bool resetSuccess = charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
     if (not resetSuccess)
@@ -526,6 +585,8 @@ bool enable(const uint16_t minSystemVoltage_mV,
       hal::delay_ms(5);
       chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
     } while (hal::time_ms() < timeout and chargerIcRegisters.chargeOption3.RESET_REG() == 1);
+    // do not keep the reset command in the cache
+    chargerIcRegisters.chargeOption3.set_RESET_REG(0);
   }
 
   // everything went fine (for now)
@@ -537,7 +598,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
 
   bool success = true;
 
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
@@ -564,9 +625,16 @@ bool enable(const uint16_t minSystemVoltage_mV,
   chargerIcRegisters.chargeOption0.set_WDTMR_ADJ(1);
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
-  // set 6A inductor (TODO issue #131: change with system constants)
-  chargerIcRegisters.chargeOption3.set_IL_AVG(0b0);
+  read_charge_option3();
+  // set from max physical characteristics
+  if (physical_constants::maxChargerCurrent_mA <= 6000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b00);
+  else if (physical_constants::maxChargerCurrent_mA <= 10000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b01);
+  else if (physical_constants::maxChargerCurrent_mA <= 15000)
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b10);
+  else
+    chargerIcRegisters.chargeOption3.set_IL_AVG(0b11);
   success &= charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
   // disable charge
@@ -590,7 +658,7 @@ bool enable(const uint16_t minSystemVoltage_mV,
   const auto maxBatteryVoltage_mV_read = chargerIcRegisters.maxChargeVoltage.set(maxBatteryVoltage_mV);
   const auto minSystemVoltage_mV_read = chargerIcRegisters.minSystemVoltage.set(minSystemVoltage_mV);
 
-  std::string startErrorMessage = "";
+  etl::string<64> startErrorMessage = "";
   bool isSuccessful = true;
 
   // a write failed at some point
@@ -705,7 +773,7 @@ void shutdown()
   chargerIcRegisters.chargeOption0.set_EN_LWPWR(1);
   charger_ic::writeRegEx(chargerIcRegisters.chargeOption0);
 
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   // disable high impedance mode
   chargerIcRegisters.chargeOption3.set_EN_HIZ(0);
   charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
@@ -713,7 +781,15 @@ void shutdown()
 
 void set_input_current_limit(const uint16_t maxInputCurrent_mA, const bool shouldUseICO)
 {
-  powerLimits_s.current_mA = maxInputCurrent_mA;
+  // limit to hardware maximum
+  uint16_t maxInputCurrentAllowed_mA = maxInputCurrent_mA;
+  if (maxInputCurrentAllowed_mA > physical_constants::maxVbusWireCurrent_mA)
+    maxInputCurrentAllowed_mA = static_cast<uint16_t>(physical_constants::maxVbusWireCurrent_mA);
+  if (maxInputCurrentAllowed_mA > physical_constants::maxVbusGateCurrent_mA)
+    maxInputCurrentAllowed_mA = static_cast<uint16_t>(physical_constants::maxVbusGateCurrent_mA);
+
+  // limit by max input current
+  powerLimits_s.current_mA = maxInputCurrentAllowed_mA;
   powerLimits_s.shouldUseICO = shouldUseICO;
 }
 
@@ -727,7 +803,8 @@ bool is_input_source_present()
 
 void try_clear_faults()
 {
-  // clear the fault we can clear, wait and see
+  // clear the fault we can clear, wait and see.
+  // run_status_update tracks the last processed status apart from this cache: it sees the fault clearing (or not)
   chargerIc.readRegEx(chargerIcRegisters.chargerStatus);
   if (chargerIcRegisters.chargerStatus.SYSOVP_STAT())
   {
@@ -751,7 +828,7 @@ void enable_OTG()
 
 void disable_OTG()
 {
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   chargerIcRegisters.chargeOption3.set_EN_OTG(0);
   charger_ic::writeRegEx(chargerIcRegisters.chargeOption3);
 
@@ -764,13 +841,22 @@ void disable_OTG()
 void set_OTG_targets(const uint16_t voltage_mV, const uint16_t maxCurrent_mA)
 {
   // OTG voltage register depends on another register...
-  chargerIc.readRegEx(chargerIcRegisters.chargeOption3);
+  read_charge_option3();
   const bool isVoltageRangeLow = chargerIcRegisters.chargeOption3.OTG_RANGE_LOW() != 0x00;
 
   const auto prevVal = chargerIcRegisters.oTGVoltage.get(isVoltageRangeLow);
 
   const auto realVal = chargerIcRegisters.oTGVoltage.set(voltage_mV, isVoltageRangeLow);
-  chargerIcRegisters.oTGCurrent.set(maxCurrent_mA);
+
+  uint16_t maxCurrentLimit_mA = maxCurrent_mA;
+
+  // limit value to the minimum of the VBUS gate, common to vbus rail and output rail
+  if (maxCurrentLimit_mA > physical_constants::maxVbusGateCurrent_mA)
+    maxCurrentLimit_mA = physical_constants::maxVbusGateCurrent_mA;
+
+  // check max battery current already checked as low level safety
+
+  chargerIcRegisters.oTGCurrent.set(maxCurrentLimit_mA);
 
   // if (realVal != prevVal)
   //   bsp::lampda_print("new OTG targets : %dmV %dmA", realVal, maxCurrent_mA);
@@ -780,7 +866,7 @@ bool is_in_OTG() { return isInOtg_s; }
 
 Status_t get_status() { return status_s; }
 
-std::string get_status_detail() { return status_error; }
+etl::string<64> get_status_detail() { return status_error; }
 
 ChargeStatus_t get_charge_status() { return chargeStatus_s; }
 

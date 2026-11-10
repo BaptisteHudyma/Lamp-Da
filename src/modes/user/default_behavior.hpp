@@ -12,7 +12,12 @@
 //
 
 #include "src/system/component/time_handling.h"
-#include "src/system/hal/bluetooth.h"
+
+#include "src/system/bsp/ble.h"
+
+#include "src/system/component/sound.h"
+#include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/button_bindings.h"
 
 #include <cstdint>
 namespace lampda::user {
@@ -63,8 +68,9 @@ void brightness_update(const brightness_t brightness)
   // dont handle invalid commands
   if (brightness <= ::lampda::brightness::absoluteMaximumBrightness)
   {
-    // force update of the internal references
-    manager.lamp.align_internal_to_system_brightness();
+    // force update of the internal references to the new brightness
+    // (the system saved brightness is only updated after this callback)
+    manager.lamp.align_internal_to_system_brightness(brightness);
 
     // set brightness for underlying object (w/o re-entry in update_brightness)
     manager.lamp.setBrightness(brightness, true, true);
@@ -77,14 +83,6 @@ void brightness_update(const brightness_t brightness)
     // this call could be just a max brightness update
     manager.lamp.enforce_internal_brightness_limits();
   }
-}
-
-void sunset_timer_update(const float progress)
-{
-  auto manager = get_context();
-
-  // callbacks
-  manager.sunset_update(progress);
 }
 
 void write_parameters()
@@ -116,56 +114,51 @@ bool button_start_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent
         // - if it is enabled, but the bounded peer already exists (force open connection)
 
         // Start pairing mode
-        const bool hasPairedDeviceAndNoPairing = hal::bluetooth::is_bounded() and
-                                                 not hal::bluetooth::is_advertising() and
-                                                 not hal::bluetooth::is_connected();
+        const bool hasPairedDeviceAndNoPairing =
+                bsp::ble::is_bounded() and not bsp::ble::is_advertising() and not bsp::ble::is_connected();
         if (hasPairedDeviceAndNoPairing)
         {
           if (manager.overlay_animate_ramp(
                       holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
           {
             // Start BLE but with paired device authorization only
-            hal::bluetooth::start_advertising(false);
+            bsp::ble::start_advertising(false);
 
             bsp::lampda_print("Enable BLE for paired device");
           }
         }
-        // else: not bounded, or already started bounded connection
+        // else: not bounded, or already started bounded connection, or a device is connected
         else
         {
-          // Start pairing mode
-          const bool isNotCurrentlyPairing =
-                  not(hal::bluetooth::is_advertising() and hal::bluetooth::is_open_to_all()) and
-                  not hal::bluetooth::is_connected();
+          // Start pairing mode. A connected device is disconnected, to force a new pairing
+          const bool isNotCurrentlyPairing = not(bsp::ble::is_advertising() and bsp::ble::is_open_to_all());
           if (isNotCurrentlyPairing and
               manager.overlay_animate_ramp(
                       holdDuration, 3000, modes::colors::PaletteGradient<modes::colors::Blue, modes::colors::Blue>))
           {
             // Start pairing mode
-            hal::bluetooth::start_advertising(true);
+            bsp::ble::force_pairing_mode();
 
             bsp::lampda_print("Enable BLE pairing mode");
           }
         }
         return true;
       }
-    case 5:
-      {
-        if (not isEndOfHoldEvent and holdDuration > 0)
-        {
-          // sunset timer !
-          auto manager = get_context();
-          if (manager.overlay_animate_ramp(
-                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
-          {
-            // update the sunset timing
-            manager.state.isSunsetTimingPending = 2;
-          }
+  }
 
-          return true;
-        }
-        break;
-      }
+  // sunset timer, on its configured clicks
+  if (logic::button_bindings::get_hold_behavior(clicks) == logic::button_bindings::Behavior::Sunset and
+      not isEndOfHoldEvent and holdDuration > 0)
+  {
+    auto manager = get_context();
+    if (manager.overlay_animate_ramp(
+                holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+    {
+      // update the sunset timing
+      manager.state.isSunsetTimingPending = 2;
+    }
+
+    return true;
   }
 
   return false;
@@ -220,23 +213,21 @@ bool button_clicked(const uint8_t clicks)
 {
   auto manager = get_context();
 
-  switch (clicks)
+  // quick navigation: jump to first mode of first category
+  if (logic::button_bindings::get_click_behavior(clicks) == logic::button_bindings::Behavior::QuickNavigation)
   {
-    case 6: // 6 clicks:  jump to first mode of first category
-      {
-        // exit fav group if needed
-        manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
+    // exit fav group if needed
+    manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
 
-        // return to first state
-        manager.set_active_group(0);
-        manager.set_active_mode(0);
-        // ramps will be updated on their own
+    // return to first state
+    manager.set_active_group(0);
+    manager.set_active_mode(0);
+    // ramps will be updated on their own
 
-        // Blip for state change
-        manager.blip(250);
+    // Blip for state change
+    manager.blip(250);
 
-        return true;
-      }
+    return true;
   }
 
   // nothing
@@ -249,37 +240,31 @@ bool button_hold(const uint8_t clicks, const bool isEndOfHoldEvent, const uint32
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
 
+  // Add 5 minutes to sunset timer, on its configured clicks
+  if (logic::button_bindings::get_hold_behavior(clicks) == logic::button_bindings::Behavior::Sunset and
+      not isEndOfHoldEvent and holdDuration > 0 and logic::sunset_timer.is_enabled())
+  {
+    if (manager.overlay_animate_ramp(
+                holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
+    {
+      // update the sunset timing
+      manager.state.isSunsetTimingPending = 2;
+    }
+  }
+
+  // configure custom ramp, on its configured clicks. No ramps in favorite group
+  if (logic::button_bindings::get_hold_behavior(clicks) == logic::button_bindings::Behavior::CustomRamp and
+      not manager.state.isInFavoriteMockGroup)
+  {
+    rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
+      manager.custom_ramp_update(rampValue);
+      manager.set_active_custom_ramp(rampValue);
+    });
+    return true;
+  }
+
   switch (clicks)
   {
-    case 3: // 3 click+hold: configure custom ramp
-            // no ramps in favorite group
-      if (not manager.state.isInFavoriteMockGroup)
-      {
-        rampHandler.update_ramp(manager.get_active_custom_ramp(), holdDuration, [&](uint8_t rampValue) {
-          manager.custom_ramp_update(rampValue);
-          manager.set_active_custom_ramp(rampValue);
-        });
-        return true;
-      }
-      break;
-
-      // 5 click+hold: Add 5 minutes to sunset timer
-    case 5:
-      {
-        if (not isEndOfHoldEvent and holdDuration > 0 and logic::sunset::is_enabled())
-        {
-          // sunset timer !
-          auto manager = get_context();
-          if (manager.overlay_animate_ramp(
-                      holdDuration, 1000, modes::colors::PaletteGradient<modes::colors::White, modes::colors::Red>))
-          {
-            // update the sunset timing
-            manager.state.isSunsetTimingPending = 2;
-          }
-        }
-        break;
-      }
-
     case 13: // 13 clicks + hold: reset the stored parameters
       {
         if (not isEndOfHoldEvent and holdDuration > 0)
@@ -329,7 +314,7 @@ void handle_brightness_control(const brightness_t requiredbrightness)
   if (not logic::behavior::is_in_output_state())
     return;
 
-  logic::sunset::lock_brightness_update(true);
+  logic::sun_timers_brightness_lock_all(true);
   // update brightness
   const brightness_t desiredBrightness =
           min<brightness_t>(::lampda::brightness::absoluteMaximumBrightness, requiredbrightness);
@@ -337,10 +322,10 @@ void handle_brightness_control(const brightness_t requiredbrightness)
   logic::brightness::update_brightness(desiredBrightness);
   // update saved brightness
   logic::brightness::update_saved_brightness();
-  logic::sunset::lock_brightness_update(false);
+  logic::sun_timers_brightness_lock_all(false);
 
   // and change the sunset timer if needed
-  logic::sunset::bump_timer();
+  logic::sunset_timer.bump_timer();
 }
 
 /// handle the On or Off command
@@ -437,7 +422,46 @@ void handle_sunset_to_time_command(const component::time::RealTime& time)
   if (not logic::behavior::is_in_output_state())
     logic::behavior::set_power_on();
 
-  logic::sunset::set_deadline(internalLampActionTime);
+  logic::sunset_timer.set_deadline(internalLampActionTime);
+}
+
+/**
+ * \brief Handle the timing command
+ */
+void handle_sunrise_to_time_command(const component::time::RealTime& time)
+{
+  if (not time.is_valid())
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds. Invalid values.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+  const auto& realTime = component::time::get_real_time();
+  if (not realTime.is_valid())
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds : Time is not synchronized yet.",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+
+  const uint32_t internalLampActionTime = component::time::get_platform_time_from_target_time(time);
+  if (internalLampActionTime <= 0)
+  {
+    bsp::lampda_print("Refusing sunrise command %d %dh %dm %ds: Target time is incoherent",
+                      time.dayOfTheWeek,
+                      time.hour,
+                      time.minutes,
+                      time.seconds);
+    return;
+  }
+
+  logic::sunrise_timer.set_deadline(internalLampActionTime);
 }
 
 void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
@@ -453,14 +477,17 @@ void handle_mode_control(const uint8_t groupIndex, const uint8_t modeIndex)
     bsp::lampda_print("Group id %d is greater than max group id %d", groupIndex, manager.get_groups_count());
     return;
   }
-  manager.set_active_group(groupIndex);
+
+  modes::ActiveIndexTy index {groupIndex, modeIndex, 0, 0};
+  manager.jump_to_new_active_index(index, true, true); // ignore saved index AND quit favorite mode
 
   if (modeIndex >= manager.get_modes_count())
   {
     bsp::lampda_print("Mode id %d is greater than max mode id %d", modeIndex, manager.get_modes_count());
+    manager.set_active_mode(manager.get_modes_count() - 1);
     return;
   }
-  manager.set_active_mode(modeIndex);
+
   manager.blip(250);
 }
 
@@ -523,6 +550,128 @@ bool handle_user_command(const common::UserCommand& command)
           __private::handle_sunset_to_time_command(time);
         else
           bsp::lampda_print("Failed to parse set_sunset_time command");
+        return true;
+      }
+    case common::UserCommand::Type::SetSunriseToTime:
+      {
+        component::time::RealTime time;
+        if (command.parse_set_sunrise_to_time_command(time))
+          __private::handle_sunrise_to_time_command(time);
+        else
+          bsp::lampda_print("Failed to parse set_sunrise_time command");
+        return true;
+      }
+
+    case common::UserCommand::Type::SignalSunsetProgress:
+      {
+        float progress;
+        if (command.parse_signal_sunset_progress_command(progress))
+          get_context().sunset_update(progress);
+        else
+          bsp::lampda_print("Failed to parse signal_sunset_progress command");
+        return true;
+      }
+    case common::UserCommand::Type::SignalSunriseProgress:
+      {
+        float progress;
+        if (command.parse_signal_sunrise_progress_command(progress))
+          get_context().sunrise_update(progress);
+        else
+          bsp::lampda_print("Failed to parse signal_sunrise_progress command");
+        return true;
+      }
+    case common::UserCommand::Type::SignalSuntimerCancel:
+      {
+        if (command.parse_signal_suntimer_cancel_command())
+        {
+          auto manager = get_context();
+          manager.sunset_timer_internal_reset();
+          manager.sunrise_timer_internal_reset();
+        }
+        else
+          bsp::lampda_print("Failed to parse signal_suntimer_cancel command");
+        return true;
+      }
+    case common::UserCommand::Type::DisableSunTimer:
+      {
+        bool isSunrise;
+        if (command.parse_disable_sun_timer_command(isSunrise))
+        {
+          if (isSunrise)
+          {
+            // keep the brightness reached by the sunrise, as for a user brightness change
+            logic::sunrise_timer.cancel_at_current_brightness();
+            bsp::lampda_print("Sunrise timer disabled");
+          }
+          else
+          {
+            logic::sunset_timer.cancel();
+            bsp::lampda_print("Sunset timer disabled");
+          }
+        }
+        else
+          bsp::lampda_print("Failed to parse disable_sun_timer command");
+        return true;
+      }
+    case common::UserCommand::Type::SetMicSensitivity:
+      {
+        uint8_t sensitivity;
+        if (command.parse_set_mic_sensitivity_command(sensitivity))
+          component::microphone::set_sensitivity(sensitivity);
+        else
+          bsp::lampda_print("Failed to parse set_mic_sensitivity command");
+        return true;
+      }
+    case common::UserCommand::Type::BlipOutput:
+      {
+        uint32_t duration_ms;
+        if (command.parse_blip_output_command(duration_ms))
+        {
+          auto manager = get_context();
+          // skipped if a blip is running: it would replace its remaining time
+          if (manager.state.skipNextFrameEffect == 0)
+            manager.blip(duration_ms);
+        }
+        else
+          bsp::lampda_print("Failed to parse blip_output command");
+        return true;
+      }
+    case common::UserCommand::Type::PrintStatus:
+      {
+        if (command.parse_print_status_command())
+        {
+          if (not logic::behavior::is_in_output_state())
+          {
+            bsp::lampda_print_raw("$stat:OFF\r\n");
+          }
+          else
+          {
+            auto manager = get_context();
+            // single line, easy to parse by an external app: $stat:<group>:<mode>:<ramp>:<brightness>:<F|->
+            bsp::lampda_print_raw("$stat:g%u:m%u:r%u:%c brgt:%u\r\n",
+                                  manager.get_active_group(),
+                                  manager.get_active_mode(),
+                                  manager.get_active_custom_ramp(),
+                                  manager.state.isInFavoriteMockGroup ? 'F' : 'X',
+                                  logic::brightness::get_brightness());
+          }
+        }
+        else
+          bsp::lampda_print("Failed to parse print_status command");
+        return true;
+      }
+    case common::UserCommand::Type::PrintFavorites:
+      {
+        if (command.parse_print_favorites_command())
+        {
+          auto manager = get_context();
+          bsp::lampda_print("favorites set: %u (max %u), in favorite group: %s",
+                            manager.state.usedFavoriteCount,
+                            manager.state.maxFavoriteCount,
+                            manager.state.isInFavoriteMockGroup ? "true" : "false");
+        }
+        else
+          bsp::lampda_print("Failed to parse print_favorites command");
         return true;
       }
 

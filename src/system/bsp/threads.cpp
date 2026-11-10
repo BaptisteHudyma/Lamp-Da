@@ -3,13 +3,13 @@
 
 #include "threads.h"
 
+#include <etl/map.h>
+
 #include "src/system/hal/threads.h"
 
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/utils/utils.h"
-
-#include <map>
 
 namespace lampda {
 namespace bsp {
@@ -22,7 +22,7 @@ const uint32_t button_taskName = utils::hash("button");
 const uint32_t power_taskName = utils::hash("power");
 const uint32_t user_taskName = utils::hash("user");
 const uint32_t taskScheduler_taskName = utils::hash("task_sched");
-const uint32_t sunset_taskName = utils::hash("sunset");
+const uint32_t suntimer_taskName = utils::hash("suntimers");
 const uint32_t ble_cli_taskName = utils::hash("ble_cli");
 const uint32_t print_taskName = utils::hash("print");
 
@@ -42,8 +42,8 @@ const char* const get_name_from_hash(const uint32_t hash)
       return "user";
     case taskScheduler_taskName:
       return "task_sched";
-    case sunset_taskName:
-      return "sunset";
+    case suntimer_taskName:
+      return "sun_timer";
     case ble_cli_taskName:
       return "ble_cli";
     case print_taskName:
@@ -66,29 +66,35 @@ static TaskHandle_t staticHandles[hal::threads::MaxStaticTasks];
 inline static uint32_t handleIndex = 0;
 
 // store all handles
-std::map<uint32_t, TaskHandleStorage> handles;
+etl::map<uint32_t, TaskHandleStorage, 32> handles;
 
 void low_level_start_thread(taskfunc_t taskFunction,
                             const uint32_t taskName,
                             const int priority,
                             const int stackSize,
                             TaskBuffer_t* buffer,
-                            const int startedSuspended)
+                            const bool startSuspended)
 {
   // handle already exists
-  if (handles.find(taskName) != handles.cend())
+  if (handles.find(taskName) != handles.end())
   {
-    bsp::lampda_print("task %s (%d) creation failed: already exists", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("task %s (%lu) creation failed: already exists",
+                      get_name_from_hash(taskName),
+                      static_cast<unsigned long>(taskName));
     return;
   }
   if (stackSize < 255)
   {
-    bsp::lampda_print("task %s (%d) creation failed: stack too small", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("task %s (%lu) creation failed: stack too small",
+                      get_name_from_hash(taskName),
+                      static_cast<unsigned long>(taskName));
     return;
   }
   if (handleIndex >= hal::threads::MaxStaticTasks)
   {
-    bsp::lampda_print("task %s (%d) creation failed: no tasks available", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("task %s (%lu) creation failed: no tasks available",
+                      get_name_from_hash(taskName),
+                      static_cast<unsigned long>(taskName));
     return;
   }
 
@@ -99,15 +105,23 @@ void low_level_start_thread(taskfunc_t taskFunction,
                                           priority,
                                           stackSize,
                                           buffer,
-                                          startedSuspended);
+                                          startSuspended);
   if (createdTaskSize_bytes > 0)
   {
-    handles[taskName] = {staticHandles[handleIndex], createdTaskSize_bytes};
+    const bool wasAdded = handles.insert({taskName, {staticHandles[handleIndex], createdTaskSize_bytes}}).second;
+    if (not wasAdded)
+    {
+      bsp::lampda_print("task %s (%lu) creation failed: map insert fail",
+                        get_name_from_hash(taskName),
+                        static_cast<unsigned long>(taskName));
+      return;
+    }
     handleIndex++;
   }
   else
   {
-    bsp::lampda_print("task %s (%d) creation failed", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print(
+            "task %s (%lu) creation failed", get_name_from_hash(taskName), static_cast<unsigned long>(taskName));
   }
 }
 
@@ -116,13 +130,13 @@ void low_level_start_thread(taskfunc_t taskFunction,
 void start_thread(
         taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t* buffer)
 {
-  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, 1);
+  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, false);
 }
 
 void start_suspended_thread(
         taskfunc_t taskFunction, const uint32_t taskName, const int priority, const int stackSize, TaskBuffer_t* buffer)
 {
-  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, 0);
+  __private::low_level_start_thread(taskFunction, taskName, priority, stackSize, buffer, true);
 }
 
 void yield_this_thread() { hal::threads::HAL_yield(); }
@@ -132,10 +146,12 @@ void suspend_this_thread() { hal::threads::HAL_suspend(); }
 void resume_thread(const uint32_t taskName)
 {
   // handle already exists
-  auto handle = __private::handles.find(taskName);
-  if (handle == __private::handles.cend())
+  const auto& handle = __private::handles.find(taskName);
+  if (handle == __private::handles.end())
   {
-    bsp::lampda_print("ERROR: resume task handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("ERROR: resume task handle \'%s\' (%lu) do not exist",
+                      get_name_from_hash(taskName),
+                      static_cast<unsigned long>(taskName));
     return;
   }
 
@@ -146,10 +162,11 @@ uint16_t get_usage_percent(const uint32_t taskName)
 {
   // handle already exists
   auto handle = __private::handles.find(taskName);
-  if (handle == __private::handles.cend())
+  if (handle == __private::handles.end())
   {
-    bsp::lampda_print(
-            "ERROR: get usage percent handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("ERROR: get usage percent handle \'%s\' (%lu) do not exist",
+                      get_name_from_hash(taskName),
+                      static_cast<unsigned long>(taskName));
     return 0;
   }
 
@@ -161,9 +178,11 @@ uint16_t get_usage_percent(const uint32_t taskName)
 void notify_thread(const uint32_t taskName, int wakeUpEvent)
 {
   auto handle = __private::handles.find(taskName);
-  if (handle == __private::handles.cend())
+  if (handle == __private::handles.end())
   {
-    bsp::lampda_print("ERROR: notify task handle \'%s\' (%d) do not exist", get_name_from_hash(taskName), taskName);
+    bsp::lampda_print("ERROR: notify task handle \'%s\' (%lu) do not exist",
+                      get_name_from_hash(taskName),
+                      static_cast<unsigned long>(taskName));
     return;
   }
   hal::threads::HAL_notify_thread(handle->second.taskHandle, wakeUpEvent);

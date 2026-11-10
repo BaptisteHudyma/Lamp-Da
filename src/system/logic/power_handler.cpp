@@ -2,6 +2,7 @@
 
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/i2c.h"
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/registers.h"
 
 #include "src/system/bsp/pd/power_delivery.h"
@@ -14,12 +15,16 @@
 #include "src/system/component/charger.h"
 
 #include "src/system/common/state_machine.h"
+#include "src/system/common/recovery_trace.h"
+#include "src/system/common/recovery_timing.h"
 
 #include "src/system/logic/alerts.h"
 
+#include <atomic>
 #include <cstdint>
 #include <cassert>
 #include <stdint.h>
+#include <cstdarg>
 
 namespace lampda {
 namespace logic {
@@ -29,8 +34,14 @@ namespace power {
 void power_loop();
 // \references
 
-/// Set to true if the shutdown process is finished cleanly.
-bool _isShutdownCompleted = false;
+/// Set to true by the power thread once the shutdown process is finished cleanly.
+static std::atomic<bool> _isShutdownCompleted {false};
+
+/// VBUS gate fault edges, counted by the interrupt and shown by the power thread (issue #357)
+static std::atomic<uint32_t> _vbusGateFaultCount {0};
+
+/// Maximum time the caller of go_to_shutdown waits for the power thread to complete the shutdown.
+static constexpr uint32_t shutdownCompletionTimeout_ms = 500;
 
 /// Minimum allowed power rail clear delay.
 static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
@@ -38,37 +49,74 @@ static constexpr uint32_t clearPowerRailMinDelay_ms = 10;
 /// In some rare case the rail can take up to 2 seconds to clear itself.
 static constexpr uint32_t clearPowerRailFailureDelay_ms = 3000;
 /// Delay after which the OTG_MODE will auto disable if a disconnection is detected.
-static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 1000;
+/// Long enough for a dual role partner to attach again and swap to sink (about 1.5s, issue #357)
+static constexpr uint32_t otgNoUseTimeToDisconnect_ms = 5000;
 /// Delay after which the OTG_MODE will auto disable if not used.
 static constexpr uint8_t otgTurnOffTimeMinutes = 5;
 /// Delay after which the OTG_MODE will auto disable if not used, in milliseconds.
 static constexpr uint32_t otgNoUseExtBatTimeToDisconnect_ms = 1000 * 60 * otgTurnOffTimeMinutes;
+// after a PD hard reset as a source, time given to the sink to draw current again
+static constexpr uint32_t sourceHardResetGrace_ms = 2000;
+// after a PD hard reset as a source, maximum output voltage above the default one, to restore VBUS
+static constexpr uint32_t sourceHardResetMaxOvervoltage_mV = 500;
+// as a source, maximum rising slew rate of the output voltage: 5V to 20V in 200ms.
+// The 3S battery sits between 9V and 12.6V: a single step from 5V (buck) to 15/20V (boost) under load can collapse
+// VBUS, and the sink detaches (issue #357). The PS_RDY is held until VBUS reaches the contract voltage.
+static constexpr uint32_t otgVoltageRampSlew_mV_per_ms = 75;
+// as a source above 5V, time given to the sink to use the power, from the contract (PS_RDY): a laptop can take a few
+// seconds before drawing current, and the input current measure has a 50mA resolution (issue #357)
+static constexpr uint32_t otgVoltageHighNoUseTimeout_ms = 10000;
 /// Delay after which the STARTUP state will auto switch to error.
-static constexpr uint32_t startupFailTimeout_ms = 3000;
+static constexpr uint32_t startupFailTimeout_ms = common::RecoveryTiming::startup_timeout_ms;
 
 static_assert(clearPowerRailMinDelay_ms < clearPowerRailFailureDelay_ms,
               "clear power rail min activation is less than min unlock delay");
 
-/// true voltage output
+/// true voltage output. Only access it under _outputLimitsMutex
 static uint16_t _outputVoltage_mV = 0;
-/// true current output limit
+/// true current output limit. Only access it under _outputLimitsMutex
 static uint16_t _outputCurrent_mA = 0;
 
-/// temporary voltage
-static uint16_t _temporaryOutputVoltage_mV = 0;
-/// temporary current limits
-static uint16_t _temporaryOutputCurrent_mA = 0;
-/// temporary output timeout time
-static uint32_t _temporaryOutputTimeOut = 0;
+/// A temporary output request, replacing the output limits for a duration
+struct TemporaryOutput
+{
+  uint32_t start_ms = 0;    ///< start time of the request
+  uint32_t duration_ms = 0; ///< duration of the request, 0 if no temporary output is active
+  uint16_t voltage_mV = 0;  ///< temporary voltage
+  uint16_t current_mA = 0;  ///< temporary current limit
+};
+
+/// Requested by the main thread, applied and expired by the power thread.
+/// Only access it under _outputLimitsMutex, so that a request is always seen as a whole.
+static TemporaryOutput _temporaryOutput;
+
+/// Guards all the output limits (_outputVoltage_mV, _outputCurrent_mA, _temporaryOutput): set by the main thread,
+/// applied by the power thread. Not recursive.
+static hal::mutex::hal_mutex_t _outputLimitsMutex;
+/// Initialized at program start: the output limits are written before the power init
+[[maybe_unused]] static const bool _isOutputLimitsMutexInit = (hal::mutex::hal_mutex_init(&_outputLimitsMutex), true);
+
+/// Hold _outputLimitsMutex for the scope
+struct OutputLimitsLock
+{
+  OutputLimitsLock() { hal::mutex::hal_mutex_lock(&_outputLimitsMutex); }
+  ~OutputLimitsLock() { hal::mutex::hal_mutex_unlock(&_outputLimitsMutex); }
+  OutputLimitsLock(const OutputLimitsLock&) = delete;
+  OutputLimitsLock& operator=(const OutputLimitsLock&) = delete;
+};
 
 /// True if battery charging is allowed
 static bool _isChargeEnabled = false;
 
 /// Store the state error description
-static std::string _errorStr = "";
+static etl::string<128> _errorStr = "";
 
 /// True if the state changed to OTG_MODE on it's own (via USB-PD requests).
 static bool _hasAutoSwitchedToOTG = false;
+
+/// True if the OTG_MODE was started by a power role swap requested by the partner (a phone charging the lamp).
+/// The PD state machine owns the source role: the OTG stops when it stops sourcing (swap back, detachment).
+static bool _isOtgFromRoleSwap = false;
 
 /// in this mode, the battery is too low to power the components.
 /// They will be powered through the vbus gate.
@@ -76,8 +124,17 @@ static bool _isInBatteryRecoveryMode = false;
 // This flag is never cleared and allows use to check this case
 static bool _wasStartedInBatteryRecoveryMode = false;
 
+static common::RecoveryTrace recoveryTrace;
+
+static int startup_probe(uint8_t address, common::RecoveryStage stage)
+{
+  const int result = hal::i2c::i2c_check_existence(0, address);
+  recoveryTrace.probe(stage, result, hal::time_ms());
+  return result;
+}
+
 /// Return the error string if set, or "x"
-std::string get_error_string()
+etl::string<128> get_error_string()
 {
   if (_errorStr.empty())
     return "x";
@@ -85,7 +142,7 @@ std::string get_error_string()
 }
 
 /// Set the error message, if not already set.
-void set_error_state_message(const std::string& errorMsg)
+void set_error_state_message(const etl::string<128>& errorMsg)
 {
   if (_errorStr.empty())
   {
@@ -150,7 +207,7 @@ const hal::gpio::DigitalPin fastRoleSwap(hal::gpio::DigitalPin::GPIO::Output_Vbu
 
 // if high, signal an USB fault
 const hal::gpio::DigitalPin usbFault(hal::gpio::DigitalPin::GPIO::Signal_UsbProtectionFault);
-// if high, signal a vbus gate fault
+// active low: low signals a vbus gate fault (high when the gate is open or nominal, verified on hardware)
 const hal::gpio::DigitalPin vbusFault(hal::gpio::DigitalPin::GPIO::Signal_VbusGateFault);
 } // namespace __private
 
@@ -188,33 +245,118 @@ uint32_t get_power_rail_voltage()
   }
 }
 
-void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA)
+/**
+ * \brief Set the OnTheGo output power
+ * \param[in] voltage_mV Voltage to output
+ * \param[in] current_mA Current to output
+ * \param[in] isTargetingPort If true, the current is set for the USB-C port. If false, it is set for the output gate
+ */
+void set_otg_parameters(uint16_t voltage_mV, uint16_t current_mA, const bool isTargetingPort = false)
 {
-  static uint16_t lastOtgVoltage_mV = 0;
-  static uint16_t lastOtgCurrent_mA = 0;
-  if (lastOtgVoltage_mV != voltage_mV || lastOtgCurrent_mA != current_mA)
+  static uint16_t latestOtgVoltage_mV = 0;
+  static uint16_t latestOtgCurrent_mA = 0;
+
+  if (voltage_mV > 20000)
   {
-    lastOtgVoltage_mV = voltage_mV;
-    lastOtgCurrent_mA = current_mA;
+    voltage_mV = 20000;
+  }
+
+  if (isTargetingPort)
+  {
+    // limit value to the minimum of the USB port
+    if (current_mA > physical_constants::maxVbusWireCurrent_mA)
+      current_mA = physical_constants::maxVbusWireCurrent_mA;
+  }
+  else
+  {
+    // limit the value to the minimum of the output gate
+    if (current_mA > physical_constants::maxOutputGateCurrent_mA)
+      current_mA = physical_constants::maxOutputGateCurrent_mA;
+  }
+
+  // only write to charger is the instruction changed
+  if (latestOtgVoltage_mV != voltage_mV || latestOtgCurrent_mA != current_mA)
+  {
+    latestOtgVoltage_mV = voltage_mV;
+    latestOtgCurrent_mA = current_mA;
 
     // ramp up output voltage
-    ::lampda::component::charger::control_OTG(voltage_mV, current_mA);
+    ::lampda::component::charger::control_OTG(latestOtgVoltage_mV, latestOtgCurrent_mA);
   }
+}
+
+/// State of the OTG output voltage ramp, for one OTG session
+struct OtgRampState
+{
+  uint16_t ramped_mV = 0;     ///< voltage applied by the ramp, 0 before the first request (cold start)
+  uint32_t lastUpdate_ms = 0; ///< last ramp update time
+  uint32_t rampStart_ms = 0;  ///< start time of the current ramp, 0 if no ramp is in progress
+};
+static OtgRampState _otgRamp;
+
+/// Clear the ramp state when the OTG output is turned off: the next session starts cold, at the default voltage
+void reset_otg_ramp() { _otgRamp = OtgRampState {}; }
+
+/**
+ * \brief Limit the rising slew rate of the OTG output voltage
+ * \param[in] target_mV The voltage to reach
+ * \return The voltage to apply now: a decrease is applied directly, an increase is ramped
+ */
+uint16_t ramp_otg_voltage(const uint16_t target_mV)
+{
+  uint16_t& ramped_mV = _otgRamp.ramped_mV;
+  uint32_t& lastUpdate_ms = _otgRamp.lastUpdate_ms;
+  uint32_t& rampStart_ms = _otgRamp.rampStart_ms;
+  const uint32_t now = hal::time_ms();
+
+  if (target_mV <= ramped_mV or ramped_mV == 0)
+  {
+    // decrease, or cold start at the default voltage
+    if (target_mV != ramped_mV)
+      bsp::lampda_print(
+              "OTG voltage: %umV -> %umV", static_cast<unsigned>(ramped_mV), static_cast<unsigned>(target_mV));
+    ramped_mV = target_mV;
+    rampStart_ms = 0;
+  }
+  else
+  {
+    if (rampStart_ms == 0)
+    {
+      rampStart_ms = now;
+      bsp::lampda_print(
+              "OTG voltage ramp: %umV -> %umV", static_cast<unsigned>(ramped_mV), static_cast<unsigned>(target_mV));
+    }
+    const uint32_t step_mV = (now - lastUpdate_ms) * otgVoltageRampSlew_mV_per_ms;
+    ramped_mV = static_cast<uint16_t>(min<uint32_t>(target_mV, ramped_mV + step_mV));
+    if (ramped_mV == target_mV)
+    {
+      bsp::lampda_print("OTG voltage ramp done in %lums", static_cast<unsigned long>(now - rampStart_ms));
+      rampStart_ms = 0;
+    }
+  }
+  lastUpdate_ms = now;
+  return ramped_mV;
 }
 
 void handle_clear_power_rails()
 {
+  // the main loop can set a new target meanwhile: only skip to the target this pass was run for
+  const uint32_t stateGeneration = __private::powerMachine.get_state_generation();
+
   s_isOutputModeReady = false;
   if (_isInBatteryRecoveryMode)
   {
     // all is clear, skip to next step
     __private::dischargeVbus.set_high(false);
-    __private::powerMachine.skip_timeout();
+    __private::powerMachine.skip_timeout(stateGeneration);
     return;
   }
 
-  // dont suspend on OTG
-  if (__private::powerMachine.after_timeout_state() != PowerStates::OTG_MODE)
+  // PD only stops for the output mode (go_to_output_mode also suspends it before switching).
+  // Never suspend it on the way to the charging mode: on boot, the state machine already negotiates in IDLE, and a
+  // suspend/resume cycle restarts it as disconnected while the source keeps the contract it was negotiating, with the
+  // sink unable to recover it (issue #633). Do not suspend it on OTG either.
+  if (__private::powerMachine.after_timeout_state() == PowerStates::OUTPUT_VOLTAGE_MODE)
     ::lampda::bsp::powerDelivery::suspend_pd_state_machine();
 
   // disable all gates
@@ -233,6 +375,7 @@ void handle_clear_power_rails()
 
   // disable OTG if needed
   set_otg_parameters(0, 0);
+  reset_otg_ramp();
 
   // wait at least a little bit
   const auto powerRailVoltage_mv = get_power_rail_voltage();
@@ -242,7 +385,7 @@ void handle_clear_power_rails()
   {
     __private::dischargeVbus.set_high(false);
     // all is clear, skip to next step
-    __private::powerMachine.skip_timeout();
+    __private::powerMachine.skip_timeout(stateGeneration);
     return;
   }
   else // discharge power rail
@@ -265,29 +408,140 @@ static uint32_t voltageHighRaisedTime =
         UINT32_MAX;                   ///< store the time at which the OTH mode detect high voltage on VBUS
 static bool isInOtgModeForce = false; ///< Set to true when the PD machne was forced to source already
 
+/**
+ * Battery mode, partner powering VBUS (issue #357).
+ * A dual role partner with a 3A pull-up to 3.3V (4.7k, laptops) reads our Rp in parallel with the board permanent Rd
+ * under its Rd threshold: it takes the lamp for a sink, and powers VBUS. No CC setting can fix it (the board Rd is
+ * hardware), so the lamp attaches as a sink, without using that power, and asks for the source role (power role swap).
+ */
+static bool _isSinkingToSwap = false;                   ///< attached (or attaching) as a sink, to ask for a swap
+static uint32_t _partnerVbusSince_ms = UINT32_MAX;      ///< time since VBUS is present without our output
+static uint32_t _sinkToSwapLastAttached_ms = 0;         ///< last time the sink was attached, or the sink phase started
+static constexpr uint32_t partnerVbusMin_mV = 4000;     ///< partner VBUS detection threshold
+static constexpr uint32_t partnerVbusDebounce_ms = 500; ///< also lets our own VBUS decay after a detachment
+static constexpr uint32_t sinkToSwapNoAttachTimeout_ms = 2000; ///< back to source if no source partner attaches
+static uint32_t _sinkToSwapLastRequest_ms = 0;                 ///< last swap request (the first one is at the contract)
+static uint8_t _sinkToSwapRetries = 0;                         ///< swap requests made again, while attached
+static bool _hasSourceRoleSwapFailed = false;             ///< the partner keeps the source role: leave battery mode
+static constexpr uint32_t sinkToSwapRetryDelay_ms = 2000; ///< delay between two swap requests
+static constexpr uint8_t sinkToSwapMaxRetries = 3;        ///< then the battery mode ends
+
+/// leave the sink phase. The PD force source mode is set by the caller
+void stop_sinking_to_swap()
+{
+  _isSinkingToSwap = false;
+  _partnerVbusSince_ms = UINT32_MAX;
+  _sinkToSwapRetries = 0;
+  ::lampda::bsp::powerDelivery::want_source_role_by_swap(false);
+}
+
+/**
+ * \brief Battery mode: detect a partner powering VBUS, then attach as a sink and ask for the source role
+ * \return true when the port must stay off
+ */
+bool handle_source_role_by_swap()
+{
+  namespace pd = ::lampda::bsp::powerDelivery;
+  const uint32_t now = hal::time_ms();
+
+  if (not _isSinkingToSwap)
+  {
+    // our output is off, but VBUS is there: the partner powers it
+    const bool isPartnerVbus = not pd::is_switching_to_otg() and not bsp::powergates::is_vbus_gate_enabled() and
+                               pd::get_vbus_voltage() > static_cast<int>(partnerVbusMin_mV);
+    if (not isPartnerVbus)
+    {
+      _partnerVbusSince_ms = UINT32_MAX;
+      return false;
+    }
+    if (_partnerVbusSince_ms == UINT32_MAX)
+      _partnerVbusSince_ms = now;
+    if (now - _partnerVbusSince_ms < partnerVbusDebounce_ms)
+      return false;
+
+    bsp::lampda_print("battery mode: the partner powers VBUS, attach as a sink and ask for the source role");
+    _isSinkingToSwap = true;
+    _sinkToSwapLastAttached_ms = now;
+    _sinkToSwapLastRequest_ms = now;
+    _sinkToSwapRetries = 0;
+    pd::want_source_role_by_swap(true);
+    pd::force_set_to_source_mode(false);
+    return true;
+  }
+
+  // swap accepted: the PD stack turns our supply on, the partner waits for our VBUS
+  if (pd::is_switching_to_otg())
+  {
+    bsp::lampda_print("battery mode: source role swap accepted");
+    stop_sinking_to_swap();
+    // a swap back is refused, and a detachment goes back to waiting for a sink
+    pd::force_set_to_source_mode(true);
+    return false;
+  }
+
+  // attached: swap requested, refused or failed. Ask again, then give up: staying a sink in battery mode, without
+  // using the partner power, does not match what the lamp shows
+  if (pd::is_attached_as_sink())
+  {
+    _sinkToSwapLastAttached_ms = now;
+    if (now - _sinkToSwapLastRequest_ms >= sinkToSwapRetryDelay_ms)
+    {
+      _sinkToSwapLastRequest_ms = now;
+      if (_sinkToSwapRetries >= sinkToSwapMaxRetries)
+      {
+        bsp::lampda_print("battery mode: the partner keeps the source role, end of the battery mode");
+        _hasSourceRoleSwapFailed = true;
+      }
+      else
+      {
+        _sinkToSwapRetries++;
+        pd::retry_source_role_swap();
+      }
+    }
+    return true;
+  }
+
+  // no source partner (anymore): back to source
+  if (now - _sinkToSwapLastAttached_ms > sinkToSwapNoAttachTimeout_ms)
+  {
+    bsp::lampda_print("battery mode: no partner as a source, back to the source role");
+    stop_sinking_to_swap();
+    pd::force_set_to_source_mode(true);
+  }
+  return true;
+}
+
 void handle_charging_mode()
 {
   // resume PD state machine
   ::lampda::bsp::powerDelivery::resume_pd_state_machine();
-  // enable vbus path
-  ::lampda::bsp::powergates::enable_vbus_gate();
 
-#if 0 // TODO #134
-// OTG requested, switch to OTG mode
-  if (::lampda::bsp::powerDelivery::is_switching_to_otg() and component::battery::is_battery_usable_as_power_source())
+  // A partner charging the lamp (a phone) can ask for a power role swap, to be powered by the lamp instead.
+  // Never in battery recovery mode: the board runs from VBUS, and the old source turns it off during the swap
+  const bool canPowerPartner = not _isInBatteryRecoveryMode and
+                               component::battery::is_battery_usable_as_power_source() and
+                               logic::alerts::manager.can_use_usb_port();
+  ::lampda::bsp::powerDelivery::allow_otg(canPowerPartner);
+
+  // swap accepted: the old source turned its VBUS off, and waits for ours (issue #357)
+  if (canPowerPartner and ::lampda::bsp::powerDelivery::is_switching_to_otg())
   {
-    // disable balancing
+    bsp::lampda_print("power role swap: powering the partner");
+    ::lampda::component::charger::set_enable_charge(false);
     ::lampda::bsp::balancer::enable_balancing(false);
     timeSinceOTGNoCurrentUse = hal::time_ms();
     voltageHighRaisedTime = UINT32_MAX;
     isInOtgModeForce = false;
 
-    // start otg
+    // start otg, without the rails clearing: VBUS is already off, and the PS_RDY waits for it
     _hasAutoSwitchedToOTG = true;
+    _isOtgFromRoleSwap = true;
     __private::powerMachine.set_state(PowerStates::OTG_MODE);
     return;
   }
-#endif
+
+  // enable vbus path
+  ::lampda::bsp::powergates::enable_vbus_gate();
 
   if (::lampda::bsp::powergates::is_vbus_gate_enabled())
   {
@@ -295,9 +549,6 @@ void handle_charging_mode()
     // balance while we have power on vbus
     ::lampda::bsp::balancer::enable_balancing(true);
   }
-
-  // allow OTG in charge mode only
-  ::lampda::bsp::powerDelivery::allow_otg(true);
 
   // charge OR idle and do nothing (end of charge)
 }
@@ -312,20 +563,34 @@ void handle_output_voltage_mode()
 
   const auto powerRailVoltage_mv = get_power_rail_voltage();
 
+  // snapshot the output limits, and expire the temporary output request, under the lock
+  TemporaryOutput temporaryOutput;
+  uint16_t outputVoltage_mV;
+  uint16_t outputCurrent_mA;
+  {
+    OutputLimitsLock lock;
+    // elapsed time comparison is safe across a time_ms wrap. Clear an expired request, so that it can never come back
+    if (_temporaryOutput.duration_ms != 0 and
+        (hal::time_ms() - _temporaryOutput.start_ms) >= _temporaryOutput.duration_ms)
+      _temporaryOutput.duration_ms = 0;
+    temporaryOutput = _temporaryOutput;
+    outputVoltage_mV = _outputVoltage_mV;
+    outputCurrent_mA = _outputCurrent_mA;
+  }
+
   bool isVoltageOk = false;
   // if we are in temporary output mode, use temporary limits
-  if (hal::time_ms() < _temporaryOutputTimeOut)
+  if (temporaryOutput.duration_ms != 0)
   {
-    set_otg_parameters(_temporaryOutputVoltage_mV, _temporaryOutputCurrent_mA);
+    set_otg_parameters(temporaryOutput.voltage_mV, temporaryOutput.current_mA);
     isVoltageOk =
             (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
              // do not check the upper bound, this is a special DANGEROUS case
-             powerRailVoltage_mv <= static_cast<uint32_t>(_temporaryOutputVoltage_mV * voltageGateHigherMultiplier));
+             powerRailVoltage_mv <= static_cast<uint32_t>(temporaryOutput.voltage_mV * voltageGateHigherMultiplier));
   }
   else
   {
-    _temporaryOutputTimeOut = 0;
-    set_otg_parameters(_outputVoltage_mV, _outputCurrent_mA);
+    set_otg_parameters(outputVoltage_mV, outputCurrent_mA);
     isVoltageOk =
             (powerRailVoltage_mv >= static_cast<uint32_t>(stripInputMinVoltage_mV * voltageGateLowerMultiplier) and
              powerRailVoltage_mv <= static_cast<uint32_t>(stripInputMaxVoltage_mV * voltageGateHigherMultiplier));
@@ -344,9 +609,9 @@ void handle_output_voltage_mode()
   else
   {
     if (s_isOutputModeReady)
-      bsp::lampda_print("voltage is not in required range, disabling output. Actual %dmV. Required %dmV",
-                        powerRailVoltage_mv,
-                        _outputVoltage_mV);
+      bsp::lampda_print("voltage is not in required range, disabling output. Actual %lumV. Required %dmV",
+                        static_cast<unsigned long>(powerRailVoltage_mv),
+                        outputVoltage_mV);
     s_isOutputModeReady = false;
 
     ::lampda::bsp::powergates::disable_gates();
@@ -355,6 +620,36 @@ void handle_output_voltage_mode()
 
 void handle_otg_mode()
 {
+  // PD hard reset as a source: VBUS must drop to 0V during the recovery time, then come back.
+  // Keeping it makes the PD sinks send hard resets again, until they give up on PD (issue #357).
+  // Only the port is cut: the OTG output stays on, to restore VBUS in time
+  static uint32_t lastSourceHardReset_ms = 0;
+  const bool isSourceHardResetting = ::lampda::bsp::powerDelivery::is_source_hard_resetting();
+  if (isSourceHardResetting)
+    lastSourceHardReset_ms = hal::time_ms();
+  const bool isAfterSourceHardReset = hal::time_ms() - lastSourceHardReset_ms < sourceHardResetGrace_ms;
+  // no current is expected while VBUS is cut, and the sink renegotiates after: this is not an inactivity
+  if (isSourceHardResetting or isAfterSourceHardReset)
+  {
+    timeSinceOTGNoCurrentUse = hal::time_ms();
+    voltageHighRaisedTime = UINT32_MAX;
+  }
+
+  // After a power role swap, the PD state machine stops sourcing on a swap back or on a detachment (not on a hard
+  // reset: it restores VBUS after it). Cut VBUS now: on a swap back, the partner waits for it to be off.
+  // Do not suspend the PD state machine or change its role: the swap back is in progress
+  if (_isOtgFromRoleSwap and not isSourceHardResetting and not isAfterSourceHardReset and
+      not ::lampda::bsp::powerDelivery::is_switching_to_otg())
+  {
+    bsp::lampda_print("power role swap: partner released the power");
+    ::lampda::bsp::powergates::disable_gates();
+    set_otg_parameters(0, 0);
+    reset_otg_ramp();
+    _isOtgFromRoleSwap = false;
+    go_to_charger_mode();
+    return;
+  }
+
   bool otgNoActivity = false;
   const bool isAutoOTGMode = _hasAutoSwitchedToOTG;
 
@@ -369,14 +664,21 @@ void handle_otg_mode()
   {
     timeSinceOTGCurrentUse = hal::time_ms();
 
-    if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
+    // count from the contract: during the voltage transition, the sink is not allowed to use the power yet
+    if (not ::lampda::bsp::powerDelivery::is_source_contract_ready())
     {
-      bsp::lampda_print("OTG mode: Voltage high registered: %dmv", vbusVoltage_mv);
+      voltageHighRaisedTime = UINT32_MAX;
+    }
+    else if (vbusVoltage_mv > 5500 and voltageHighRaisedTime == UINT32_MAX)
+    {
+      bsp::lampda_print("OTG mode: Voltage high registered: %lumv", static_cast<unsigned long>(vbusVoltage_mv));
       voltageHighRaisedTime = hal::time_ms();
     }
 
     // if no current use since a timing, stop otg
-    const uint32_t otgNonuseTimeout = isAutoOTGMode ? otgNoUseTimeToDisconnect_ms : otgNoUseExtBatTimeToDisconnect_ms;
+    // after a power role swap, the partner may not use the power right away: give it the external battery delay
+    const uint32_t otgNonuseTimeout = (isAutoOTGMode and not _isOtgFromRoleSwap) ? otgNoUseTimeToDisconnect_ms :
+                                                                                   otgNoUseExtBatTimeToDisconnect_ms;
     if (hal::time_ms() - timeSinceOTGNoCurrentUse > otgNonuseTimeout)
     {
       otgNoActivity = true;
@@ -384,7 +686,7 @@ void handle_otg_mode()
     }
 
     // voltage negociated but not used
-    if (voltageHighRaisedTime != UINT32_MAX and hal::time_ms() - voltageHighRaisedTime > 1000)
+    if (voltageHighRaisedTime != UINT32_MAX and hal::time_ms() - voltageHighRaisedTime > otgVoltageHighNoUseTimeout_ms)
     {
       otgNoActivity = true;
       bsp::lampda_print("no OTG activity and voltage high, shutdown");
@@ -409,17 +711,21 @@ void handle_otg_mode()
   const bool canUseOtg = true; //(not isAutoOTGMode) or bsp::powerDelivery::is_switching_to_otg();
 
   // end of OTG, switch to charger
-  if (otgNoActivity or not canUseOtg or
+  if (otgNoActivity or not canUseOtg or _hasSourceRoleSwapFailed or
       // blocking alerts for OTG use
       not component::battery::is_battery_usable_as_power_source() or not logic::alerts::manager.can_use_usb_port())
   {
     // reset pd machine
+    stop_sinking_to_swap();
+    _hasSourceRoleSwapFailed = false;
     ::lampda::bsp::powerDelivery::force_set_to_source_mode(false);
     ::lampda::bsp::powerDelivery::suspend_pd_state_machine();
 
     // temporary suspend
     ::lampda::bsp::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
+    reset_otg_ramp();
+    _isOtgFromRoleSwap = false;
 
     // safe switch (may not be needed)
     go_to_charger_mode();
@@ -452,9 +758,46 @@ void handle_otg_mode()
   if (not requestedOtg.is_otg_requested())
     return;
 
+  if (isSourceHardResetting)
+  {
+    // cut the port, and go back to the default output meanwhile (the contract may have been at a higher voltage)
+    ::lampda::bsp::powergates::disable_gates();
+    set_otg_parameters(ramp_otg_voltage(defaultOTG.requestedVoltage_mV), defaultOTG.requestedCurrent_mA, true);
+    return;
+  }
+
   // ramp up output voltage
   // then unlock the vbus gate
-  set_otg_parameters(requestedOtg.requestedVoltage_mV, requestedOtg.requestedCurrent_mA);
+  set_otg_parameters(ramp_otg_voltage(requestedOtg.requestedVoltage_mV), requestedOtg.requestedCurrent_mA, true);
+
+  // the partner may power VBUS itself: get the source role by a swap (not after a partner role swap: it is the source)
+  if (not _isOtgFromRoleSwap and handle_source_role_by_swap())
+  {
+    ::lampda::bsp::powergates::disable_gates();
+    return;
+  }
+
+  // A compliant source drives VBUS only once a sink is attached (Rd seen by the PD stack): a dual role partner (laptop,
+  // phone) treats a VBUS present before the attachment as a fault, and never attaches (issue #357).
+  // The OTG output stays on behind the gate, to give VBUS quickly on attachment (tVBUSon).
+  // Devices without Rd (legacy USB-A to C cables) are not powered anymore.
+  if (not ::lampda::bsp::powerDelivery::is_switching_to_otg())
+  {
+    ::lampda::bsp::powergates::disable_gates();
+    return;
+  }
+
+  // after a hard reset, or after a detachment from a higher voltage contract, the output may still be above the
+  // voltage to give: never give it to the sink
+  // (the charger output measure: with the gate open, the VBUS measure is the port side)
+  const bool isVbusGateOpening = not ::lampda::bsp::powergates::is_vbus_gate_enabled();
+  if ((isAfterSourceHardReset or isVbusGateOpening) and
+      (not state.areMeasuresOk or
+       state.powerRail_mV > requestedOtg.requestedVoltage_mV + sourceHardResetMaxOvervoltage_mV))
+  {
+    ::lampda::bsp::powergates::disable_gates();
+    return;
+  }
 
   // allow reverse current flow
   __private::vbusDirection.set_high(true);
@@ -487,19 +830,17 @@ void handle_startup()
 
   // if this is false, it's a special case where battery voltage is too low to power the components
   // or the components are dead...
-  if (hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress) != 0
-  // TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
-      || hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress) != 0
-#endif
-  )
+  if (startup_probe(hal::i2c::chargeI2cAddress, common::RecoveryStage::ChargerProbe) != 0 ||
+      startup_probe(hal::i2c::batteryBalancerI2cAddress, common::RecoveryStage::BalancerProbe) != 0)
   {
     const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
-    const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not ::lampda::bsp::powerDelivery::is_power_available();
+    const bool isVbusUnpowered = timeSinceStateSwitch > 200 and not component::charger::is_vbus_signal_detected();
+    const bool shouldUseRecoveryProbeWindow = _isInBatteryRecoveryMode or not isVbusUnpowered;
 
     // no vbus, or
-    if (timeSinceStateSwitch > startupFailTimeout_ms * 0.3 or isVbusUnpowered)
+    if (common::RecoveryTiming::probe_timed_out(timeSinceStateSwitch, shouldUseRecoveryProbeWindow) or isVbusUnpowered)
     {
+      recoveryTrace.once(common::RecoveryStage::StartupRejected, isVbusUnpowered ? 1 : 2, hal::time_ms());
       logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
       if (isVbusUnpowered)
       {
@@ -519,6 +860,7 @@ void handle_startup()
       // Recover strategy :
       // unlock the power gate and check that charger and balancer are detected.
       ::lampda::bsp::powergates::enable_vbus_gate_DIRECT();
+      recoveryTrace.once(common::RecoveryStage::VbusGateRequested, 0, hal::time_ms());
     }
     _isInBatteryRecoveryMode = true;
     _wasStartedInBatteryRecoveryMode = true;
@@ -533,6 +875,7 @@ void handle_startup()
 
   // charging component, setup first
   const bool chargerSuccess = ::lampda::component::charger::setup();
+  recoveryTrace.once(common::RecoveryStage::ChargerSetup, chargerSuccess ? 0 : 1, hal::time_ms());
   if (!chargerSuccess)
   {
     set_error_state_message("\n\t- Init charger component failed");
@@ -546,6 +889,7 @@ void handle_startup()
   if (_isInBatteryRecoveryMode)
   {
     ::lampda::component::charger::set_enable_charge(true);
+    recoveryTrace.once(common::RecoveryStage::ChargeRequested, 0, hal::time_ms());
 
     // wait a bit
     const auto& state = ::lampda::component::charger::get_state();
@@ -554,7 +898,7 @@ void handle_startup()
     if (not isCharging)
       return;
     const uint32_t timeSinceStateSwitch = hal::time_ms() - __private::powerMachine.get_state_raised_time();
-    if (timeSinceStateSwitch < startupFailTimeout_ms * 0.8)
+    if (timeSinceStateSwitch < common::RecoveryTiming::recovery_ready_ms)
       return;
 
     if (not ::lampda::bsp::powerDelivery::is_power_available())
@@ -563,14 +907,13 @@ void handle_startup()
       return;
     }
     // This delay is to let the time for the balancer to boot.
-    hal::delay_ms(250);
+    hal::delay_ms(common::RecoveryTiming::balancer_settle_ms);
   }
   // Final point: We will never pass through here again !
 
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
   if (not ::lampda::bsp::balancer::init())
   {
+    recoveryTrace.once(common::RecoveryStage::BalancerSetupFailed, 1, hal::time_ms());
     if (_isInBatteryRecoveryMode)
     {
       set_error_state_message(
@@ -584,7 +927,6 @@ void handle_startup()
     // failed initialisation, skip
     return;
   }
-#endif
 
   /*
    * All good !
@@ -656,7 +998,9 @@ void state_machine_behavior()
       break;
     // called when system will be powering down
     case PowerStates::SHUTDOWN:
-      handle_shutdown();
+      // shutdown the components only once, the power thread then idles (see power_loop)
+      if (not _isShutdownCompleted)
+        handle_shutdown();
       break;
     default:
       {
@@ -667,10 +1011,14 @@ void state_machine_behavior()
   }
 }
 
-void switch_state(const PowerStates newState)
+/// Switch to \p newState through the rails clearing. Return false if the machine is in error.
+/// The error check and the switch are atomic: an error raised by the power thread is never overwritten
+bool switch_state(const PowerStates newState)
 {
-  powerMachine.set_state(
-          PowerStates::CLEAR_POWER_RAILS, static_cast<uint32_t>(clearPowerRailFailureDelay_ms * 1.5f), newState);
+  return powerMachine.set_state_unless(PowerStates::ERROR,
+                                       PowerStates::CLEAR_POWER_RAILS,
+                                       static_cast<uint32_t>(clearPowerRailFailureDelay_ms * 1.5f),
+                                       newState);
 }
 
 bool can_switch_states() { return powerMachine.get_state() != PowerStates::ERROR; }
@@ -692,20 +1040,17 @@ bool go_to_output_mode()
     ::lampda::bsp::powerDelivery::allow_otg(false);
     set_otg_parameters(0, 0);
 
-    __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
-    return true;
+    return __private::switch_state(PowerStates::OUTPUT_VOLTAGE_MODE);
   }
   return false;
 }
 
 bool go_to_charger_mode()
 {
-  // TODO: and other checks
   if (__private::can_switch_states())
   {
     ::lampda::bsp::powerDelivery::force_set_to_source_mode(false);
-    __private::switch_state(PowerStates::CHARGING_MODE);
-    return true;
+    return __private::switch_state(PowerStates::CHARGING_MODE);
   }
 
   return false;
@@ -722,10 +1067,12 @@ bool go_to_otg_mode()
     timeSinceOTGNoCurrentUse = hal::time_ms();
     voltageHighRaisedTime = UINT32_MAX;
     isInOtgModeForce = false;
+    stop_sinking_to_swap();
+    _hasSourceRoleSwapFailed = false;
     ::lampda::bsp::powerDelivery::allow_otg(true);
     _hasAutoSwitchedToOTG = false;
-    __private::switch_state(PowerStates::OTG_MODE);
-    return true;
+    _isOtgFromRoleSwap = false;
+    return __private::switch_state(PowerStates::OTG_MODE);
   }
 
   return false;
@@ -735,8 +1082,7 @@ bool go_to_idle()
 {
   if (__private::can_switch_states())
   {
-    __private::switch_state(PowerStates::IDLE);
-    return true;
+    return __private::switch_state(PowerStates::IDLE);
   }
 
   return false;
@@ -747,7 +1093,26 @@ bool go_to_shutdown()
   // no need to check if we can switch case in this case
   __private::powerMachine.set_state(PowerStates::SHUTDOWN);
 
-  handle_shutdown();
+  // power thread never started: nothing can run concurrently, shutdown from here
+  if (not is_setup())
+  {
+    handle_shutdown();
+    return _isShutdownCompleted;
+  }
+
+  // the power thread owns the power components: let it run the shutdown, then wait for it
+  const uint32_t startTime = hal::time_ms();
+  while (not _isShutdownCompleted)
+  {
+    if (hal::time_ms() - startTime > shutdownCompletionTimeout_ms)
+    {
+      // power thread is stuck: shutdown from here, as a last resort
+      bsp::lampda_print("power thread did not complete the shutdown, forcing it");
+      handle_shutdown();
+      break;
+    }
+    hal::delay_ms(1);
+  }
 
   return _isShutdownCompleted;
 }
@@ -773,13 +1138,15 @@ void set_output_voltage_mv(const uint16_t outputVoltage_mV)
     }
   }
 
-  _temporaryOutputTimeOut = 0;
+  OutputLimitsLock lock;
+  _temporaryOutput.duration_ms = 0;
   _outputVoltage_mV = outputVoltage_mV;
 }
 
 void set_output_max_current_mA(const uint16_t outputCurrent_mA)
 {
-  _temporaryOutputTimeOut = 0;
+  OutputLimitsLock lock;
+  _temporaryOutput.duration_ms = 0;
   _outputCurrent_mA = outputCurrent_mA;
 }
 
@@ -794,10 +1161,12 @@ void set_temporary_output(const uint16_t outputVoltage_mV, const uint16_t output
     }
   }
 
-  // set output timeout
-  _temporaryOutputTimeOut = hal::time_ms() + timeout;
-  _temporaryOutputVoltage_mV = outputVoltage_mV;
-  _temporaryOutputCurrent_mA = outputCurrent_mA;
+  // replace the request as a whole
+  OutputLimitsLock lock;
+  _temporaryOutput.start_ms = hal::time_ms();
+  _temporaryOutput.duration_ms = timeout;
+  _temporaryOutput.voltage_mV = outputVoltage_mV;
+  _temporaryOutput.current_mA = outputCurrent_mA;
 }
 
 // charge mode
@@ -807,14 +1176,87 @@ bool enable_charge(const bool enable)
   return true;
 }
 
-std::string get_state()
+etl::string<32> get_state()
 {
-  return std::string(PowerStatesStr[static_cast<size_t>(__private::powerMachine.get_state())]);
+  return etl::string<32>(PowerStatesStr[static_cast<size_t>(__private::powerMachine.get_state())]);
 }
 
 bool is_in_output_mode() { return __private::powerMachine.get_state() == PowerStates::OUTPUT_VOLTAGE_MODE; }
 bool is_in_otg_mode() { return __private::powerMachine.get_state() == PowerStates::OTG_MODE; }
 bool was_started_in_battery_recovery() { return _wasStartedInBatteryRecoveryMode; }
+bool is_in_in_battery_recovery() { return _isInBatteryRecoveryMode; }
+
+template<typename... Args> void report(const char* format, Args... values)
+{
+  bsp::lampda_print(format, values...);
+  hal::delay_ms(15);
+}
+
+void show_recovery_diagnostics()
+{
+  report("--- recovery diagnostics (bounded recovery timing) ---");
+  report("state: %s | error: %s", get_state().c_str(), get_error_string().c_str());
+  report("recovery attempted: %d | startup timeout: %lu ms",
+         _wasStartedInBatteryRecoveryMode,
+         static_cast<unsigned long>(startupFailTimeout_ms));
+  report("probe cutoffs: initial=%lu ms recovery=%lu ms | balancer settle=%lu ms",
+         static_cast<unsigned long>(common::RecoveryTiming::initial_probe_timeout_ms),
+         static_cast<unsigned long>(common::RecoveryTiming::recovery_ready_ms),
+         static_cast<unsigned long>(common::RecoveryTiming::balancer_settle_ms));
+  report("vbus detected: %d | PD power available: %d | vbus mV: %d",
+         component::charger::is_vbus_signal_detected(),
+         bsp::powerDelivery::is_power_available(),
+         bsp::powerDelivery::get_vbus_voltage());
+  report("gate bookkeeping (not pin feedback): vbus=%d output=%d",
+         bsp::powergates::is_vbus_gate_enabled(),
+         bsp::powergates::is_power_gate_enabled());
+  // These are the same address-only probes used by debug i2c. No register payload is sent.
+  const int charger = hal::i2c::i2c_check_existence(0, hal::i2c::chargeI2cAddress);
+  const int balancer = hal::i2c::i2c_check_existence(0, hal::i2c::batteryBalancerI2cAddress);
+  report("live I2C: charger addr=0x%02X result=%d | balancer addr=0x%02X result=%d (0=ACK)",
+         hal::i2c::chargeI2cAddress,
+         charger,
+         hal::i2c::batteryBalancerI2cAddress,
+         balancer);
+  const auto& charge = component::charger::get_state();
+  report("charger cached status: %s | measures valid: %d | charging: %d | effective: %d",
+         charge.get_status_str().c_str(),
+         charge.areMeasuresOk,
+         charge.is_charging(),
+         charge.is_effectivly_charging());
+  report("balancer cached measures valid: %d (invalid means cell voltages unknown)",
+         bsp::balancer::get_status().is_valid());
+  report("startup probe counts: charger=%lu balancer=%lu (short-circuit evaluation retained)",
+         static_cast<unsigned long>(recoveryTrace.charger_probes()),
+         static_cast<unsigned long>(recoveryTrace.balancer_probes()));
+  show_recovery_trace();
+  report("--- end recovery diagnostics ---");
+}
+
+void show_recovery_trace()
+{
+  const uint32_t count = recoveryTrace.size();
+  const char* names[] = {"charger_probe",
+                         "balancer_probe",
+                         "vbus_gate_requested",
+                         "startup_rejected",
+                         "charger_setup",
+                         "charge_requested",
+                         "balancer_setup_failed"};
+
+  for (uint32_t i = 0; i < count; ++i)
+  {
+    const auto& event = recoveryTrace.event(i);
+    bsp::lampda_print("trace boot_ms=%lu stage=%s result=%d",
+                      static_cast<unsigned long>(event.time_ms),
+                      names[static_cast<uint8_t>(event.stage)],
+                      event.result);
+    hal::delay_ms(15);
+  }
+  bsp::lampda_print("trace omitted: %lu | startup_rejected: 1=no power, 2=probe timeout",
+                    static_cast<unsigned long>(recoveryTrace.omitted()));
+  hal::delay_ms(15);
+}
 
 static bool isSetup = false;
 
@@ -827,12 +1269,22 @@ void init()
   // detect shorts in the USB port
   __private::usbFault.attach_callback(
           []() {
-            // usb port alert detected
-            logic::alerts::manager.raise(logic::alerts::Type::USB_PORT_SHORT);
+            // usb port alert detected. Interrupt context: only signal it, the alert is raised by a thread
+            logic::alerts::signal_usb_port_fault();
           },
           hal::gpio::DigitalPin::Interrupt::kFallingEdge);
 
   /// TODO: issue #326 handle the VBUS gate fault cleanly
+#ifndef LMBD_SIMULATION
+  // the gate cuts VBUS on a fault (seen at 20V with a laptop): count them, the power thread shows them (issue #357)
+  __private::vbusFault.set_pin_mode(hal::gpio::DigitalPin::Mode::kInput);
+  __private::vbusFault.attach_callback(
+          []() {
+            // interrupt context: only count
+            _vbusGateFaultCount.fetch_add(1);
+          },
+          hal::gpio::DigitalPin::Interrupt::kFallingEdge);
+#endif
 #ifdef LMBD_SIMULATION
   __private::vbusFault.attach_callback(
           []() {
@@ -849,7 +1301,7 @@ void init()
 // TODO issue #132 remove when the mock components will be running
 #ifndef LMBD_SIMULATION
   bool isSuccessful = true;
-  std::string errorStr = "";
+  etl::string<128> errorStr = "";
 
   // at the very last, power delivery
   const bool pdSuccess = ::lampda::bsp::powerDelivery::setup();
@@ -888,11 +1340,43 @@ void power_loop()
   // kick power watchdog
   hal::registers::kick_watchdog(POWER_WATCHDOG_ID);
 
+  // raise the alerts signaled by the interrupts (USB port fault), before the power decisions
+  logic::alerts::process_interrupt_signals();
+
+  // show the VBUS gate faults (issue #357)
+  {
+    static uint32_t shownVbusGateFaults = 0;
+    const uint32_t vbusGateFaults = _vbusGateFaultCount.load();
+    if (vbusGateFaults != shownVbusGateFaults)
+    {
+      shownVbusGateFaults = vbusGateFaults;
+      bsp::lampda_print("VBUS gate fault signaled (count %lu, fault pin %s, gate %s)",
+                        static_cast<unsigned long>(vbusGateFaults),
+                        __private::vbusFault.is_high() ? "high" : "LOW",
+                        ::lampda::bsp::powergates::is_vbus_gate_enabled() ? "enabled" : "disabled");
+    }
+  }
+
   // fist action, update power gate status
   ::lampda::bsp::powergates::loop();
 
   // run power module state machine
   __private::state_machine_behavior();
+
+  // components are shut down (or sleeping): do not touch them anymore, just idle until the threads are stopped
+  if (_isShutdownCompleted)
+  {
+    hal::delay_ms(5);
+    return;
+  }
+
+  // A source reset drops VBUS for up to ~2s: only allow it when the battery can power the board alone.
+  // During startup the battery status is not known yet, and in recovery the board runs from VBUS.
+  {
+    const auto state = __private::powerMachine.get_state();
+    ::lampda::bsp::powerDelivery::allow_source_resets(not _isInBatteryRecoveryMode and state != PowerStates::STARTUP and
+                                                      state != PowerStates::ERROR);
+  }
 
   // run the power delivery update loop
   ::lampda::bsp::powerDelivery::loop();
@@ -909,7 +1393,7 @@ void power_loop()
     // remove flag when battery level is greater than zero
     const auto chargerState = ::lampda::component::charger::get_state();
     if (hal::time_ms() > startupFailTimeout_ms * 5 and chargerState.areMeasuresOk and
-        chargerState.batteryVoltage_mV > batteryMinVoltageSafe_mV)
+        chargerState.batteryVoltage_mV > physical_constants::batteryMinVoltageSafe_mV)
     {
       bsp::lampda_print("Cleared battery recovery mode");
       _isInBatteryRecoveryMode = false;

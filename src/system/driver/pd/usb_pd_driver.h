@@ -64,6 +64,12 @@ extern "C" {
   void force_set_to_source(int force);
 
   /**
+   * \brief As a sink, ask the partner for a power role swap as soon as a contract is in place, and only request 5V
+   * \param[in] wanted If 0, back to the normal sink behavior
+   */
+  void set_source_role_wanted(const int wanted);
+
+  /**
    * \brief allow or forbid power sourcing from this device
    * \param[in] allowPowerSourcing If 0, this device will only charge. Else, if negociated via usb, this device will
    * charge others.
@@ -98,6 +104,8 @@ extern "C" {
 
   // reset the cached values, call on power supply unplugged
   extern void reset_cache();
+  // forget the received source capabilities (when the state machine restarts)
+  extern void reset_source_capabilities();
 
   // The associated cable is pd capable
   int is_pd_conector();

@@ -30,6 +30,17 @@ TEST_F(UserCommandTest, SetRampCommand)
   EXPECT_EQ(parsed_ramp, ramp);
 }
 
+TEST_F(UserCommandTest, SetRampRejectsOtherTypes)
+{
+  // other one-byte commands must not be read as a ramp value
+  uint8_t parsed_ramp = 0;
+  EXPECT_FALSE(UserCommand::make_set_ble_mode_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_go_to_favorite_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_set_favorite_command(3).parse_ramp(parsed_ramp));
+  EXPECT_FALSE(UserCommand::make_turn_onoff_command(true).parse_ramp(parsed_ramp));
+  EXPECT_EQ(parsed_ramp, 0);
+}
+
 TEST_F(UserCommandTest, BrightnessCommand)
 {
   brightness_t bright = 128;
@@ -86,6 +97,16 @@ TEST_F(UserCommandTest, SetSunsetToTimeCommand)
 
   component::time::RealTime parsed_time;
   EXPECT_TRUE(cmd.parse_set_sunset_to_time_command(parsed_time));
+}
+
+TEST_F(UserCommandTest, SetSunriseToTimeCommand)
+{
+  component::time::RealTime time {0, 20, 0, 0};
+  auto cmd = UserCommand::make_set_sunrise_to_time_command(time);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SetSunriseToTime);
+
+  component::time::RealTime parsed_time;
+  EXPECT_TRUE(cmd.parse_set_sunrise_to_time_command(parsed_time));
 }
 
 TEST_F(UserCommandTest, SetBleCustomColorModeCommand)
@@ -236,6 +257,21 @@ TEST_F(UserCommandTest, SunsetTimeEdgeCases)
   EXPECT_FALSE(cmd_invalid.parse_set_sunset_to_time_command(parsed_invalid));
 }
 
+TEST_F(UserCommandTest, SunriseTimeEdgeCases)
+{
+  component::time::RealTime valid_sunrise {0, 18, 30, 0};
+  auto cmd = UserCommand::make_set_sunrise_to_time_command(valid_sunrise);
+  component::time::RealTime parsed;
+  EXPECT_TRUE(cmd.parse_set_sunrise_to_time_command(parsed));
+  EXPECT_EQ(parsed.hour, 18);
+  EXPECT_EQ(parsed.minutes, 30);
+
+  component::time::RealTime invalid_sunrise {25, 0, 0, 0};
+  auto cmd_invalid = UserCommand::make_set_sunrise_to_time_command(invalid_sunrise);
+  component::time::RealTime parsed_invalid;
+  EXPECT_FALSE(cmd_invalid.parse_set_sunrise_to_time_command(parsed_invalid));
+}
+
 TEST_F(UserCommandTest, GoToFavoriteIndexCommand)
 {
   uint8_t favoriteGroup = 1;
@@ -256,6 +292,88 @@ TEST_F(UserCommandTest, SetFavoriteIndexCommand)
   uint8_t parsed_fav = 0;
   EXPECT_TRUE(cmd.parse_set_favorite_command(parsed_fav));
   EXPECT_EQ(parsed_fav, favoriteGroup);
+}
+
+TEST_F(UserCommandTest, SignalSunsetProgressCommand)
+{
+  float value = 0.57889254f;
+  auto cmd = UserCommand::make_signal_sunset_progress_command(value);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SignalSunsetProgress);
+
+  float parsed = 0;
+  EXPECT_TRUE(cmd.parse_signal_sunset_progress_command(parsed));
+  EXPECT_EQ(parsed, value);
+}
+
+TEST_F(UserCommandTest, SignalSunriseProgressCommand)
+{
+  float value = 0.57889254f;
+  auto cmd = UserCommand::make_signal_sunrise_progress_command(value);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SignalSunriseProgress);
+
+  float parsed = 0;
+  EXPECT_TRUE(cmd.parse_signal_sunrise_progress_command(parsed));
+  EXPECT_EQ(parsed, value);
+}
+
+TEST_F(UserCommandTest, SignalSuntimerCancelCommand)
+{
+  auto cmd = UserCommand::make_signal_suntimer_cancel_command();
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SignalSuntimerCancel);
+
+  EXPECT_TRUE(cmd.parse_signal_suntimer_cancel_command());
+}
+
+TEST_F(UserCommandTest, BlipOutputCommand)
+{
+  const uint32_t duration = 0x12345678;
+  auto cmd = UserCommand::make_blip_output_command(duration);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::BlipOutput);
+
+  uint32_t parsed = 0;
+  EXPECT_TRUE(cmd.parse_blip_output_command(parsed));
+  EXPECT_EQ(parsed, duration);
+
+  // another command type is refused
+  EXPECT_FALSE(UserCommand::make_signal_suntimer_cancel_command().parse_blip_output_command(parsed));
+  EXPECT_EQ(parsed, duration);
+}
+
+TEST_F(UserCommandTest, BlipOutputCommandHighBit)
+{
+  // bit 31 set: the top byte must be widened before the shift, or it would overflow an int
+  const uint32_t duration = 0x92345678;
+  auto cmd = UserCommand::make_blip_output_command(duration);
+
+  uint32_t parsed = 0;
+  EXPECT_TRUE(cmd.parse_blip_output_command(parsed));
+  EXPECT_EQ(parsed, duration);
+  EXPECT_NE(parsed & 0x80000000u, 0u);
+}
+
+TEST_F(UserCommandTest, DisableSunTimerCommand)
+{
+  bool isSunrise = false;
+  auto cmd = UserCommand::make_disable_sun_timer_command(true);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::DisableSunTimer);
+  EXPECT_TRUE(cmd.parse_disable_sun_timer_command(isSunrise));
+  EXPECT_TRUE(isSunrise);
+
+  EXPECT_TRUE(UserCommand::make_disable_sun_timer_command(false).parse_disable_sun_timer_command(isSunrise));
+  EXPECT_FALSE(isSunrise);
+
+  EXPECT_FALSE(UserCommand::make_signal_suntimer_cancel_command().parse_disable_sun_timer_command(isSunrise));
+}
+
+TEST_F(UserCommandTest, SetMicSensitivityCommand)
+{
+  uint8_t sensitivity = 0;
+  auto cmd = UserCommand::make_set_mic_sensitivity_command(42);
+  EXPECT_EQ(cmd.get_type(), UserCommand::Type::SetMicSensitivity);
+  EXPECT_TRUE(cmd.parse_set_mic_sensitivity_command(sensitivity));
+  EXPECT_EQ(sensitivity, 42);
+
+  EXPECT_FALSE(UserCommand::make_set_ramp_command(42).parse_set_mic_sensitivity_command(sensitivity));
 }
 
 } // namespace common

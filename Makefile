@@ -1,12 +1,17 @@
 SRC_DIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
-VENV_DIR=$(SRC_DIR)venv
+
+# pinned versions (arduino-cli, board package): shared with the CI image
+include $(SRC_DIR)tools/ci/environment.mk
+
+# install locations, can be moved out of the repository (the CI image does)
+VENV_DIR=$(or $(LMBD_VENV_DIR),$(SRC_DIR)venv)
 BUILD_DIR=$(SRC_DIR)_build
 TOOLS_DIR=$(SRC_DIR)tools
 MEDIAS_DIR=$(SRC_DIR)Medias
 CACHE_DIR=$(BUILD_DIR)/cache
 ARTIFACTS=$(BUILD_DIR)/artifacts
 OBJECTS_DIR=$(BUILD_DIR)/objs
-ARDUINO_LOC=$(BUILD_DIR)/arduino-cli
+ARDUINO_LOC=$(or $(LMBD_ARDUINO_LOC),$(BUILD_DIR)/arduino-cli)
 COMPILED_UF2=$(BUILD_DIR)/uf2
 GEN_DIR=$(SRC_DIR)src/generated
 HALTRG_DIR=$(GEN_DIR)/hal
@@ -27,7 +32,6 @@ ARDUINO_USER=$(shell $(ARDUINO_CLI) config get directories.user)
 ARDUINO_DATA=$(shell $(ARDUINO_CLI) config get directories.data)
 ARDUINO_BOARD=$(ARDUINO_DATA)/packages/adafruit/hardware/nrf52
 ADAFRUIT_URL=https://adafruit.github.io/arduino-board-index/package_adafruit_index.json
-CUSTOM_BOARD_URL=https://github.com/BaptisteHudyma/LampDa_nRF52_Arduino
 FULL_LAMP_TYPE=LMBD_LAMP_TYPE__$(shell echo ${LMBD_LAMP_TYPE} | tr '[:lower:]' '[:upper:]')
 
 FOLDER_NAME=$(shell basename $(SRC_DIR))
@@ -37,10 +41,14 @@ PROJECT_INO=$(PROJECT_NAME).ino
 COMPILER_CMD=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.cpp.cmd|cut -f2 -d=)
 COMPILER_PATH=$(shell $(ARDUINO_CLI) compile -b $(FQBN) --show-properties|grep compiler.path|cut -f2 -d=)
 
+LIBRARY_PATH_FLAGS = -I$(SRC_DIR)/libs/etl/include
+LINKER_FLAGS = -letlcpp -DETL_TARGET_DEVICE_GENERIC -DETL_TARGET_OS_NONE
+
 CPP_INCLUDES=-I$(OBJECTS_DIR)/sketch -I$(GEN_DIR) -DLMBD_MISSING_DEFINE
 CPP_BASIC_FLAGS=-std=gnu++17 -fconcepts -DNDEBUG -DLMBD_CPP17 -D$(FULL_LAMP_TYPE) $(CPP_INCLUDES) ${LMBD_EXTRA_FLAGS}
 CPP_BUILD_FLAGS=$(CPP_BASIC_FLAGS) -fdiagnostics-color=always -Wno-unused-parameter -ftemplate-backtrace-limit=1 -fstack-usage -ffunction-sections -fdata-sections # -fsanitize=undefined,address -fstack-protector-all
-ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(CPP_INCLUDES) -fstack-usage -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS}'"
+ARDUINO_EXTRA_FLAGS="compiler.cpp.extra_flags='$(LINKER_FLAGS) $(CPP_INCLUDES) -fstack-usage -D$(FULL_LAMP_TYPE) ${LMBD_EXTRA_FLAGS} ${LIBRARY_PATH_FLAGS}'"
+
 #
 # to enable warnings:
 # 	LMBD_CPP_EXTRA_FLAGS="-Wall -Wextra" make
@@ -75,6 +83,8 @@ simple: build-simple
 
 indexable: build-indexable
 
+indexable-hd: build-indexable-hd
+
 simple2indexable: build-simple2indexable
 
 build-cct:
@@ -85,6 +95,9 @@ build-simple:
 
 build-indexable:
 	LMBD_LAMP_TYPE="indexable" make build
+
+build-indexable-hd:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD" make build
 
 build-simple2indexable:
 	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make build
@@ -97,6 +110,9 @@ upload-simple:
 
 upload-indexable:
 	LMBD_LAMP_TYPE="indexable" make upload
+
+upload-indexable-hd:
+	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD"  make upload
 
 upload-simple2indexable:
 	LMBD_LAMP_TYPE="indexable" LMBD_EXTRA_FLAGS="-DLMBD_SIMPLE_EMULATOR=1" make upload
@@ -225,7 +241,7 @@ $(VENV_DIR)/bin/activate:
 	@echo; echo " --- $@"
 	@($(PYTHON_EXE) -m venv $(VENV_DIR) \
 		&& $(SOURCE_VENV) \
-		&& $(PYTHON_EXE) -m pip install -r $(VENV_DIR)/../requirements.txt \
+		&& $(PYTHON_EXE) -m pip install -r $(SRC_DIR)requirements.txt \
 		&& (adafruit-nrfutil version | grep -q 'adafruit-nrfutil version')) || \
 		(echo; echo \
 		 ; echo 'ERROR: python3 virtualenv seems to be not be functioning?' \
@@ -264,7 +280,7 @@ clean-board-install: install-venv
 	@(test -d $(ARDUINO_BOARD) && rm -rf $(ARDUINO_BOARD)) \
 		|| echo ' -> no existing install found'
 	# install clean 'adafruit:nrf52' core to repair install...
-	@$(ARDUINO_CLI) core install 'adafruit:nrf52' --additional-urls "$(ADAFRUIT_URL)"
+	@$(ARDUINO_CLI) core install 'adafruit:nrf52@$(ADAFRUIT_CORE_VERSION)' --additional-urls "$(ADAFRUIT_URL)"
 	# uninstall 'adafruit:nrf52' immediately after to clean install...
 	@$(ARDUINO_CLI) core uninstall 'adafruit:nrf52' \
 		--additional-urls "$(ADAFRUIT_URL)" || echo ' -> nothing to remove'
@@ -273,10 +289,18 @@ clean-board-install: install-venv
 unsafe-board-install: clean-board-install install-venv
 	@echo; echo " --- $@"
 	# install 'adafruit:nrf52' on a fresh clean install...
-	@$(ARDUINO_CLI) core install 'adafruit:nrf52' --additional-urls "$(ADAFRUIT_URL)"
-	# replacing board by custom repository...
+	@$(ARDUINO_CLI) core install 'adafruit:nrf52@$(ADAFRUIT_CORE_VERSION)' --additional-urls "$(ADAFRUIT_URL)"
+	# replacing board by custom repository, at the commit pinned in tools/ci/environment.mk...
 	@rm -rf $(ARDUINO_BOARD)
-	git clone --recurse-submodules $(CUSTOM_BOARD_URL) $(ARDUINO_BOARD)
+	git clone $(CUSTOM_BOARD_URL) $(ARDUINO_BOARD)
+	@git -C $(ARDUINO_BOARD) -c advice.detachedHead=false checkout $(CUSTOM_BOARD_REF) \
+		|| (echo; echo \
+		 ; echo 'ERROR: commit "$(CUSTOM_BOARD_REF)" not found in $(CUSTOM_BOARD_URL)' \
+		 ; echo \
+		 ; echo 'Update CUSTOM_BOARD_REF in tools/ci/environment.mk to an existing commit or tag.' \
+		 ; echo \
+		 ; false)
+	git -C $(ARDUINO_BOARD) submodule update --init --recursive
 
 # this target may break local IDE install!
 unsafe-install-libs: install-venv
@@ -292,11 +316,27 @@ local-arduino-cli:
 	# @echo 'arduino-cli' >> $(SRC_DIR).gitignore
 	# @echo '.gitignore' >> $(SRC_DIR).gitignore
 
+ARDUINO_CLI_INSTALLER=https://raw.githubusercontent.com/arduino/arduino-cli/v$(ARDUINO_CLI_VERSION)/install.sh
+
 arduino-cli-download:
 	mkdir -p $(ARDUINO_LOC)
-	# attempting to download arduino-cli in a local directory
-	@cd $(ARDUINO_LOC) \
-		&& curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$(ARDUINO_LOC) /bin/sh
+	# attempting to download arduino-cli $(ARDUINO_CLI_VERSION) in a local directory
+	@(curl -fsSL -o $(ARDUINO_LOC)/install.sh $(ARDUINO_CLI_INSTALLER) \
+		&& cd $(ARDUINO_LOC) \
+		&& BINDIR=$(ARDUINO_LOC) /bin/sh install.sh $(ARDUINO_CLI_VERSION) \
+		&& rm -f $(ARDUINO_LOC)/install.sh) || \
+		(echo; echo \
+		 ; echo 'ERROR: could not install arduino-cli $(ARDUINO_CLI_VERSION)!' \
+		 ; echo \
+		 ; echo 'Troubleshooting:' \
+		 ; echo ' - the version is pinned by ARDUINO_CLI_VERSION in tools/ci/environment.mk' \
+		 ; echo ' - check that this version is still listed in https://github.com/arduino/arduino-cli/releases' \
+		 ; echo '    - if not, set ARDUINO_CLI_VERSION to an available release (this changes the CI image, see docs/CIImage.md)' \
+		 ; echo ' - check that the installer is reachable: $(ARDUINO_CLI_INSTALLER)' \
+		 ; echo ' - check that the archive is reachable: https://downloads.arduino.cc/arduino-cli/arduino-cli_$(ARDUINO_CLI_VERSION)_Linux_64bit.tar.gz' \
+		 ; echo ' - a network error or a rate limit from GitHub can also cause this, retry later' \
+		 ; echo \
+		 ; false)
 	@echo 'WARNING: on some distributions, such local arduino-cli binaries may not have network access!'
 
 safe-install: local-arduino-cli
@@ -538,14 +578,24 @@ verify-all: format-verify
 	@echo; echo " --- $@"
 	# verify that tests be built
 	make clean test
-	# verify that simulator can be built
-	make clean simulator
+	
+	# verify that simulators can be built
+	make clean simulator-indexable
+	make clean simulator-indexable-hd
+	make clean simulator-simple
+
 	# verify that all lamp types build & validates
 	make clean 'verify-type(indexable)'
 	@touch $(BUILD_DIR)/.skip-simple-clean # (re-use indexable setup)
 	make 'verify-type(simple)'
 	@touch $(BUILD_DIR)/.skip-cct-clean # (re-use indexable setup)
 	make 'verify-type(cct)'
+	# verify indexable-hd (clean first: extra flags are baked into the process script)
+	@echo " --- verify-type(indexable-hd)"
+	@echo; echo Building with LMBD_LAMP_TYPE=indexable-hd to verify artifact...; echo
+	make clean
+	LMBD_LAMP_TYPE=indexable LMBD_EXTRA_FLAGS="-DLMBD_LAMP_TYPE__INDEXABLE_IS_HD" make build verify
+	
 	@echo; echo 'Everything went fine :)'
 
 
@@ -615,9 +665,29 @@ clean-simulator:
 		&& (echo 'Artifact is ready here:'; echo '$<'; echo) \
 		|| (echo 'No artifact found, build failed?'; rm -f '$<')
 
-simulator: link-hal-simulator generate-images indexable-simulator simple-simulator
+%-simulator-run: $(BUILD_DIR)/simulator/run-%-simulator
+	@echo " --- ok: $@"
+	@test -x '$(BUILD_DIR)/simulator/$*-simulator' \
+		&& (echo 'Artifact is ready here:'; echo '$(BUILD_DIR)/simulator/$*-simulator'; echo) \
+		|| (echo 'No artifact found, build failed?')
+
+simulator-indexable: link-hal-simulator generate-images indexable-simulator
 	@echo " --- ok: $@"
 
+simulator-indexable-hd: link-hal-simulator generate-images indexable-hd-simulator
+	@echo " --- ok: $@"
+
+simulator-simple: link-hal-simulator generate-images simple-simulator
+	@echo " --- ok: $@"
+
+run-simulator-indexable: link-hal-simulator generate-images indexable-simulator-run
+	@echo " --- ok: $@"
+
+run-simulator-indexable-hd: link-hal-simulator generate-images indexable-hd-simulator-run
+	@echo " --- ok: $@"
+
+run-simulator-simple: link-hal-simulator generate-images simple-simulator-run
+	@echo " --- ok: $@"
 
 clean-tests:
 	@echo; echo " --- $@"
@@ -630,6 +700,38 @@ test: link-hal-simulator generate-images
 	@mkdir -p $(BUILD_DIR)/tests
 	@cd $(SRC_DIR)/tests && \
 		LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "tests")
+
+run-utest:
+	@cd $(SRC_DIR)/tests && \
+	LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "run-utest")
+	@cd $(SRC_DIR)/tests && \
+	LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "run-utest_simple")
+	
+run-itest:
+	@cd $(SRC_DIR)/tests && \
+	LMBD_ROOT_DIR=$(SRC_DIR) TEST_BUILD_DIR=$(BUILD_DIR)/tests make $(shell basename "run-itest")
+
+#
+# CI image (see docs/CIImage.md)
+#  - "make ci-image-build" builds the image used by the CI, as the "CI image" workflow does
+#  - "make ci-image-shell" opens a shell in it, with this repository mounted
+#
+
+CI_IMAGE=$(shell $(TOOLS_DIR)/ci/image-name.sh)
+
+ci-image-name:
+	@echo $(CI_IMAGE)
+
+ci-image-build:
+	@echo; echo " --- $@"
+	docker build -f $(TOOLS_DIR)/ci/Dockerfile -t $(CI_IMAGE) $(SRC_DIR)
+
+ci-image-shell:
+	@echo; echo " --- $@"
+	@docker image inspect $(CI_IMAGE) > /dev/null 2>&1 || docker pull $(CI_IMAGE) \
+		|| (echo; echo 'ERROR: image "$(CI_IMAGE)" is not available, run "make ci-image-build"'; echo; false)
+	docker run --rm -it -v $(SRC_DIR):/work/$(PROJECT_NAME) -w /work/$(PROJECT_NAME) \
+		-u $$(id -u):$$(id -g) -e HOME=/tmp $(CI_IMAGE) bash
 
 #
 # remove

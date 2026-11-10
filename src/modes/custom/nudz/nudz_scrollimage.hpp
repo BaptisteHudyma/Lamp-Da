@@ -186,6 +186,8 @@ struct NudzBeerGlassMode : public BasicMode
 
   struct StateTy
   {
+    static constexpr uint32_t nbubbles = 30; ///< number of bubbles
+
     float level;         ///< average level of beer
     float ampl;          ///< accel amplitude factor
     float accmax;        ///< clamp accel to avoid too large changes
@@ -196,11 +198,10 @@ struct NudzBeerGlassMode : public BasicMode
                          ///< thus produce a new wave
     uint32_t beer_color; ///< color of the beer :)
     uint32_t foam_color; ///< color of the foam of the beer
-    uint32_t background_color;     ///< color background
-    std::vector<float> levels;     ///< level of every matrix columns
-    std::vector<float> speeds;     ///< spped of every matric columns
-    uint32_t nbubbles;             ///< number of bubbles
-    std::vector<BubbleTy> bubbles; ///< store the bubbles
+    uint32_t background_color;                  ///< color background
+    std::array<float, LampTy::maxWidth> levels; ///< level of every matrix columns
+    std::array<float, LampTy::maxWidth> speeds; ///< spped of every matric columns
+    std::array<BubbleTy, nbubbles> bubbles;     ///< store the bubbles
 
     imu::ImuEventTy<> imuEvent; ///< Handle imu events
   };
@@ -220,10 +221,9 @@ struct NudzBeerGlassMode : public BasicMode
     ctx.state.beer_color = 0x503000;
     ctx.state.foam_color = 0x706050;
     ctx.state.background_color = 0x000000;
-    ctx.state.levels = std::vector<float>(ctx.lamp.maxWidth, ctx.state.level);
-    ctx.state.speeds = std::vector<float>(ctx.lamp.maxWidth, 0.f);
-    ctx.state.nbubbles = 20;
-    ctx.state.bubbles = std::vector<BubbleTy>(ctx.state.nbubbles, BubbleTy());
+    ctx.state.levels.fill(ctx.state.level);
+    ctx.state.speeds.fill(0.f);
+    ctx.state.bubbles.fill(BubbleTy());
 
     /// prevent the ramp from looping around
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
@@ -290,7 +290,7 @@ struct NudzBeerGlassMode : public BasicMode
     else if (acc.y > accmax)
       acc.y = accmax;
 
-    std::vector<float> ospeeds = speeds;
+    std::array<float, LampTy::maxWidth> ospeeds = speeds;
 
     // accelerate column by column
     // the "column" model is very simple and easy,

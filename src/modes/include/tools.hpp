@@ -11,6 +11,8 @@
 #include <optional>
 #include <tuple>
 
+#include <etl/bitset.h>
+
 #include "src/modes/include/compile.hpp"
 #include "src/modes/include/mode_type.hpp"
 
@@ -141,7 +143,7 @@ template<typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>> struct 
   template<template<class> class QueryStruct, bool hasError = false> static constexpr auto asTable()
   {
     // collect all values as table
-    std::array<bool, TupleSz> acc {};
+    etl::bitset<TupleSz> acc {};
     if constexpr (!hasError)
     {
       unroll<TupleSz>([&](auto Idx) {
@@ -171,7 +173,7 @@ template<typename TupleTy, uint8_t TupleSz = std::tuple_size_v<TupleTy>> struct 
   template<template<class> class QueryStruct, size_t MaxSz, bool hasError = false> static constexpr auto asTable2D()
   {
     // collect all values as table
-    std::array<std::array<bool, MaxSz>, TupleSz> acc {};
+    std::array<etl::bitset<MaxSz>, TupleSz> acc {};
     if constexpr (!hasError)
     {
       unroll<TupleSz>([&](auto Idx) {
@@ -195,6 +197,12 @@ template<typename TupleTy, bool hasError = false> struct anyOf
   {
     /// Set to true if Ty asks for a sunset mode callback
     static constexpr bool value = Ty::hasSunsetAnimation;
+  };
+
+  template<typename Ty> struct QHasSunrise
+  {
+    /// Set to true if Ty asks for a sunrise mode callback
+    static constexpr bool value = Ty::hasSunriseAnimation;
   };
 
   template<typename Ty> struct QHasBright
@@ -229,6 +237,7 @@ template<typename TupleTy, bool hasError = false> struct anyOf
 
   // booleans we need
   static constexpr bool hasSunsetAnimation = forEach<TupleTy>::template any<QHasSunset, hasError>();
+  static constexpr bool hasSunriseAnimation = forEach<TupleTy>::template any<QHasSunrise, hasError>();
   static constexpr bool hasBrightCallback = forEach<TupleTy>::template any<QHasBright, hasError>();
   static constexpr bool hasCustomRamp = forEach<TupleTy>::template any<QCustomRamp, hasError>();
   static constexpr bool hasButtonCustomUI = forEach<TupleTy>::template any<QButtonUI, hasError>();
@@ -237,6 +246,7 @@ template<typename TupleTy, bool hasError = false> struct anyOf
 
   // as table
   static constexpr auto everySunsetCallback = forEach<TupleTy>::template asTable<QHasSunset, hasError>();
+  static constexpr auto everySunriseCallback = forEach<TupleTy>::template asTable<QHasSunrise, hasError>();
   static constexpr auto everyBrightCallback = forEach<TupleTy>::template asTable<QHasBright, hasError>();
   static constexpr auto everyCustomRamp = forEach<TupleTy>::template asTable<QCustomRamp, hasError>();
   static constexpr auto everyButtonCustomUI = forEach<TupleTy>::template asTable<QButtonUI, hasError>();
@@ -251,6 +261,12 @@ template<typename TupleTy, bool hasError = false> struct asTableFor
   {
     /// Set to true if Ty asks for a sunset mode callback
     static constexpr auto value = Ty::everySunsetCallback;
+  };
+
+  template<typename Ty> struct QHasSunrise
+  {
+    /// Set to true if Ty asks for a sunrise mode callback
+    static constexpr auto value = Ty::everySunriseCallback;
   };
 
   template<typename Ty> struct QHasBright
@@ -287,6 +303,9 @@ template<typename TupleTy, bool hasError = false> struct asTableFor
 
   /// Set to true if Ty asks for a sunset mode callback
   static constexpr auto everySunsetCallback = forEach<TupleTy>::template asTable2D<QHasSunset, maxTableSz, hasError>();
+  /// Set to true if Ty asks for a sunset mode callback
+  static constexpr auto everySunriseCallback =
+          forEach<TupleTy>::template asTable2D<QHasSunrise, maxTableSz, hasError>();
   /// Set to true if Ty asks for custom brightness control
   static constexpr auto everyBrightCallback = forEach<TupleTy>::template asTable2D<QHasBright, maxTableSz, hasError>();
   /// Set to true if Ty asks for a custom ramp

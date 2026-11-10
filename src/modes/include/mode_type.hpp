@@ -84,6 +84,9 @@ struct BasicMode
 
   /// Toggles the use of custom BasicMode::sunset_update() callback
   static constexpr bool hasSunsetAnimation = false;
+  /// If hasSunsetAnimation is true, this can be used to toggle an internal handling that dissolve the current animation
+  /// during the sunset
+  static constexpr bool usesSunsetGravityDissolveMode = false;
 
   /** \brief Custom callback when sunset mode is updated (optional)
    *
@@ -93,6 +96,21 @@ struct BasicMode
    * \param[in] progress Between 0 and 1, progress of the sunset. At 1, the system turns off
    */
   static void sunset_update(auto& ctx, float progress) { return; }
+
+  /// Toggles the use of custom BasicMode::sunrise_update() callback
+  static constexpr bool hasSunriseAnimation = false;
+  /// If hasSunriseAnimation is true, this can be used to toggle an internal handling that make the current animation
+  /// appear with dropped particles during sunrise
+  static constexpr bool usesSunriseGravityAppearMode = false;
+
+  /** \brief Custom callback when sunrise mode is updated (optional)
+   *
+   * Callback active only if BasicMode::hasSunriseAnimation is True
+   *
+   * \param[in] ctx The current context
+   * \param[in] progress Between 0 and 1, progress of the sunrise. At 1, the system is fully on
+   */
+  static void sunrise_update(auto& ctx, float progress) { return; }
 
   /// Toggles the use of custom BasicMode::brightness_update() callback
   static constexpr bool hasBrightCallback = false;
@@ -274,6 +292,7 @@ struct BasicMode
 
   // polyfill (to be ignored in this context)
   static constexpr bool everySunsetCallback = false;    ///< \private
+  static constexpr bool everySunriseCallback = false;   ///< \private
   static constexpr bool everyBrightCallback = false;    ///< \private
   static constexpr bool everySystemCallbacks = false;   ///< \private
   static constexpr bool everyRequireUserThread = false; ///< \private

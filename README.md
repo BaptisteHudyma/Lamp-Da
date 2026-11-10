@@ -58,7 +58,38 @@ base behavior:
 - The lamp starts and stops with one click.
 - The luminosity can be raised by clicking than holding, and diminished by double-clicking than holding.
 
+Some behaviors can be moved to other clicks with the command line (over USB serial, or Bluetooth UART):
+
+| Behavior | Name | Default clicks | Click action | Hold action |
+|----------|------|----------------|--------------|-------------|
+| Custom ramp | `ramp` | 3 | | configure the custom ramp of the mode |
+| Favorites | `favorite` | 4 | jump to the favorites | add or remove a favorite |
+| Sunset timer | `sunset` | 5 | | start or extend the sunset timer |
+| Quick navigation | `nav` | 6 | jump to the first mode | |
+| Scroll | `scroll` | 6 | | scroll across modes and groups |
+| Indicator brightness | `indicator` | 7 | next brightness | cycle the brightness |
+
+- `sys bind` shows the current links, `set bind nav 8` moves a behavior and `set bind_reset` restores the defaults.
+- The click and hold actions of a behavior always move together, to 4 up to 9 clicks (3 up to 9 for `ramp`, `scroll` and `sunset`, that have no click action).
+- A click only and a hold only behavior can share the same clicks, like `nav` and `scroll`. Otherwise, the behaviors already on these clicks swap with the moved one. A swap that would leave two behaviors on the same action is refused: move the other behavior first.
+- 1 and 2 clicks (on/off, next mode, brightness), 3 clicks (next group, or quit the favorites) and 10 clicks and above (shutdown, resets) cannot be changed.
+- Links are saved when the lamp shuts down, and clearing the user parameters restores the defaults.
+- Commands of the lamp when it is off keep priority whatever the links: 3 clicks + hold starts in button usermode (so `sunset` on 3 clicks only works when the lamp is on) and 4 clicks toggles the lockout. In button usermode, a 5 clicks hold still exits after 5 seconds.
+- CCT lamps can only move `indicator`, to 5 up to 9 clicks: 3 and 4 clicks + hold are their color ramps.
+
 The battery level is displayed as a color gradient from green (high) to red (low).
+
+The indicator can also be controlled with the command line:
+- `set ind_lvl [0-2]` sets the indicator brightness, like the `indicator` behavior: 0 is full brightness, 1 is low brightness, 2 is low brightness and off when charging. This choice is saved when the lamp shuts down.
+- `set ind_color [red] [green] [blue]` replaces the battery level color by a fixed color (0-255 each), with the same animations. `set ind_color` without parameters restores the battery level color. This color is not saved.
+- `sys ind` shows the indicator brightness level and color.
+- Alerts always take precedence over these settings.
+
+The microphone sensitivity of the sound reactive modes can be set with the command line, or with the sensitivity slider of ELK bluetooth apps:
+- `set mic_sens [0-100]` sets the sensitivity. 50 is the default (no gain), 0 divides the sound by 10, 100 multiplies it by 10. This choice is not saved.
+- `sys mic` shows the current sensitivity.
+
+When the lamp is on, the output blinks once when the battery goes under 75%, twice under 50% and three times under 25%. A level passed during the first 10 seconds of use is never displayed, even after this delay. Each level is displayed once until the lamp is turned off and on again. Use `set bat_blink 0` to disable the blinks, `set bat_blink 1` to enable them, and `sys bat_blink` to check the current choice. This choice is saved when the lamp shuts down.
 
 ![battery levels](Medias/lamp_top.jpg)
 

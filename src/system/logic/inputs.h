@@ -5,9 +5,8 @@
 #ifndef INPUTS_H
 #define INPUTS_H
 
+#include <cstddef>
 #include <cstdint>
-
-#include "src/system/common/queue.h"
 
 namespace lampda {
 namespace logic {
@@ -21,14 +20,21 @@ struct ButtonEvent
 {
   bool isLongPress = false;      ///< indicates if this is a long press click
   uint32_t longPressDuration;    ///< during a long press click, this is the press time. It goes to zero on release
-  uint32_t clickCount;           ///< keep track of the number of clicks of the chain
+  uint8_t clickCount;            ///< keep track of the number of clicks of the chain
   bool isEndOfLongPress = false; ///< indicates if this is the end call of a long press click
 };
 
 static constexpr size_t maxButtonEventStore =
         15; ///< this event count should be high enough to not miss clicks and ramp events
 
-extern common::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+/// Pop the oldest button event. Thread safe. Return false if there is no event
+bool pop_button_event(ButtonEvent& event);
+
+/// Return the number of stored button events. Thread safe
+size_t get_button_event_count();
+
+/// Drop all stored button events. Thread safe
+void clear_button_events();
 
 } // namespace __private
 
@@ -46,9 +52,9 @@ void button_disable_usermode();
 bool is_button_usermode_enabled();
 
 /// Signal a button click event
-bool add_button_click_event(uint32_t clickCount);
+bool add_button_click_event(uint8_t clickCount);
 /// Signal a button press event
-bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress);
+bool add_button_press_event(uint8_t clickCount, uint32_t pressDuration, bool isEndOfPress);
 
 } // namespace inputs
 } // namespace logic

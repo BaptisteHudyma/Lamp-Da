@@ -7,11 +7,12 @@
 
 /// @file utils.hpp
 
-#include "src/system/ext/math8.h"
 #include <cmath>
 #include <cstdint>
-#include <deque>
-#include <string>
+
+#include "src/system/ext/math8.h"
+
+#include <etl/bitset.h>
 
 /// User modes audio utilities
 namespace lampda::modes::audio {
@@ -56,7 +57,7 @@ struct MicrophoneConfig
  *
  * Every time this class is updated, it will:
  *
- *  - measure the sound level using ``ctx.lamp.get_sound_level()``
+ *  - measure the sound level using ``ctx.lamp.get_sound_struct()``
  *  - update ``avgLevel`` a sound level "rolling" average
  *  - update ``avgMax`` a peak sound level "decaying" average
  *  - compute ``delta`` "contrast" between measured level and its average
@@ -80,6 +81,9 @@ struct MicrophoneConfig
  * ``windowShort`` is used for ``avgDelta`` (shorter to be more reactive).
  *
  * Note that the algorithm implemented is simple and produces false positives.
+ *
+ * The raw and auto gained samples, and the raw FFT, are not copied here: read them
+ * from ``ctx.lamp.get_sound_struct()`` if a mode needs them.
  */
 
 template<typename ConfigTy = MicrophoneConfig,
@@ -91,30 +95,32 @@ template<typename ConfigTy = MicrophoneConfig,
 struct SoundEventTy
 {
   /// Floor level for computations using ``AvgMax`` (lowest peak average)
-  static constexpr float _eventCutoff = eventCutoff / 100.0;
+  static constexpr float _eventCutoff = eventCutoff / 100.0f;
 
   /// Inverse scaling factor for ``eventScale``
-  static constexpr float _eventNorm = eventNorm / 100.0;
+  static constexpr float _eventNorm = eventNorm / 100.0f;
 
   /// Window size used for ``avgLevel`` and ``avgMax``
-  static constexpr float _windowSize = windowSize / 4.0;
+  static constexpr float _windowSize = windowSize / 4.0f;
 
   /// Window size used for ``avgDelta``
-  static constexpr float _windowShort = windowShort / 4.0;
+  static constexpr float _windowShort = windowShort / 4.0f;
 
-  /// number of sample in a microphone run
-  static constexpr size_t _dataLenght = component::microphone::SoundStruct::SAMPLE_SIZE;
-  /// target value reached by the auto gain
-  static constexpr int16_t _autoGainTargetValue = component::microphone::gainedSignalTarget;
+  /// Precomputed rolling average factors: multiplications are faster than divisions on the target
+  static constexpr float _windowSizeInv = 1.0f / (_windowSize + 1.0f);
+  /// Precomputed rolling average factor of ``avgDelta``
+  static constexpr float _windowShortInv = 1.0f / (_windowShort + 1.0f);
+  /// Precomputed ``eventScale`` factor
+  static constexpr float _eventScaleFactor = 256.0f / _eventNorm;
+
   /// number of channels in the log fft
   static constexpr size_t _fftChannels = component::microphone::SoundStruct::numberOfFFtChanels;
 
   /// Frequency resolution of the raw fft result
   static constexpr float fftResolutionHz = component::microphone::SoundStruct::get_fft_resolution_Hz();
-  /// Size of the fourrier transform history
-  static constexpr size_t _FFThistory_MaxSize = round(fftResolutionHz);
+  /// Size of the fourrier transform history. Not allocated without beat tracking
+  static constexpr size_t _FFThistory_MaxSize = ConfigTy::useBeatTracking ? round(fftResolutionHz) : 0;
 
-  using FFTContainer = std::array<float, _dataLenght / 2>; ///<  Container for the fast fourrier linear results
   using FFTLogContainer = std::array<float, _fftChannels>; ///< Container for the fast fourrier logarithmic results
   using FFTHistoryContainer = std::array<FFTLogContainer, _FFThistory_MaxSize>; ///< history of the FFT
 
@@ -128,17 +134,16 @@ struct SoundEventTy
     avgDelta = 0;
     hasEvent = false;
     eventScale = 0;
+    maxAmplitude = 0;
+    maxAmplitudeFrequency = 0;
     _eventCount = 0;
     _eventScale = 0;
 
     historyIndex = 0;
     historySize = 0;
 
-    data.fill(0);
-    dataAutoGained.fill(0);
     fft_log.fill(0);
-    fft_raw.fill(0);
-    beatDetected.fill(false);
+    beatDetected.reset();
   }
 
   /// Call this once every tick inside the mode loop callback
@@ -147,34 +152,31 @@ struct SoundEventTy
     const component::microphone::SoundStruct& soundObject = ctx.lamp.get_sound_struct();
 
     // copy microphone data
-    data = soundObject.data;
-    dataAutoGained = soundObject.rectifiedData;
     fft_log = soundObject.fft_log;
-    fft_raw = soundObject.fft_raw;
-    fft_log_end_frequencies = soundObject.fft_log_end_frequencies;
     maxAmplitude = soundObject.maxAmplitude;
     maxAmplitudeFrequency = soundObject.maxAmplitudeFrequency;
 
     // average input sound over a second-long window (approx)
     const auto soundLevel = soundObject.sound_level_Db;
     level = (not std::isinf(soundLevel) and not std::isnan(soundLevel) and soundLevel > -70) ? soundLevel : -70;
-    avgLevel = (level + avgLevel * _windowSize) / (_windowSize + 1);
+    avgLevel = (level + avgLevel * _windowSize) * _windowSizeInv;
 
     // average maximum over the same long window (approx)
-    avgMax = (avgLevel + std::max<float>(level, avgMax) * _windowSize) / (_windowSize + 1.0);
+    avgMax = (avgLevel + std::max<float>(level, avgMax) * _windowSize) * _windowSizeInv;
     avgMax = std::max<float>(_eventCutoff, avgMax);
 
     // delta between instantaneous level & average, squashed by its max
-    delta = std::max<float>(level - avgLevel, 0) / avgMax;
+    delta = std::max<float>(level - avgLevel, 0.0f) / avgMax;
 
     // average of delta square (1.0 split around _eventCutoff)
-    avgDelta = (delta * delta + avgDelta * _windowShort) / (_windowShort + 1.0);
+    avgDelta = (delta * delta + avgDelta * _windowShort) * _windowShortInv;
 
     // if avgDelta looks triggered, start sampling event
-    if (avgDelta > 1.0)
+    if (avgDelta > 1.0f)
     {
       _eventCount += 1;
-      _eventScale = std::max<float>(_eventScale, 256.0 * (avgMax / _eventNorm) * (1.0 + delta));
+      // constrained before the conversion: an out of range float to integer conversion is undefined
+      _eventScale = std::min<float>(std::max<float>(_eventScale, _eventScaleFactor * avgMax * (1.0f + delta)), 255.0f);
 
       // if no trigger, decay event
     }
@@ -202,6 +204,9 @@ struct SoundEventTy
     // beat tracking is heavy on performances
     if constexpr (ConfigTy::useBeatTracking)
     {
+      // constant, only needed by is_beat_on_freq_range
+      fft_log_end_frequencies = soundObject.fft_log_end_frequencies;
+
       // update history size
       if (historySize < _FFThistory_MaxSize)
         historySize++;
@@ -246,51 +251,46 @@ struct SoundEventTy
       if (maxFrequencyForBin >= maxFreq)
         break;
     }
-    return beatCnt > 0 && beatCnt >= ceil(0.5f * nbDataPoints);
+    return beatCnt > 0 && beatCnt >= ceilf(0.5f * nbDataPoints);
   }
 
-  float level = 10;            ///< Last sound level measured
-  float avgLevel = 10;         ///< Rolling sound level average
-  float avgMax = 10;           ///< Decaying sound "peak" level average
-  float delta = 0;             ///< Last sound "contrast" computed (centered around 1.0)
-  float avgDelta = 0;          ///< Rolling sound "contrast" average (squared)
-  bool hasEvent;               ///< Did an event happened last tick? (reset each loop)
-  uint8_t eventScale;          ///< Event scale (0-255)
-  float maxAmplitude;          ///< max detected frequency amplitude
-  float maxAmplitudeFrequency; ///< max amplitude frequency, in Hertz
+  float level = 10;                ///< Last sound level measured
+  float avgLevel = 10;             ///< Rolling sound level average
+  float avgMax = 10;               ///< Decaying sound "peak" level average
+  float delta = 0;                 ///< Last sound "contrast" computed (centered around 1.0)
+  float avgDelta = 0;              ///< Rolling sound "contrast" average (squared)
+  bool hasEvent = false;           ///< Did an event happened last tick? (reset each loop)
+  uint8_t eventScale = 0;          ///< Event scale (0-255)
+  float maxAmplitude = 0;          ///< max detected frequency amplitude
+  float maxAmplitudeFrequency = 0; ///< max amplitude frequency, in Hertz
 
-  /// raw microphone data
-  std::array<int16_t, _dataLenght> data;
-  /// dynamically sound adjusted data
-  std::array<int16_t, _dataLenght> dataAutoGained;
   /// fast fourrier transform as a log scale (closer to human perception)
-  FFTLogContainer fft_log;
-  /// set to true when the corresponding frequency range registers a beat
-  std::array<bool, _fftChannels> beatDetected;
-  /// fast fourrier transform raw results
-  std::array<float, _dataLenght / 2> fft_raw;
+  FFTLogContainer fft_log = {};
+  /// set to true when the corresponding frequency range registers a beat. Always false without beat tracking
+  etl::bitset<_fftChannels> beatDetected;
 
 private:
   uint8_t _eventCount = 0; ///< count the beat events
   uint8_t _eventScale = 0; ///< indicates the scale event
 
   ///< store the history of the fft, on a few successiv samples
-  FFTHistoryContainer _FFTHistory_beatDetector;
-  size_t historyIndex; ///< Actual history index
-  size_t historySize;  ///< Actual history size
+  FFTHistoryContainer _FFTHistory_beatDetector = {};
+  size_t historyIndex = 0; ///< Actual history index
+  size_t historySize = 0;  ///< Actual history size
 
-  std::array<float, _fftChannels> fft_log_end_frequencies;
+  /// max frequency of each log fft channel, only set with beat tracking
+  FFTLogContainer fft_log_end_frequencies = {};
 
   /// track the beat events using the FFT
-  template<size_t T> static inline std::array<bool, T> track_beat_events(const FFTHistoryContainer& dataHistory,
-                                                                         const std::array<float, T>& data)
+  template<size_t T> static inline etl::bitset<T> track_beat_events(const FFTHistoryContainer& dataHistory,
+                                                                    const std::array<float, T>& data)
   {
-    std::array<bool, T> beats;
-    beats.fill(false);
+    etl::bitset<T> beats;
+    beats.reset();
 
     // beat detection starts after a bit
     const size_t dataHistoryCnt = dataHistory.size();
-    const float oneOverdataHistory = 1.0f / dataHistoryCnt;
+    const float oneOverdataHistory = 1.0f / static_cast<float>(dataHistoryCnt);
 
     std::array<float, T> averageFft;
     averageFft.fill(0.0f);

@@ -43,6 +43,13 @@ struct RainbowSwirlMode : public BasicMode
     // update first led color
     ctx.state.firstPixelHue += ctx.state.increment;
   }
+
+  /// sunset & sunrise animation on the fixed modes
+  static constexpr bool hasSunsetAnimation = true;
+  static constexpr bool hasSunriseAnimation = true;
+  // Use the two internal gravity modes, so no need to define the callbacks
+  static constexpr bool usesSunsetGravityDissolveMode = true;
+  static constexpr bool usesSunriseGravityAppearMode = true;
 };
 
 } // namespace lampda::modes::default_modes

@@ -389,18 +389,76 @@ TEST(cmd_parser, parse_uint_hex)
   EXPECT_STREQ(str.data(), "0xFF");
 }
 
-TEST(cmd_parser, parse_uint_octal)
+TEST(cmd_parser, parse_uint_leading_zero_is_decimal)
 {
   const bsp::text_in::Inputs::Command input = create_command("cmd 010");
   auto parsed = parseCommand(input);
 
   uint8_t value = 0;
   EXPECT_TRUE(argument::parse_uint8(parsed, 0, value));
-  EXPECT_EQ(value, 8);
+  EXPECT_EQ(value, 10);
 
   std::array<char, MaxStringArgumentLen> str {};
   EXPECT_TRUE(argument::parse_text(parsed, 0, str));
   EXPECT_STREQ(str.data(), "010");
+}
+
+TEST(cmd_parser, parse_uint_zero_padded)
+{
+  // zero padded values, natural for times, are decimal
+  const bsp::text_in::Inputs::Command input = create_command("cmd 08 09 00");
+  auto parsed = parseCommand(input);
+
+  uint8_t value = 0;
+  EXPECT_TRUE(argument::parse_uint8(parsed, 0, value));
+  EXPECT_EQ(value, 8);
+  EXPECT_TRUE(argument::parse_uint8(parsed, 1, value));
+  EXPECT_EQ(value, 9);
+  EXPECT_TRUE(argument::parse_uint8(parsed, 2, value));
+  EXPECT_EQ(value, 0);
+}
+
+TEST(cmd_parser, parse_uint_rejects_sign_and_empty_prefix)
+{
+  for (const char* text: {"cmd +5", "cmd 0x", "cmd 0b", "cmd 0b12", "cmd 0xG"})
+  {
+    const bsp::text_in::Inputs::Command input = create_command(text);
+    auto parsed = parseCommand(input);
+
+    uint16_t value = 0;
+    EXPECT_FALSE(argument::parse_uint16(parsed, 0, value)) << text;
+  }
+}
+
+TEST(cmd_parser, parse_uint_uppercase_prefix)
+{
+  // the prefixes are case insensitive, as the hex digits
+  const struct
+  {
+    const char* text;
+    uint16_t expected;
+  } cases[] = {{"cmd 0XFF", 0xFF}, {"cmd 0Xff", 0xFF}, {"cmd 0X1A2B", 0x1A2B}, {"cmd 0B1010", 0b1010}, {"cmd 0B0", 0}};
+
+  for (const auto& testCase: cases)
+  {
+    const bsp::text_in::Inputs::Command input = create_command(testCase.text);
+    auto parsed = parseCommand(input);
+
+    uint16_t value = 0;
+    EXPECT_TRUE(argument::parse_uint16(parsed, 0, value)) << testCase.text;
+    EXPECT_EQ(value, testCase.expected) << testCase.text;
+  }
+
+  // the empty and invalid uppercase prefixes are refused, as the lowercase ones
+  // a repeated prefix is not a number: strtoul would accept the second one in base 16
+  for (const char* text: {"cmd 0X", "cmd 0B", "cmd 0B12", "cmd 0XG", "cmd 0X0xFF", "cmd 0x0XFF", "cmd 0B0b1"})
+  {
+    const bsp::text_in::Inputs::Command input = create_command(text);
+    auto parsed = parseCommand(input);
+
+    uint16_t value = 0;
+    EXPECT_FALSE(argument::parse_uint16(parsed, 0, value)) << text;
+  }
 }
 
 TEST(cmd_parser, parse_uint_binary_prefix)

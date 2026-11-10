@@ -6,12 +6,14 @@
 */
 
 #include "FUSB302.h"
+#include "cc_thresholds.h"
 #include "../../../../src/system/bsp/pd/tcpm/usb_pd_tcpm.h"
 #include "../../../../src/system/bsp/pd/tcpm/tcpm.h"
 #include "../../../../src/system/bsp/pd/usb_pd.h"
 #include "../../../../src/system/bsp/pd/task.h"
 
 #include "../../../../src/system/hal/mutex.h"
+#include "../../../../src/system/bsp/text_out.h"
 
 static hal_mutex_t measure_lock;
 
@@ -107,6 +109,24 @@ static int convert_bc_lvl(int bc_lvl)
   return ret;
 }
 
+/*
+ * Source pull-ups to apply to a SWITCHES0 value.
+ * Unattached, both CC lines are pulled up to detect a sink on either of them. Once attached with PD communication
+ * enabled, only the active line keeps its pull-up (as the Linux FUSB302 driver does): with both enabled, the two CC
+ * lines are coupled through the pull-ups, and the board permanent Rd of the unused line loads the PD line (issue #357)
+ */
+static int fusb302_source_pull_ups(int reg)
+{
+  reg &= ~(TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN);
+  if (state.rx_enable && state.cc_polarity == 0)
+    reg |= TCPC_REG_SWITCHES0_CC1_PU_EN;
+  else if (state.rx_enable && state.cc_polarity == 1)
+    reg |= TCPC_REG_SWITCHES0_CC2_PU_EN;
+  else
+    reg |= TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN;
+  return reg;
+}
+
 static int measure_cc_pin_source(int cc_measure)
 {
   int switches0_reg;
@@ -119,8 +139,14 @@ static int measure_cc_pin_source(int cc_measure)
   tcpc_read(TCPC_REG_SWITCHES0, &reg);
   /* Save current value */
   switches0_reg = reg;
-  /* Clear pull-up register settings and measure bits */
+  /*
+   * Clear pull-up register settings and measure bits.
+   * Upstream only cleared the measure bits: with both pull-ups enabled, the CC lines are not measured independently
+   * (each reads the load of both lines), and the board permanent Rd on the other line drags the measure down
+   * (issue #357)
+   */
   reg &= ~(TCPC_REG_SWITCHES0_MEAS_CC1 | TCPC_REG_SWITCHES0_MEAS_CC2);
+  reg &= ~(TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN);
   /* Set desired pullup register bit */
   if (cc_measure == TCPC_REG_SWITCHES0_MEAS_CC1)
     reg |= TCPC_REG_SWITCHES0_CC1_PU_EN;
@@ -172,13 +198,24 @@ static void detect_cc_pin_source_manual(enum tcpc_cc_voltage_status* cc1_lvl, en
   int cc1_measure = TCPC_REG_SWITCHES0_MEAS_CC1;
   int cc2_measure = TCPC_REG_SWITCHES0_MEAS_CC2;
 
-  if (state.vconn_enabled)
+  /*
+   * The measure switches also select the PD receiver line: measuring the other CC line while PD communication is
+   * enabled points the receiver at the wrong line, and the incoming messages are lost (no GoodCRC, the partner ends
+   * in hard resets, issue #357). Only the active line is needed once attached (detach detection).
+   */
+  if (state.vconn_enabled || state.rx_enable)
   {
-    /* If VCONN enabled, measure cc_pin that matches polarity */
+    /* If VCONN or PD communication enabled, measure cc_pin that matches polarity */
     if (state.cc_polarity)
+    {
+      *cc1_lvl = TYPEC_CC_VOLT_OPEN;
       *cc2_lvl = measure_cc_pin_source(cc2_measure);
+    }
     else
+    {
       *cc1_lvl = measure_cc_pin_source(cc1_measure);
+      *cc2_lvl = TYPEC_CC_VOLT_OPEN;
+    }
   }
   else
   {
@@ -198,6 +235,29 @@ static void detect_cc_pin_sink(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_vo
   int bc_lvl_cc2;
 
   hal_mutex_lock(&measure_lock);
+
+  /*
+   * The measure switches also select the PD receiver line: switching them to the other CC line while PD communication
+   * is enabled makes the receiver miss the source messages (issue #357). With PD communication enabled, the measure
+   * switch is already on the active line (see fusb302_tcpm_set_rx_enable): read its level without touching anything.
+   */
+  if (state.rx_enable && (state.cc_polarity == 0 || state.cc_polarity == 1))
+  {
+    tcpc_read(TCPC_REG_STATUS0, &reg);
+    reg &= (TCPC_REG_STATUS0_BC_LVL0 | TCPC_REG_STATUS0_BC_LVL1);
+    if (state.cc_polarity)
+    {
+      *cc1 = TYPEC_CC_VOLT_OPEN;
+      *cc2 = convert_bc_lvl(reg);
+    }
+    else
+    {
+      *cc1 = convert_bc_lvl(reg);
+      *cc2 = TYPEC_CC_VOLT_OPEN;
+    }
+    hal_mutex_unlock(&measure_lock);
+    return;
+  }
 
   /*
    * Measure CC1 first.
@@ -340,11 +400,52 @@ static int fusb302_send_message(uint16_t header, const uint32_t* data, uint8_t* 
   return rv;
 }
 
+/* Source CC comparator thresholds (open vs Rd, Rd vs Ra), for an Rp current source */
+static void fusb302_set_source_thresholds(int rp)
+{
+#if LMBD_USBC_HAS_BOARD_CC_RD
+  /*
+   * Do not use the standard PD_SRC_*_VNC_MV and PD_SRC_*_RD_THRESH_MV thresholds: the board permanent Rd on the CC
+   * lines would make them always read as Rd (see cc_thresholds.h, issue #357)
+   */
+  uint32_t rp_ua;
+  switch (rp)
+  {
+    case TYPEC_RP_1A5:
+      rp_ua = LMBD_FUSB302_RP_1A5_UA;
+      break;
+    case TYPEC_RP_3A0:
+      rp_ua = LMBD_FUSB302_RP_3A0_UA;
+      break;
+    case TYPEC_RP_USB:
+    default:
+      rp_ua = LMBD_FUSB302_RP_USB_UA;
+  }
+  state.mdac_vnc = lmbd_cc_open_mdac(rp_ua);
+  state.mdac_rd = lmbd_cc_rd_mdac(rp_ua);
+#else
+  switch (rp)
+  {
+    case TYPEC_RP_1A5:
+      state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_VNC_MV);
+      state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_RD_THRESH_MV);
+      break;
+    case TYPEC_RP_3A0:
+      state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_VNC_MV);
+      state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_RD_THRESH_MV);
+      break;
+    case TYPEC_RP_USB:
+    default:
+      state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_VNC_MV);
+      state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_RD_THRESH_MV);
+  }
+#endif
+}
+
 static int fusb302_tcpm_select_rp_value(int rp)
 {
   int reg;
   int rv;
-  uint8_t vnc, rd;
 
   rv = tcpc_read(TCPC_REG_CONTROL0, &reg);
   if (rv)
@@ -356,22 +457,15 @@ static int fusb302_tcpm_select_rp_value(int rp)
   {
     case TYPEC_RP_1A5:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_1A5;
-      vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_VNC_MV);
-      rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_1_5_RD_THRESH_MV);
       break;
     case TYPEC_RP_3A0:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_3A0;
-      vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_VNC_MV);
-      rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_3_0_RD_THRESH_MV);
       break;
     case TYPEC_RP_USB:
     default:
       reg |= TCPC_REG_CONTROL0_HOST_CUR_USB;
-      vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_VNC_MV);
-      rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_RD_THRESH_MV);
   }
-  state.mdac_vnc = vnc;
-  state.mdac_rd = rd;
+  fusb302_set_source_thresholds(rp);
   return tcpc_write(TCPC_REG_CONTROL0, reg);
 }
 
@@ -387,10 +481,8 @@ static int fusb302_tcpm_init()
   /* set default */
   state.cc_polarity = -1;
 
-  /* set the voltage threshold for no connect detection (vOpen) */
-  state.mdac_vnc = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_VNC_MV);
-  /* set the voltage threshold for Rd vs Ra detection */
-  state.mdac_rd = TCPC_REG_MEASURE_MDAC_MV(PD_SRC_DEF_RD_THRESH_MV);
+  /* the software reset below selects the default USB Rp current source: set the matching CC thresholds */
+  fusb302_set_source_thresholds(TYPEC_RP_USB);
 
   /* all other variables assumed to default to 0 */
 
@@ -464,6 +556,32 @@ static int fusb302_tcpm_init()
 
 static int fusb302_tcpm_release() { return EC_ERROR_UNIMPLEMENTED; }
 
+/* last CC levels read, for debug */
+static int last_cc1 = TYPEC_CC_VOLT_OPEN;
+static int last_cc2 = TYPEC_CC_VOLT_OPEN;
+
+void fusb302_get_last_cc(int* cc1, int* cc2)
+{
+  *cc1 = last_cc1;
+  *cc2 = last_cc2;
+}
+
+/* transmission results, for debug */
+static uint32_t tx_collisions = 0;
+static uint32_t tx_retry_fails = 0;
+static uint32_t tx_success = 0;
+/* received messages (GoodCRC sent), for debug */
+static uint32_t rx_messages = 0;
+
+uint32_t fusb302_get_rx_count() { return rx_messages; }
+
+void fusb302_get_tx_counters(uint32_t* success, uint32_t* collisions, uint32_t* retry_fails)
+{
+  *success = tx_success;
+  *collisions = tx_collisions;
+  *retry_fails = tx_retry_fails;
+}
+
 static int fusb302_tcpm_get_cc(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_voltage_status* cc2)
 {
   if (state.pulling_up)
@@ -477,7 +595,27 @@ static int fusb302_tcpm_get_cc(enum tcpc_cc_voltage_status* cc1, enum tcpc_cc_vo
     detect_cc_pin_sink(cc1, cc2);
   }
 
+  last_cc1 = *cc1;
+  last_cc2 = *cc2;
   return 0;
+}
+
+/*
+ * BC_LVL interrupt: only useful to a sink, without PD communication (CC level change).
+ * As a source, the CC measurements switch the pull-ups and comparators, which changes BC_LVL: each measurement raised
+ * an interrupt, the CC event woke the PD task, that measured again... an endless loop that starved the lower priority
+ * threads until the watchdog reset (issue #357). The source detection polls the CC lines on a timer instead.
+ */
+static void fusb302_update_bc_lvl_mask(void)
+{
+  int reg;
+  if (tcpc_read(TCPC_REG_MASK, &reg))
+    return;
+  if (state.rx_enable || state.pulling_up)
+    reg |= TCPC_REG_MASK_BC_LVL;
+  else
+    reg &= ~TCPC_REG_MASK_BC_LVL;
+  tcpc_write(TCPC_REG_MASK, reg);
 }
 
 static int fusb302_tcpm_set_cc(int pull)
@@ -495,7 +633,7 @@ static int fusb302_tcpm_set_cc(int pull)
       reg &= ~(TCPC_REG_SWITCHES0_CC2_PU_EN | TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC1_PD_EN |
                TCPC_REG_SWITCHES0_CC2_PD_EN | TCPC_REG_SWITCHES0_VCONN_CC1 | TCPC_REG_SWITCHES0_VCONN_CC2);
 
-      reg |= TCPC_REG_SWITCHES0_CC1_PU_EN | TCPC_REG_SWITCHES0_CC2_PU_EN;
+      reg = fusb302_source_pull_ups(reg);
 
       if (state.vconn_enabled)
         reg |= state.cc_polarity ? TCPC_REG_SWITCHES0_VCONN_CC1 : TCPC_REG_SWITCHES0_VCONN_CC2;
@@ -543,6 +681,7 @@ static int fusb302_tcpm_set_cc(int pull)
       /* Unsupported... */
       return EC_ERROR_UNIMPLEMENTED;
   }
+  fusb302_update_bc_lvl_mask();
   return 0;
 }
 
@@ -594,6 +733,13 @@ static int fusb302_tcpm_set_polarity(enum tcpc_cc_polarity polarity)
 
   /* Save the polarity for later */
   state.cc_polarity = polarity;
+
+  /* the active line changed: move the source pull-up with it */
+  if (state.pulling_up && state.rx_enable)
+  {
+    tcpc_read(TCPC_REG_SWITCHES0, &reg);
+    tcpc_write(TCPC_REG_SWITCHES0, fusb302_source_pull_ups(reg));
+  }
 
   return 0;
 }
@@ -712,22 +858,25 @@ static int fusb302_tcpm_set_rx_enable(int enable)
         /* "shouldn't get here" */
         return EC_ERROR_UNKNOWN;
     }
+    if (state.pulling_up)
+      reg = fusb302_source_pull_ups(reg);
     tcpc_write(TCPC_REG_SWITCHES0, reg);
 
     /* Disable BC_LVL interrupt when enabling PD comm */
-    if (!tcpc_read(TCPC_REG_MASK, &reg))
-      tcpc_write(TCPC_REG_MASK, reg | TCPC_REG_MASK_BC_LVL);
+    fusb302_update_bc_lvl_mask();
 
     /* flush rx fifo in case messages have been coming our way */
     fusb302_flush_rx_fifo();
   }
   else
   {
+    /* back to both pull-ups: detect the sink on any line */
+    if (state.pulling_up)
+      reg = fusb302_source_pull_ups(reg);
     tcpc_write(TCPC_REG_SWITCHES0, reg);
 
-    /* Enable BC_LVL interrupt when disabling PD comm */
-    if (!tcpc_read(TCPC_REG_MASK, &reg))
-      tcpc_write(TCPC_REG_MASK, reg & ~TCPC_REG_MASK_BC_LVL);
+    /* Enable BC_LVL interrupt when disabling PD comm (sink only, see fusb302_update_bc_lvl_mask) */
+    fusb302_update_bc_lvl_mask();
   }
 
 #ifdef CONFIG_USB_PD_DECODE_SOP
@@ -963,6 +1112,9 @@ void fusb302_tcpc_alert()
    */
   if (state.rx_enable)
     interrupt &= ~TCPC_REG_INTERRUPT_BC_LVL;
+  /* nor as a source: our own CC measurements change it (see fusb302_update_bc_lvl_mask) */
+  if (state.pulling_up)
+    interrupt &= ~TCPC_REG_INTERRUPT_BC_LVL;
 
   if (interrupt & TCPC_REG_INTERRUPT_BC_LVL)
   {
@@ -972,6 +1124,7 @@ void fusb302_tcpc_alert()
 
   if (interrupt & TCPC_REG_INTERRUPT_COLLISION)
   {
+    tx_collisions++;
     /* packet sending collided */
     pd_transmit_complete(TCPC_TX_COMPLETE_FAILED);
   }
@@ -984,7 +1137,12 @@ void fusb302_tcpc_alert()
     usb_charger_vbus_change(fusb302_tcpm_check_vbus_level(VBUS_PRESENT));
 #else
     if (!fusb302_tcpm_check_vbus_level(VBUS_PRESENT))
+    {
       pd_vbus_low();
+      /* VBUS lost while we power it: it explains a sink detachment (issue #357) */
+      if (state.pulling_up)
+        lampda_print("FUSB302: VBUS lost while sourcing");
+    }
 #endif
     task_wake();
     // TODO hook_notify(HOOK_AC_CHANGE);
@@ -994,11 +1152,13 @@ void fusb302_tcpc_alert()
   /* GoodCRC was received, our FIFO is now non-empty */
   if (interrupta & TCPC_REG_INTERRUPTA_TX_SUCCESS)
   {
+    tx_success++;
     pd_transmit_complete(TCPC_TX_COMPLETE_SUCCESS);
   }
 
   if (interrupta & TCPC_REG_INTERRUPTA_RETRYFAIL)
   {
+    tx_retry_fails++;
     /* all retries have failed to get a GoodCRC */
     pd_transmit_complete(TCPC_TX_COMPLETE_FAILED);
   }
@@ -1026,6 +1186,7 @@ void fusb302_tcpc_alert()
   {
     /* Packet received and GoodCRC sent */
     /* (this interrupt fires after the GoodCRC finishes) */
+    rx_messages++;
     if (state.rx_enable)
     {
       /* Pull all RX messages from TCPC into EC memory */

@@ -240,9 +240,14 @@ void pd_process_source_cap(int cnt, uint32_t* src_caps)
   pd_find_pdo_index(PD_MAX_VOLTAGE_MV, &pdo);
   pd_extract_pdo_power(pdo, &ma, &mv);
 
-  /* Set max. limit, but apply 500mA ceiling */
-  // charge_manager_set_ceil( CEIL_REQUESTOR_PD, PD_MIN_MA);
-  pd_set_input_current_limit(ma, mv);
+  /*
+   * Do NOT publish this as the input current limit: it is the best source offer, not a contract.
+   * Upstream applies a 500mA ceiling here through the charge manager, which we do not have. Publishing it lets the
+   * charger pull the offered current before the source accepted the request, and keeps it if the request fails
+   * (issue #633). The limit is set on PS_RDY, and cleared on disconnection and hard reset.
+   */
+  (void)ma;
+  (void)mv;
 #endif
 }
 
@@ -400,7 +405,23 @@ unsigned pd_get_max_voltage(void) { return max_request_mv; }
 
 #endif /* CONFIG_USB_PD_DUAL_ROLE */
 
-int pd_svdm(int cnt, uint32_t* payload, uint32_t** rpayload) { return 0; }
+/*
+ * No structured VDM is supported (no identity, SVID or alternate mode): NAK the requests, as PD 2.0 asks of a
+ * responder. Ignoring them leaves the partner (a laptop as DFP sends Discover Identity) waiting and retrying until it
+ * gives up, which some partners end with an error recovery (issue #357).
+ */
+int pd_svdm(int cnt, uint32_t* payload, uint32_t** rpayload)
+{
+  static uint32_t nak[1];
+
+  /* only answer requests: never the responses, nor the Attention command (no response expected) */
+  if (cnt < 1 || PD_VDO_CMDT(payload[0]) != CMDT_INIT || PD_VDO_CMD(payload[0]) == CMD_ATTENTION)
+    return 0;
+
+  nak[0] = (payload[0] & ~VDO_CMDT_MASK) | VDO_CMDT(CMDT_RSP_NAK);
+  *rpayload = nak;
+  return 1;
+}
 
 #ifndef CONFIG_USB_PD_CUSTOM_VDM
 int pd_vdm(int cnt, uint32_t* payload, uint32_t** rpayload) { return 0; }

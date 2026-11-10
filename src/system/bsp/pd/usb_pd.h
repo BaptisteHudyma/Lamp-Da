@@ -44,6 +44,7 @@ extern "C" {
 #define PD_EVENT_DEVICE_ACCESSED    (1 << 7)
 #define PD_EVENT_POWER_STATE_CHANGE (1 << 8)
 #define PD_EVENT_RX_HARD_RESET      (1 << 11) /* Receive a Hard Reset. */
+#define PD_EVENT_RESET_ALLOWED      (1 << 12) /* The sink can now reset the source, see pd_set_reset_allowed */
 
 /* --- PD data message helpers --- */
 #define PDO_MAX_OBJECTS 7
@@ -135,6 +136,7 @@ extern "C" {
 #define PD_T_SEND_SOURCE_CAP        (100 * MSEC_US) /* between 100ms and 200ms */
 #define PD_T_SINK_WAIT_CAP          (600 * MSEC_US) /* between 310ms and 620ms */
 #define PD_T_SINK_TRANSITION        (35 * MSEC_US)  /* between 20ms and 35ms */
+#define PD_T_SRC_PS_RDY_MAX         (400 * MSEC_US) /* source: latest PS_RDY after Accept, < tPSTransition */
 #define PD_T_SOURCE_ACTIVITY        (45 * MSEC_US)  /* between 40ms and 50ms */
 #define PD_T_SENDER_RESPONSE        (30 * MSEC_US)  /* between 24ms and 30ms */
 #define PD_T_PS_TRANSITION          (500 * MSEC_US) /* between 450ms and 550ms */
@@ -172,6 +174,8 @@ extern "C" {
 #define PD_T_DISCOVER_IDENTITY     (45 * MSEC_US)   /* between 40ms and 50ms */
 #define PD_T_SYSJUMP               (1000 * MSEC_US) /* 1s */
 #define PD_T_PR_SWAP_WAIT          (100 * MSEC_US)  /* tPRSwapWait 100ms */
+/* power role swap to source: the old source waits our PS_RDY tPSSourceOn (390ms min) after its own PS_RDY */
+#define PD_T_SWAP_NEW_SRC_MAX (380 * MSEC_US)
 
 /* number of edges and time window to detect CC line is not idle */
 #define PD_RX_TRANSITION_COUNT  3
@@ -747,11 +751,6 @@ extern "C" {
    */
   int pd_get_role();
 
-  //  TODO HACK below
-  int is_sourcing();
-  int send_control(int type);
-  // endofTODO
-
 #endif
 
   /* Control Message type */
@@ -1070,6 +1069,96 @@ extern "C" {
   int is_sink_ready();
 
   /**
+   * Return 1 if the sink is still negotiating with the source (waiting for capabilities, resetting, requesting).
+   * Return 0 when negotiated, disconnected, suspended, or when the source did not answer (non PD source)
+   */
+  int is_sink_negotiating();
+
+  /**
+   * Return 1 if the sink is in a hard reset: the source drops VBUS and restores it (up to ~2s). The state machine
+   * goes to disconnected by itself if VBUS does not come back.
+   */
+  int is_sink_hard_resetting();
+
+  /**
+   * Return 1 if the source is in a hard reset: VBUS must drop to vSafe0V, until the recovery time is elapsed
+   * (PD_T_SRC_RECOVER), then come back to vSafe5V. The sinks wait for this VBUS drop, and send hard resets again
+   * when it does not happen (issue #357)
+   */
+  int is_source_hard_resetting();
+
+  /**
+   * Return 1 during a power role swap: VBUS is off between the two sources, this is not an unplug
+   */
+  int is_power_role_swapping();
+
+  /// Debug counters of the PD negociation events, since boot
+  struct pd_debug_counters
+  {
+    /// source attached (CC debounced, VBUS present)
+    uint32_t attaches;
+    /// source capabilities messages received (and answered with a request)
+    uint32_t src_caps_received;
+    /// contracts established as sink (PS_RDY received)
+    uint32_t contracts;
+    /// soft resets sent, and the ones that were not acknowledged
+    uint32_t soft_resets_sent;
+    uint32_t soft_resets_failed;
+    /// hard resets sent, and the ones whose transmission never completed (assumed sent, as the spec says)
+    uint32_t hard_resets_sent;
+    uint32_t hard_resets_tx_failed;
+    /// hard resets received from the partner
+    uint32_t hard_resets_received;
+    /// sink attached while we are source (CC debounced)
+    uint32_t src_attaches;
+    /// source capabilities sent while we are source, and the ones acknowledged by a GoodCRC
+    uint32_t src_caps_sent;
+    uint32_t src_caps_acked;
+    /// contracts established as source (PS_RDY sent and acknowledged)
+    uint32_t src_contracts;
+    /// power role swaps requested by the partner: accepted, rejected
+    uint32_t pr_swaps_accepted;
+    uint32_t pr_swaps_rejected;
+    /// power role swaps completed: we became the source, we became the sink
+    uint32_t pr_swaps_to_source;
+    uint32_t pr_swaps_to_sink;
+    /// swaps to source abandoned because our VBUS did not come up in time
+    uint32_t pr_swaps_vbus_timeout;
+  };
+
+  /* time of the last wake up of the PD state machine, in ms (debug) */
+  uint32_t pd_get_last_run_ms(void);
+
+  /// Details on the current contract, for debug
+  struct pd_contract_info
+  {
+    uint8_t power_role;
+    uint8_t polarity;
+    int is_explicit_contract;
+    /// the partner sent at least one PD message
+    int is_pd_capable;
+    int is_vbus_never_low;
+    /// last request sent (contract when an explicit contract is in place)
+    uint32_t requested_mv;
+    uint32_t requested_ma;
+    /// hard resets sent since the attach
+    int hard_reset_count;
+    struct pd_debug_counters counters;
+  };
+
+  /// Fill the contract details, for debug
+  void pd_get_contract_info(struct pd_contract_info* info);
+
+  /**
+   * Allow (1) or forbid (0) the sink to reset the source when its capabilities were missed.
+   * A hard reset makes the source drop VBUS for up to ~2s: forbid it when the battery cannot power the board.
+   * Forbidden by default.
+   */
+  void pd_set_reset_allowed(int allowed);
+  /// Return 1 if the sink can reset the source
+  int pd_is_reset_allowed();
+
+  /**
    * Return a human readable version of the pd state machine
    *
    * @param port USB-C port number
@@ -1153,6 +1242,13 @@ extern "C" {
    * @return EC_SUCCESS if the power supply is ready, <0 else.
    */
   int pd_set_power_supply_ready();
+
+  /**
+   * Check that the source output reached the voltage selected by pd_transition_voltage, to send PS_RDY.
+   *
+   * @return 1 if VBUS is at the requested voltage, 0 else
+   */
+  int pd_is_source_voltage_ready();
 
   /**
    * Ask the specified voltage from the PD source.
@@ -1258,6 +1354,12 @@ extern "C" {
    * @param flags PD flags
    */
   void pd_check_pr_role(int pr_role, int flags);
+
+  /**
+   * Ask the PD task to run the power role policy (pd_check_pr_role) again, when it is a ready sink.
+   * Can be called from any thread.
+   */
+  void pd_request_pr_role_check();
 
   /**
    * Check current data role for potential data swap

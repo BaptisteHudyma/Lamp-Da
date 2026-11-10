@@ -12,7 +12,8 @@
 #include <array>
 
 #include <src/system/logic/alerts.h>
-#include <src/system/logic/sunset_timer.h>
+#include <src/system/logic/sun_timers.h>
+#include <src/system/logic/user_signals.h>
 
 #include <src/system/utils/assert.h>
 
@@ -23,6 +24,9 @@
 #include "src/modes/include/default_config.hpp"
 #include "src/modes/include/hardware/keystore.hpp"
 #include "src/modes/include/hardware/lamp_type.hpp"
+
+#include "src/modes/include/anims/fadeout.hpp"
+#include "src/modes/include/anims/fadein.hpp"
 
 namespace lampda::modes {
 
@@ -160,6 +164,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   // required to support manager-level context
   using HasAnyGroup = details::anyOf<AllGroupsTy>;
   static constexpr bool hasSunsetAnimation = HasAnyGroup::hasSunsetAnimation;
+  static constexpr bool hasSunriseAnimation = HasAnyGroup::hasSunriseAnimation;
   static constexpr bool hasBrightCallback = HasAnyGroup::hasBrightCallback;
   static constexpr bool requireUserThread = HasAnyGroup::requireUserThread;
   static constexpr bool hasCustomRamp = HasAnyGroup::hasCustomRamp;
@@ -169,6 +174,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   // useful for runtime tests of mode properties
   using EveryModeBool = details::asTableFor<AllGroupsTy>;
   static constexpr auto everySunsetCallback = EveryModeBool::everySunsetCallback;
+  static constexpr auto everySunriseCallback = EveryModeBool::everySunriseCallback;
   static constexpr auto everyBrightCallback = EveryModeBool::everyBrightCallback;
   static constexpr auto everyRequireUserThread = EveryModeBool::everyRequireUserThread;
   static constexpr auto everyCustomRamp = EveryModeBool::everyCustomRamp;
@@ -282,11 +288,25 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     static_assert(maxFavoriteCount < 16, "Maximum of 15 favorite as been exceeded");
 
     // (variables for pending favorite state machine)
-    uint8_t isFavoritePending = 0;           ///< indicate that the addition of a favorite in in process
-    uint8_t whichFavoritePending = 0;        ///< indicates the favorite currently selected
-    bool isInDeleteFavorite = false;         ///< indicates that we are in a favorite deletion process
-    uint8_t isFavoriteDeletePending = 0;     ///< indicate that the deletion of a favorite in in process
-    uint8_t lastFavoriteStep = 0;            ///< last used favorite index
+    bool isInDeleteFavorite = false; ///< indicates that we are in a favorite deletion process
+    uint8_t lastFavoriteStep = 0;    ///< last used favorite index
+
+    struct PendingFavorite
+    {
+      enum class FavoriteAction : uint8_t
+      {
+        None,
+        Add,
+        Delete
+      };
+
+      FavoriteAction action = FavoriteAction::None; ///< action on this favorite
+      uint8_t slot = 0;                             ///< index of the favorite to add/remove
+      ActiveIndexTy snapshot {};                    ///< current active index
+    };
+
+    PendingFavorite pendingFavorite; ///< store the pending favorite to add or delete
+
     bool isInFavoriteMockGroup = false;      ///< Indicates that we are in the fake favorite page
     ActiveIndexTy beforeFavoriteActiveIndex; ///< store the index we need to go to when quitting the favorite page
     uint8_t isSunsetTimingPending = 0;       ///< Indicates that a sunset timer ramp is active
@@ -312,10 +332,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       favorites = {};
       usedFavoriteCount = 0;
 
-      isFavoritePending = 0;
-      whichFavoritePending = 0;
+      pendingFavorite = {};
       isInDeleteFavorite = false;
-      isFavoriteDeletePending = 0;
+
       lastFavoriteStep = 0;
       isInFavoriteMockGroup = false;
       beforeFavoriteActiveIndex = ActiveIndexTy();
@@ -326,10 +345,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
       skipNextFrameEffect = 0;
     }
-
-    // inside lamp.config
-    //  - skipFirstLedsForEffect = 0; // should the loop skip some lower LEDs?
-    //  - skipFirstLedsForAmount = 0; // how many pixels to shave from the top?
 
     /// configuration-related actions done before entering mode
     static void LMBD_INLINE before_enter_mode(auto& ctx)
@@ -347,6 +362,21 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       {
         ctx.lamp.clear();
       }
+      // reset masking
+      ctx.lamp.forceDisableLedDitherMask = false;
+    }
+
+    static void LMBD_INLINE on_favorite_hold_end(auto& ctx, bool shouldExecuteAction)
+    {
+      auto& p = ctx.state.pendingFavorite;
+      if (shouldExecuteAction)
+      {
+        if (p.action == PendingFavorite::FavoriteAction::Add && p.slot <= ctx.state.usedFavoriteCount)
+          ctx.set_favorite_at(p.slot, p.snapshot); // store the press-time snapshot
+        else if (p.action == PendingFavorite::FavoriteAction::Delete)
+          ctx.delete_favorite_now();
+      }
+      p = {}; // single point of reset
     }
   };
 
@@ -459,20 +489,54 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
   }
 
-  /// jump to an active index cleanly
-  static void jump_to_new_active_index(auto& ctx, const ActiveIndexTy& newActiveIndex)
+  /**
+   * \brief Jump to an active index cleanly
+   * \param[in, out] ctx
+   * \param[in] newActiveIndex The active index and ramps we want to jump to
+   * \param[in] ignoreRampAndIndex If true, ignore the given ramp and use the saved one
+   * \param[in] quitFavoriteGroup should also quit the favorite group when entering the mode
+   */
+  static void jump_to_new_active_index(auto& ctx,
+                                       const ActiveIndexTy& newActiveIndex,
+                                       const bool ignoreRampAndIndex = false,
+                                       const bool quitFavoriteGroup = false)
   {
-    // not limited to accessible groups
-    ctx.set_active_group(newActiveIndex.groupIndex, nbGroupsTotal);
-    ctx.set_active_mode(newActiveIndex.modeIndex);
-    // just copy the other values
-    ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
-    ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
+    // Favorite switches used to call set_active_group then set_active_mode.
+    // Each of those enters the mode once, so one favorite step fired two
+    // $mode user actions while only switching once (#569). Quit once, apply
+    // the full index, enter once.
+    auto manager = ctx.modeManager.get_context();
+    manager.cancel_blip();
+
+    // Persist last mode for the group we leave (set_active_group → quit_group).
+    ctx.quit_group();
+    ctx.modeManager.quit_mode(manager);
+
+    ctx.modeManager.activeIndex.groupIndex = newActiveIndex.groupIndex;
+    ctx.modeManager.activeIndex.modeIndex = newActiveIndex.modeIndex;
+
+    ctx.modeManager.enter_mode(manager);
+
+    // call AFTER the mode switch
+    if (quitFavoriteGroup)
+    {
+      ctx.state.isInFavoriteMockGroup = false;
+    }
+
+    // compare before copying, or ramps loaded in enter_mode would always match the favorite
+    const bool isRampRestored =
+            (not ignoreRampAndIndex) and ctx.modeManager.activeIndex.rawIndex == newActiveIndex.rawIndex;
+
+    if (not ignoreRampAndIndex)
+    {
+      // just copy the other values
+      ctx.modeManager.activeIndex.customIndex = newActiveIndex.customIndex;
+      ctx.modeManager.activeIndex.rampIndex = newActiveIndex.rampIndex;
+    }
 
     // if ramps loaded in enter_mode != ones saved as favorite, emulate update
-    if (ctx.modeManager.activeIndex.rawIndex != newActiveIndex.rawIndex)
+    if (not isRampRestored)
     {
-      ctx.modeManager.activeIndex = newActiveIndex;
       custom_ramp_update(ctx, ctx.get_active_custom_ramp());
     }
   }
@@ -494,14 +558,26 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     which_one = (which_one % ctx.state.usedFavoriteCount);
     ctx.state.lastFavoriteStep = which_one;
 
-    // store last active index before jump
-    if (shouldSaveLastActiveIndex)
+    // store last active index before jump, only when entering the favorite group:
+    // inside it, the active index is a favorite and would overwrite the mode to return to
+    if (shouldSaveLastActiveIndex and not ctx.state.isInFavoriteMockGroup)
     {
       ctx.state.beforeFavoriteActiveIndex = ctx.modeManager.activeIndex;
     }
 
     if (which_one >= ctx.state.maxFavoriteCount)
       return false;
+
+    if (not ctx.state.isInFavoriteMockGroup)
+    {
+      // not already in favorite group : save the latest mode & group parameters
+      ctx.quit_group();
+      auto manager = ctx.modeManager.get_context();
+      ctx.modeManager.quit_mode(manager);
+
+      // indicate that we are now in a favorite group BEFORE the state switch
+      ctx.state.isInFavoriteMockGroup = true;
+    }
 
     const auto targetFavorite = ctx.state.favorites[which_one];
     // reset once with the right mode
@@ -513,9 +589,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     // indicate favorite mode entry
     ctx.blip(250);
-
-    // indicate that we are now in a favorite group
-    ctx.state.isInFavoriteMockGroup = true;
 
     return true;
   }
@@ -531,10 +604,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 #ifdef LMBD_SIMULATION
     fprintf(stderr, "Exit fake favorite group\n");
 #endif
-    // reset favorite indicator
-    ctx.state.isInFavoriteMockGroup = false;
-    // return to previous state
-    jump_to_new_active_index(ctx, newActiveIndex);
+    // return to previous state, with the saved ramps of the target mode
+    jump_to_new_active_index(ctx, newActiveIndex, false, true);
 
     // blip to indicate favorite mode exit
     ctx.blip(250);
@@ -546,9 +617,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * \brief Add a new favorite to the target index
    * \param[in, out] ctx Context
    * \param[in] which_one Index of the favorite to add
+   * \param[in] desiredFavorite Desired mode and values to add as a favorite
    * \return True if the process succeeded
    */
-  static bool set_favorite_now(auto& ctx, uint8_t which_one = 0)
+  static bool set_favorite_at(auto& ctx, uint8_t which_one, ActiveIndexTy desiredFavorite)
   {
     // new favorite added
     if (which_one != ctx.state.maxFavoriteCount && which_one == ctx.state.usedFavoriteCount)
@@ -559,7 +631,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
     if (which_one < ctx.state.maxFavoriteCount)
     {
-      ctx.state.favorites[which_one] = ctx.modeManager.activeIndex;
+      ctx.state.favorites[which_one] = desiredFavorite;
+
+      logic::alerts::manager.raise(logic::alerts::Type::FAVORITE_SET);
       return true;
     }
     return false;
@@ -795,15 +869,19 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// Callback called on a group deactivation
   static void quit_group(auto& ctx)
   {
-    //
-    uint8_t modeIdBefore = ctx.get_active_mode();
+    // only save while out of favorites
+    if (not ctx.state.isInFavoriteMockGroup)
+    {
+      //
+      uint8_t modeIdBefore = ctx.get_active_mode();
 
-    // changes to lastModeMemory made in this function will be persistent
-    auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
+      // changes to lastModeMemory made in this function will be persistent
+      auto keyModeMemory = ctx.template storageFor<Store::modeMemory>(ctx.state.lastModeMemory);
 
-    // save last mode used in group, before switching
-    uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
-    ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+      // save last mode used in group, before switching
+      uint8_t groupIdBefore = ctx.get_active_group(nbGroupsTotal);
+      ctx.state.lastModeMemory[groupIdBefore] = modeIdBefore;
+    }
   }
 
   /// Callback called on a mode activation
@@ -817,6 +895,13 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     });
 
     ctx.state.after_enter_mode(ctx);
+
+    const uint8_t groupId = ctx.get_active_group();
+    const uint8_t modeId = ctx.get_active_mode();
+    logic::user_signals::send_mode(groupId, modeId);
+    // entering a mode restores its saved ramp without calling custom_ramp_update
+    if (ctx.everyCustomRamp[groupId][modeId])
+      logic::user_signals::send_ramp(ctx.get_active_custom_ramp(), true);
   }
 
   /// Callback called on a mode deactivation
@@ -825,6 +910,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [](auto group) {
       group.quit_mode();
     });
+
+    // cancel any blip
+    auto manager = ctx.modeManager.get_context();
+    manager.cancel_blip();
   }
 
   //
@@ -834,32 +923,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   /// main action loop
   static void loop(auto& ctx)
   {
-    // handle pending favorite
-    if (ctx.state.isFavoritePending > 0)
-    {
-      ctx.state.isFavoritePending -= 1;
-
-      if (ctx.state.isFavoritePending == 0 && ctx.state.whichFavoritePending <= ctx.state.usedFavoriteCount)
-      {
-        if (ctx.set_favorite_now(ctx.state.whichFavoritePending))
-        {
-          logic::alerts::manager.raise(logic::alerts::Type::FAVORITE_SET);
-        }
-      }
-    }
-
-    // handle favorite delete
-    if (ctx.state.isFavoriteDeletePending > 0)
-    {
-      ctx.state.isFavoriteDeletePending -= 1;
-
-      // delete favorite
-      if (ctx.state.isFavoriteDeletePending == 0)
-      {
-        ctx.delete_favorite_now();
-      }
-    }
-
     // handle the sunset timer update
     if (ctx.state.isSunsetTimingPending > 0)
     {
@@ -867,15 +930,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       if (ctx.state.isSunsetTimingPending == 0)
       {
         // set and update sunset timer
-        logic::sunset::add_time_minutes(5);
+        logic::sunset_timer.add_time_minutes(5);
         // blip AFTER the update
         ctx.blip(50);
       }
-    }
-
-    if (ctx.lamp.config.skipFirstLedsForEffect > 0)
-    {
-      ctx.lamp.config.skipFirstLedsForEffect -= 1;
     }
 
     if (ctx.state.skipNextFrameEffect > 0)
@@ -885,7 +943,7 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       // reached last skip frame, restore mode
       if (ctx.state.skipNextFrameEffect == 0)
       {
-        ctx.lamp.restoreBrightness();
+        ctx.lamp.restoreBrightnessNow();
       }
       return;
     }
@@ -897,8 +955,15 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
       group.loop();
     });
 
+    // apply low level brigthness mask, is enabled
+    ctx.lamp.apply_low_brightness_mask();
+
     // display the overlay after the group update
     overlay.display_update(ctx);
+
+    // a full frame is ready: the leds can come back, unless this frame started a new blip
+    if (ctx.state.skipNextFrameEffect == 0)
+      ctx.lamp.end_blackout();
   }
 
   /**
@@ -911,6 +976,60 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [&](auto group) {
       group.sunset_update(progress);
     });
+  }
+
+  /**
+   * \brief Callback of the sunrise timer update
+   * \param[in, out] ctx Context
+   * \param[in] progress Between 0 and 1, progress of the sunrise timer. Lamp will be fully on at 1
+   */
+  static void sunrise_update(auto& ctx, float progress)
+  {
+    dispatch_group(ctx, [&](auto group) {
+      group.sunrise_update(progress);
+    });
+  }
+
+  /**
+   * \brief Run a sun timer loop
+   */
+  static void sunset_timer_animation_internal_loop(auto& ctx)
+  {
+    if (logic::sunset_timer.is_enabled())
+    {
+      ctx.modeManager.sunsetHandler.loop_suntimer_animation(ctx);
+      ctx.lamp.forceDisableLedDitherMask = true;
+    }
+  }
+
+  /**
+   * \brief Signal that a sun timer as been canceled
+   */
+  static void sunset_timer_internal_reset(auto& ctx)
+  {
+    ctx.modeManager.sunsetHandler.reset_suntimer_animation(ctx);
+    ctx.lamp.forceDisableLedDitherMask = false;
+  }
+
+  /**
+   * \brief Run a sun timer loop
+   */
+  static void sunrise_timer_animation_internal_loop(auto& ctx)
+  {
+    if (logic::sunrise_timer.is_enabled())
+    {
+      ctx.modeManager.sunriseHandler.loop_suntimer_animation(ctx);
+      ctx.lamp.forceDisableLedDitherMask = true;
+    }
+  }
+
+  /**
+   * \brief Signal that a sun timer as been canceled
+   */
+  static void sunrise_timer_internal_reset(auto& ctx)
+  {
+    ctx.modeManager.sunriseHandler.reset_suntimer_animation(ctx);
+    ctx.lamp.forceDisableLedDitherMask = false;
   }
 
   /**
@@ -930,6 +1049,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
   {
     // start with tick value
     ctx.lamp.refresh_tick_value();
+
+    // start by reseting the sun timers animations, clear masks if we did not wake up with a sunrise
+    ctx.sunset_timer_internal_reset();
+    ctx.sunrise_timer_internal_reset();
 
     foreach_group<true>(ctx, [](auto group) {
       group.power_on_sequence();
@@ -954,6 +1077,8 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     foreach_group<true>(ctx, [](auto group) {
       group.power_off_sequence();
     });
+
+    ctx.lamp.forceDisableLedDitherMask = false;
   }
 
   /// Write the parameters to memory
@@ -1073,6 +1198,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     dispatch_group(ctx, [&](auto group) {
       group.custom_ramp_update(rampValue);
     });
+
+    if (ctx.everyCustomRamp[groupId][modeId])
+      logic::user_signals::send_ramp(rampValue);
   }
 
   /// Binds to local Group::custom_click()
@@ -1129,6 +1257,9 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     return ctx.state.usedFavoriteCount + ((ctx.state.usedFavoriteCount < ctx.state.maxFavoriteCount) ? 1 : 0);
   }
 
+  /// Return true is we are in the favorite group mode
+  static bool is_in_favorite_group(auto& ctx) { return ctx.state.isInFavoriteMockGroup; }
+
   /**
    * \brief Set the current mode as a favorite at the target index
    *
@@ -1152,9 +1283,11 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
               ctx, favoriteIndex, numberOfFavoriteSet, favoriteIndex < numberOfFavoriteSet, displayTimeout_s);
     }
 
-    // set this, after a while upon no longer holding button, favorite is set
-    ctx.state.isFavoritePending = 10;
-    ctx.state.whichFavoritePending = favoriteIndex;
+    ctx.state.pendingFavorite.action = StateTy::PendingFavorite::FavoriteAction::Add;
+    ctx.state.pendingFavorite.slot = favoriteIndex;
+    ctx.state.pendingFavorite.snapshot = ctx.modeManager.activeIndex;
+
+    ctx.state.on_favorite_hold_end(ctx, true);
   }
 
   /** \private
@@ -1162,9 +1295,10 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * \param[in, out] ctx
    * \param[in] holdDuration User button hold duration
    * \param[in] stepSize Desired lenght of the animation, in milliseconds
+   * \param[in] isEndOfHold Indicate if the hold was just released
    */
   template<bool displayFavoriteNumber = true>
-  static void animate_favorite_pick(auto& ctx, float holdDuration, float stepSize)
+  static void animate_favorite_pick(auto& ctx, float holdDuration, float stepSize, bool isEndOfHold)
   {
     const uint8_t numberOfFavoriteSet = get_number_of_allowed_favorites(ctx);
 
@@ -1175,9 +1309,6 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     // display ramp to show where user is standing
     if (stepCount >= numberOfFavoriteSet)
     {
-      // cancel action
-      ctx.state.isFavoritePending = 0;
-
       // display ramp for the first time to allow the user to cancel the action
       if (holdDuration <= 2 * stepSize)
       {
@@ -1188,9 +1319,21 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
     {
       // green ramp : favorites
       overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Green, colors::White>);
+      // display target favorite
+      if constexpr (displayFavoriteNumber)
+      {
+        display_favorite_number_ramp(ctx, stepCount, numberOfFavoriteSet, stepCount < numberOfFavoriteSet);
+      }
+    }
 
-      // Set the favorite: this actually do not set it immediatly but waits until the function is not called anymores
-      set_current_mode_as_favorite<displayFavoriteNumber>(ctx, stepCount);
+    // user lets go of the button: action on the favorite
+    if (isEndOfHold)
+    {
+      // favorite in correct range: add new favorite !
+      if (stepCount < numberOfFavoriteSet)
+        set_current_mode_as_favorite(ctx, stepCount);
+      else // cancel the new favorite: outside of range
+        ctx.state.on_favorite_hold_end(ctx, false);
     }
   }
 
@@ -1199,32 +1342,31 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
    * \param[in, out] ctx
    * \param[in] holdDuration User button hold duration
    * \param[in] stepSize Desired lenght of the animation, in milliseconds
+   * \param[in] isEndOfHold Indicates the end of the hold event
    */
   template<bool displayFavoriteNumber = true>
-  static void animate_favorite_delete(auto& ctx, float holdDuration, float stepSize)
+  static void animate_favorite_delete(auto& ctx, float holdDuration, float stepSize, bool isEndOfHold)
   {
     // no favorite deletion if no favorites
     if (ctx.state.usedFavoriteCount <= 0)
       return;
+    // end of hold,
+    if (isEndOfHold)
+    {
+      ctx.state.on_favorite_hold_end(ctx, false);
+      return;
+    }
 
     ctx.state.isInDeleteFavorite = true;
 
     uint32_t stepCount = floor(holdDuration / stepSize);
     stepCount = stepCount % 2;
 
+    // detect the state switch
+    const bool justSwitched = stepCount != ctx.state.pendingFavorite.slot;
     if (stepCount == 0)
     {
-      if (overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>))
-      {
-        // set this on ramp saturation. The favorite will be removed in 2 frames
-        ctx.state.isFavoriteDeletePending = 2;
-      }
-      else
-      {
-        // no deletion if release on ramp
-        ctx.state.isFavoriteDeletePending = 0;
-      }
-
+      overlay_animate_ramp(ctx, holdDuration, stepSize, colors::PaletteGradient<colors::Orange, colors::Red>);
       // extra display on the first pixels (count pixels to know fav no)
       if constexpr (displayFavoriteNumber)
       {
@@ -1232,7 +1374,19 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
         display_favorite_number_ramp(ctx, ctx.state.lastFavoriteStep, ctx.state.usedFavoriteCount, true);
       }
     }
-    // else: do nothing
+    else
+    {
+      /// we just saturated the ramp
+      if (justSwitched)
+      {
+        // delete now on ramp saturation. This
+        ctx.state.pendingFavorite.action = StateTy::PendingFavorite::FavoriteAction::Delete;
+        ctx.state.on_favorite_hold_end(ctx, true);
+      }
+    }
+
+    // update state pending LAST: it could have been resetted by favorite handle
+    ctx.state.pendingFavorite.slot = stepCount;
   }
 
   //
@@ -1247,6 +1401,26 @@ template<typename Config, typename AllGroups, uint8_t hiddenGroupsCount> struct 
 
   /// Menu overlay object
   inline static draw::overlay::Manager<> overlay;
+
+  /**
+   * Suntimer handling
+   */
+
+  template<typename Animation> struct SunTimerHandling
+  {
+    // define the shared suntimer animation
+    Animation animation;
+    /// Update the sunset drop animation
+    void update_suntimer_drop_animation(auto& ctx, float progress) { animation.update_progress_rate(ctx, progress); }
+    /// Reset the sunset animations
+    void reset_suntimer_animation(auto& ctx) { animation.reset(ctx); }
+    /// loop suntimer animations
+    void loop_suntimer_animation(auto& ctx) { animation.loop(ctx); }
+  };
+
+  // sunset drop animation handle
+  SunTimerHandling<anims::fadeout::GravityDissolve<>> sunsetHandler;
+  SunTimerHandling<anims::fadein::GravityFadeIn<>> sunriseHandler;
 
   //
   // private members

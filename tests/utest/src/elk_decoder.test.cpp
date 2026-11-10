@@ -148,7 +148,7 @@ TEST(test_elf_decoder, brightness_messages_invalid)
 TEST(test_elf_decoder, onoff_messages_valid)
 {
   std::array<uint8_t, 9> message = {0x7E, 0x00, 0x04, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
-  message[3] = 0;
+  message[3] = 0x00;
 
   Package package;
   EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
@@ -156,7 +156,13 @@ TEST(test_elf_decoder, onoff_messages_valid)
   EXPECT_EQ(package.dataSize, 1);
   EXPECT_EQ(package.data[0], 0);
 
-  message[3] = 1;
+  message[3] = 0x01;
+  EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
+  EXPECT_EQ(package.type, Type::ONOFF);
+  EXPECT_EQ(package.dataSize, 1);
+  EXPECT_EQ(package.data[0], 1);
+
+  message[3] = 0xF0; // new versions
   EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));
   EXPECT_EQ(package.type, Type::ONOFF);
   EXPECT_EQ(package.dataSize, 1);
@@ -166,9 +172,12 @@ TEST(test_elf_decoder, onoff_messages_valid)
 TEST(test_elf_decoder, onoff_messages_invalid)
 {
   // invalid values
-  for (uint8_t onoff = 2; onoff < UINT8_MAX; onoff++)
+  for (uint8_t onoff = 0; onoff < UINT8_MAX; onoff++)
   {
-    std::array<uint8_t, 9> message = {0x7E, 0x00, 0x04, 0, 0x00, 0x00, 0x00, 0x00, 0xEF};
+    // ignore valid values
+    if (onoff == 0xF0 or onoff == 0x00 or onoff == 0x01)
+      continue;
+    std::array<uint8_t, 9> message = {0x7E, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0xEF};
     message[3] = onoff;
 
     Package package;
@@ -180,7 +189,7 @@ TEST(test_elf_decoder, onoff_messages_invalid)
   // ignore other values
   for (uint8_t header = 0; header < 255; header++)
   {
-    std::array<uint8_t, 9> message = {0x7E, header, 0x04, 0, header, header, header, header, 0xEF};
+    std::array<uint8_t, 9> message = {0x7E, header, 0x04, 0x00, header, header, header, header, 0xEF};
 
     Package package;
     EXPECT_TRUE(decode_ELK_message(message.data(), message.size(), package));

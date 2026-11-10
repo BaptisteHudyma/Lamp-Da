@@ -1,15 +1,16 @@
 #include "filesystem.h"
 
-#include "src/system/hal/bluetooth.h"
+#include <etl/map.h>
+
 #include "src/system/hal/filesystem.h"
 #include "src/system/hal/time.h"
 
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
+#include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/statistics_handler.h"
-
-#include <map>
 
 namespace lampda {
 namespace bsp {
@@ -21,8 +22,10 @@ static constexpr const char* const FILENAME_USER = "/.lampda.par";
 static constexpr const char* const FILENAME_INTERNAL = "/.internal.par";
 
 size_t lastUserParameterSize = 0;
-std::map<uint32_t, uint32_t> _userParametersValueMap;
-std::map<uint32_t, uint32_t> _systemParametersValueMap;
+
+// Map have a fixed max size here, they can be made greater if needed
+etl::map<uint32_t, uint32_t, 128> _userParametersValueMap;
+etl::map<uint32_t, uint32_t, 64> _systemParametersValueMap;
 
 /**
  * \brief Store a key and a value
@@ -45,17 +48,23 @@ union KeyValToByteArray
 
 void shutdown() { hal::filesystem::shutdown(); }
 
-void clear_internal_fs()
+/// Format the storage only: the cached parameters are kept as is
+static void format_storage()
 {
   // First disconnect any BLE device
-  if (hal::bluetooth::is_connected())
-    hal::bluetooth::disconnect();
+  if (bsp::ble::is_connected())
+    bsp::ble::disconnect();
 
   hal::filesystem::format_file_system();
 
   // It's very important to manually clear the bounded device list AFTER the format
   hal::delay_ms(100);
-  hal::bluetooth::clear_bounded_devices();
+  bsp::ble::clear_bounded_devices();
+}
+
+void clear_internal_fs()
+{
+  format_storage();
 
   // reset the cached parameters
   system::clear_cached();
@@ -67,9 +76,29 @@ void clear_internal_fs()
   logic::behavior::read_parameters();
 }
 
+bool hasOverflowed = false;
+bool has_overflowed() { return hasOverflowed; }
+
 namespace __internal {
 
-bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& paramMap)
+template<typename MapType> void set_value(const uint32_t key, const uint32_t value, MapType& paramMap)
+{
+  if (paramMap.contains(key))
+  {
+    paramMap.at(key) = value;
+  }
+  else
+  {
+    const bool isSuccess = paramMap.insert({key, value}).second;
+    if (not isSuccess)
+    {
+      bsp::lampda_print("Could not add value to map, map memory is likely full (max %d)", paramMap.capacity());
+      hasOverflowed = true;
+    }
+  }
+}
+
+template<typename MapType> bool read_file_content(const char* fileName, MapType& paramMap)
 {
   paramMap.clear();
 
@@ -111,9 +140,9 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
       if (readlen >= sizeOfData)
       {
         // only modify the first data of the list
-        if (paramMap.find(converter.kv.key) == paramMap.end())
+        if (not paramMap.contains(converter.kv.key))
         {
-          paramMap[converter.kv.key] = converter.kv.value;
+          set_value(converter.kv.key, converter.kv.value, paramMap);
         }
         else
         {
@@ -135,7 +164,8 @@ bool read_file_content(const char* fileName, std::map<uint32_t, uint32_t>& param
   return false;
 }
 
-bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramMap, const bool shouldEraseFirst = false)
+template<typename MapType>
+bool write_file(const char* filePath, const MapType& paramMap, const bool shouldEraseFirst = false)
 {
   // check if it exists
   hal::filesystem::HAL_File paramFile;
@@ -155,8 +185,9 @@ bool write_file(const char* filePath, const std::map<uint32_t, uint32_t>& paramM
     // error. the file should have been opened
     bsp::lampda_print("file system error, resetting file format");
 
-    // hardcore, format the entire file system
-    clear_internal_fs();
+    // hardcore, format the entire file system.
+    // Keep the cached parameters: they are the values to save, and resetting them would write defaults instead
+    format_storage();
   }
 
   if (not paramFile.is_open())
@@ -207,7 +238,10 @@ bool get_value(const uint32_t key, uint32_t& value)
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value) { _systemParametersValueMap[key] = value; }
+void set_value(const uint32_t key, const uint32_t value)
+{
+  __internal::set_value(key, value, _systemParametersValueMap);
+}
 
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 {
@@ -243,7 +277,7 @@ void write_to_file()
   const bool systemParameterWriteSuccess = __internal::write_file(FILENAME_INTERNAL, _systemParametersValueMap);
   if (not systemParameterWriteSuccess)
   {
-    // TODO: handle error
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     bsp::lampda_print("could not save system parameters");
   }
 }
@@ -286,7 +320,7 @@ bool get_value(const uint32_t key, uint32_t& value)
   return false;
 }
 
-void set_value(const uint32_t key, const uint32_t value) { _userParametersValueMap[key] = value; }
+void set_value(const uint32_t key, const uint32_t value) { __internal::set_value(key, value, _userParametersValueMap); }
 
 uint32_t dropMatchingKeys(const uint32_t bitMatch, const uint32_t bitSelect)
 {
@@ -328,7 +362,7 @@ void write_to_file()
           __internal::write_file(FILENAME_USER, _userParametersValueMap, shouldEraseFile);
   if (not userParameterWriteSuccess)
   {
-    // TODO: handle error
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     bsp::lampda_print("could not save user parameters");
   }
 }

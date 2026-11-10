@@ -97,9 +97,9 @@ struct Candle : public BasicMode
     auto& lamp = ctx.lamp;
 
     const auto maxBrightness = lamp.getMaxBrightness();
-    const float brightnessCorrection = maxBrightness / 255.0;
+    const float brightnessCorrection = maxBrightness / 255.0f;
 
-    // limit max brightness
+    // limit max brightness, to keep some room for the candle waves
     const brightness_t base = std::min<brightness_t>(
             lamp.getSavedBrightness(),
             maxBrightness - std::min<int>(maxBrightness, (CANDLE_AMPLITUDE + 15) * brightnessCorrection));

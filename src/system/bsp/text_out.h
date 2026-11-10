@@ -20,10 +20,12 @@ namespace bsp {
 
 EXTERNC void lampda_print_init();
 
-EXTERNC void lampda_print(const char* format, ...);
+EXTERNC void lampda_print(const char* format, ...) __attribute__((format(printf, 1, 2)));
 
 /// raw print, no system additional logs
-EXTERNC void lampda_print_raw(const char* format, ...);
+EXTERNC void lampda_print_raw(const char* format, ...) __attribute__((format(printf, 1, 2)));
+/// Number of text chunks still waiting to be sent on the bluetooth link (0 when no link is open)
+EXTERNC int lampda_print_ble_pending();
 
 #undef EXTERNC
 

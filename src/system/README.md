@@ -1,8 +1,10 @@
 # File details
 - global.h: main entry point for the program
 - bsp: Board Support Package. Board specific implementations, under the application, above the HAL.
+    - ble_services: BLE custom services
     - pd: PowerDelivery layer
     - balancer.h: handle the battery balancing, and some battery measurments
+    - ble.h: BLE high level layer.
     - charging_ic.h: layer of the battery charging component
     - imu_wrappper.h: interaction layer of the imu
     - indicator.h: visual indicator controler (led in the button)
@@ -12,12 +14,10 @@
     - text_out.h: user text output
     - threads.h: Thread board support
 - common: Common general use and interfaces
-    - bitset.h: Array of bits/booleans, in static memory
     - cmd_parser.h: Parse a command to extract its parameters
     - curves.h: define custom curve and curve sampling functions
     - elk_decoder.h: Decode elk messages
     - fft.h: implementation of the fft and assocated filtering
-    - queue.h: Define a non allocating queue
     - state_machine.h: generic state machine class, used for all main logic
     - time_utils.h: Useful time handling function
 - component: Medium level physical components layer: button, bluetooth, IMU, ...
@@ -38,7 +38,7 @@
     -  random8.h
     -  scale8.h
 - hal: Hardware Abstraction Layer: implement the platform specific code. The implementation linked to those files is switched at compile time depending on the hardware target.
-    - bluetooth.h: bluetooth interfaces
+    - ble.h: bluetooth interfaces
     - gpio.h: programmable pins interface
     - i2c.h; i2c interface
     - filesystem.h: handle the reading and writting of variables to memory
@@ -58,7 +58,7 @@
     - inputs.h: what button actions does what
     - power_handler.h: High level handling of all power and battery related logic
     - statistics_handler.h: Keep track of the system use statistics
-    - sunset_timer.h: Logic of the sunset timer
+    - sun_timers.h: Logic of the sunset and sunrise timer. Sunset shutdown the system slowly, sunrise starts the system slowly
 - utils: General functions and constants that everybody needs
     - colorspace.h: contain color space transition classes. Execution of those can be quite heavy for a microcontroler, beware !
     - constants.h: global constants used all around the program

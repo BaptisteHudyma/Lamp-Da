@@ -7,76 +7,62 @@ extern "C" {
 #include "../../../../src/system/hal/time.h"
 #include "../../../../src/system/bsp/threads.h"
 
-#define WAKE_EVENT_SIGNAL  (1 << 2)
-#define RESUME_TASK_SIGNAL (1 << 3)
+#define WAKE_EVENT_SIGNAL (1 << 2)
 
-  struct emu_task_t
-  {
-    volatile uint64_t timeout_us;
-    volatile uint32_t event;
-  };
-
-  struct emu_task_t tasks;
+  /**
+   * Pending events of the PD task.
+   * Set by any thread (interrupt handler, main loop), consumed by the PD task: always accessed atomically.
+   *
+   * The PD task sleeps on its own thread notification, that task_set_event sends. A notification is latched by the OS
+   * when the task is not waiting yet, so a wake up can never be lost.
+   * This replaces a suspend/resume scheme with a scheduler thread, where a resume sent before the PD task was
+   * suspended was dropped, freezing the PD state machine forever (issues #357, #642)
+   */
+  static volatile uint32_t pendingEvents = 0;
 
   timestamp_t get_time(void)
   {
     timestamp_t t;
-    t.val = time_ms() * 1000;
+    t.val = (uint64_t)time_ms() * 1000;
     t.val += time_us() % 1000;
     return t;
   }
 
-  void task_scheduler(void)
+  uint32_t task_timeout_us_to_ms(uint64_t timeout_us)
   {
-    // wait for eternity or until an event
-    int result = wait_notification(0);
-    // ignore all signals exept resume signals
-    if (result & RESUME_TASK_SIGNAL)
-    {
-      // wait for the target event
-      result = wait_notification(tasks.timeout_us / 1000);
-      // after this, the task is timeout or resolved
-      if (result & SCHED_NOTIFY_TIMER) // timeout
-        tasks.event |= TASK_EVENT_TIMER;
-      // resume the pd threads
-      resume_thread(pd_taskName);
-    }
+    if (timeout_us == 0)
+      return 0;
+    // round up: a truncated sub millisecond timeout would be 0, which waits forever (issue #642)
+    return (uint32_t)((timeout_us + 999) / 1000);
   }
 
   uint32_t task_set_event(uint32_t event)
   {
-    tasks.event |= event;
-    notify_thread(taskScheduler_taskName, WAKE_EVENT_SIGNAL);
+    __atomic_fetch_or(&pendingEvents, event, __ATOMIC_SEQ_CST);
+    notify_thread(pd_taskName, WAKE_EVENT_SIGNAL);
     return 0;
   }
 
   uint32_t task_wait_event(int timeout_us)
   {
-    if (timeout_us > 0)
+    // events already pending: return immediately
+    if (__atomic_load_n(&pendingEvents, __ATOMIC_SEQ_CST) == 0)
     {
-      tasks.timeout_us = timeout_us;
+      // 0 is an infinite wait
+      const uint32_t timeout_ms = (timeout_us > 0) ? task_timeout_us_to_ms((uint64_t)timeout_us) : 0;
+      // can return early, on a notification of an event already consumed: callers handle spurious wake ups
+      if (wait_notification((int)timeout_ms) & SCHED_NOTIFY_TIMER)
+        __atomic_fetch_or(&pendingEvents, TASK_EVENT_TIMER, __ATOMIC_SEQ_CST);
     }
-    else
-    {
-      // set max delay
-      tasks.timeout_us = 0;
-    }
-    // resume scheduler
-    notify_thread(taskScheduler_taskName, RESUME_TASK_SIGNAL);
-    // then wait until event is set (or timeout)
-    suspend_this_thread();
 
-    /* Resume */
-    uint32_t ret = tasks.event;
-    tasks.event = 0;
-    return ret;
+    return __atomic_exchange_n(&pendingEvents, 0u, __ATOMIC_SEQ_CST);
   }
 
   uint32_t task_wait_event_mask(uint32_t event_mask, int timeout_us)
   {
-    uint64_t deadline = get_time().val + timeout_us;
+    const uint64_t deadline = get_time().val + (uint64_t)((timeout_us > 0) ? timeout_us : 0);
     uint32_t events = 0;
-    uint64_t time_remaining_us = timeout_us;
+    int time_remaining_us = timeout_us;
 
     /* Add the timer event to the mask so we can indicate a timeout */
     event_mask |= TASK_EVENT_TIMER;
@@ -86,23 +72,31 @@ extern "C" {
       /* Collect events to re-post later */
       events |= task_wait_event(time_remaining_us);
 
-      time_remaining_us = deadline - get_time().val;
-      if (timeout_us > 0 && time_remaining_us <= 0)
+      if (timeout_us > 0)
       {
-        /* Ensure we return a TIMER event if we timeout */
-        events |= TASK_EVENT_TIMER;
-        break;
+        // signed: an unsigned remaining time underflowed once the deadline passed, and became an infinite wait
+        const int64_t remaining = (int64_t)(deadline - get_time().val);
+        if (remaining <= 0)
+        {
+          /* Ensure we return a TIMER event if we timeout */
+          events |= TASK_EVENT_TIMER;
+          break;
+        }
+        time_remaining_us = (int)remaining;
       }
     }
 
     /* Re-post any other events collected */
     if (events & ~event_mask)
-      tasks.event |= (events & ~event_mask);
+      __atomic_fetch_or(&pendingEvents, events & ~event_mask, __ATOMIC_SEQ_CST);
 
     return events & event_mask;
   }
 
-  void task_clear_event_bitmap(uint32_t eventToClear) { tasks.event &= (~eventToClear); }
+  void task_clear_event_bitmap(uint32_t eventToClear)
+  {
+    __atomic_fetch_and(&pendingEvents, ~eventToClear, __ATOMIC_SEQ_CST);
+  }
 
 #ifdef __cplusplus
 }

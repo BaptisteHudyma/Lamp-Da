@@ -17,6 +17,9 @@ void shutdown();
 /// hard clean of the whole filesystem, you will loose all stored data.
 void clear_internal_fs();
 
+/// Return true is the filesystem overflowed at a point. Some parameters may be lost
+bool has_overflowed();
+
 /// internal system file space.
 namespace system {
 

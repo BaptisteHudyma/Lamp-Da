@@ -1,20 +1,18 @@
-/*! \file bluetooth.h
-    \brief Interface for the platform specific bluetooth.
+/*! \file ble.h
+    \brief Usage interface for the bluetooth system.
 */
 
-#ifndef HAL_BLUETOOTH_HPP
-#define HAL_BLUETOOTH_HPP
+#ifndef BSP_BLE_H
+#define BSP_BLE_H
 
+#include <cstddef>
 #include <stdint.h>
-#include <string>
 #include <array>
 
-#include "src/system/bsp/text_in.h"
-
 namespace lampda {
-namespace hal {
-/// Handle the platform specific bluetooth operations
-namespace bluetooth {
+namespace bsp {
+/// Bluetooth high level handling
+namespace ble {
 
 static constexpr size_t MaxBleNameLenght = 32;
 
@@ -33,7 +31,6 @@ bool is_connected();
 bool is_bounded();
 bool is_bounded(std::array<uint8_t, 8>& buffer);
 
-/// Force disconnection
 void disconnect();
 
 /// If this returns false, do not accept any actions from bluetooth
@@ -44,6 +41,8 @@ void clear_bounded_devices();
 
 /// Set a new name for the bluetooth
 bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name);
+/// Return the current bluetooth name
+std::array<char, MaxBleNameLenght> get_ble_name();
 
 /**
  * \brief start the advertising sequence (with a timeout)
@@ -51,6 +50,12 @@ bool set_bluetooth_name(const std::array<char, MaxBleNameLenght>& name);
  * saved device exists, and if it's the case will only allow this device to connect.
  */
 void start_advertising(bool allowUnknownConnections);
+
+/**
+ * \brief Start the pairing mode (open to all devices), even if a device is connected.
+ * The connected device is disconnected first, then the pairing mode starts once the link is closed.
+ */
+void force_pairing_mode();
 
 /// disable the bluetooth advertising, but not the bluetooth
 void stop_bluetooth_advertising();
@@ -87,8 +92,8 @@ uint16_t mtu_size();
 
 } // namespace serial
 
-} // namespace bluetooth
-} // namespace hal
+} // namespace ble
+} // namespace bsp
 } // namespace lampda
 
 #endif

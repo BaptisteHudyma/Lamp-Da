@@ -8,7 +8,6 @@
 #include "src/modes/include/colors/palettes.hpp"
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 
 namespace lampda::modes::default_modes {
 
@@ -20,7 +19,7 @@ struct GravityMode : public BasicMode
   /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
   /// set the maximum particle count
-  static constexpr uint16_t particleCount = 255;
+  static constexpr uint16_t particleCount = 350;
 
   static void on_enter_mode(auto& ctx)
   {
@@ -60,7 +59,8 @@ struct GravityMode : public BasicMode
     if (!state.selectedPalette)
       return;
 
-    const uint8_t paletteWrap = ctx.lamp.tick % UINT8_MAX;
+    // wrap on the same period as the color index below, or all the colors jump when this value wraps
+    const uint16_t paletteWrap = ctx.lamp.tick % particleCount;
 
     state.imuEvent.update(ctx);
 

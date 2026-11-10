@@ -33,14 +33,14 @@ You can use the top-level repository `Makefile` to build the simulator:
 ```sh
 cd LampColorControler
 ls Makefile simulator/Makefile # (use the first one)
-make simulator
+make simulator-indexable
 ```
 
 This will setup `cmake` & build the project into `_build/simulator`:
 
 ```sh
 cd LampColorControler
-make simulator
+make simulator-indexable
 ls _build/simulator # the build directory
 _build/simulator/indexable-simulator # the output binary
 ```

@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include <etl/bitset.h>
+
 #include "src/compile.h"
 #include "src/user/constants.h"
 
@@ -37,6 +39,8 @@
 
 #include "src/modes/include/colors/utils.hpp"
 #include "src/modes/include/colors/palettes.hpp"
+
+#include "src/modes/include/draw/helix_mask.hpp"
 
 namespace lampda::modes {
 
@@ -111,8 +115,6 @@ static constexpr LampTypes _lampType = LampTypes::indexable;
 static constexpr LampTypes lampType = _lampType;
 
 /** \brief Main interface between the user and the hardware of the lamp
- *
- * TODO: write recipes for best practices when doing Simple/CCT/Indexable
  */
 struct LampTy
 {
@@ -123,8 +125,6 @@ struct LampTy
   /// Store a display config
   struct LampConfig
   {
-    uint16_t skipFirstLedsForEffect = 0; ///< Skip duration
-    uint16_t skipFirstLedsForAmount = 0; ///< Skip the first N leds
   };
 
   /// store a display configuration
@@ -189,7 +189,6 @@ private:
   struct LedStrip ///< \private
   {
     BufferTy _buffers[_nbBuffers];
-    COLOR _colors[_ledCount]; // !! slighly smaller than buffers in _buffers !!
 
     void begin();
     void show();
@@ -197,8 +196,13 @@ private:
     void signal_display();
     void setBrightness(brightness_t);
     uint8_t getBrightness();
+    void setBlackout(bool);
     void setPixelColor(uint16_t, uint32_t);
     uint32_t getPixelColor(uint16_t);
+    void mask_led_at_index(const size_t n, const bool shouldMask);
+
+  private:
+    COLOR _colors[_ledCount]; // !! slighly smaller than buffers in _buffers !!
   };
   LedStrip fakeStrip; ///< \private
   LedStrip& strip;    ///< \private
@@ -244,7 +248,7 @@ public:
     begin();
     clear();
     show_now();
-    setBrightness(logic::brightness::get_saved_brightness(), true, true);
+    setBrightness(logic::brightness::get_scaled_saved_brightness(), true, true);
     align_internal_to_system_brightness();
   }
 
@@ -331,6 +335,8 @@ public:
       assert(true);
     }
   }
+
+  static constexpr helixmask::Params helixMaskParameters = {};
 
   //
   // public constants
@@ -466,7 +472,7 @@ public:
     else if constexpr (std::is_same_v<T, uint8_t>)
     {
       uint32_t scaled = ledCount * scale;
-      return scaled / 256;
+      return static_cast<uint16_t>(scaled / 256);
     }
     else
     {
@@ -506,7 +512,7 @@ public:
   /** \brief blip the power gate for set time
    *
    * If LampTy::flavor is LampTypes::indexable then:
-   *  - clear LED strip with black pixels
+   *  - black out the LED strip, until end_blackout() or cancel_blip()
    * Else
    *  - disable output power for a duration
    */
@@ -516,7 +522,7 @@ public:
     {
       // disable strip temporarily
       // should be reactivated by the manager
-      tempBrightness(0);
+      strip.setBlackout(true);
     }
     else
     {
@@ -527,12 +533,56 @@ public:
   /**
    * \brief Cancel the ongoing blip, if any
    */
-  void LMBD_INLINE cancel_blip() const { return component::outputPower::cancel_blip(); }
+  void LMBD_INLINE cancel_blip() const
+  {
+    end_blackout();
+    component::outputPower::cancel_blip();
+  }
+
+  /**
+   * \brief Stop the strip blackout of a blip (indexable only, no-op otherwise)
+   */
+  void LMBD_INLINE end_blackout() const
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      strip.setBlackout(false);
+    }
+  }
 
   /**
    * \brief return true if the output is in a blip state
    */
   bool LMBD_INLINE is_bliping() const { return component::outputPower::is_bliping(); }
+
+  /**
+   * \brief Set the value of the half step mask, from 0 to maxMaskStep
+   */
+  void LMBD_INLINE set_steps_mask(uint8_t newValue)
+  {
+    // only available for indexable
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
+      if (newValue <= maxMaskStep)
+      {
+        *writeable_currentMaskStep = newValue;
+      }
+    }
+  }
+
+  /**
+   * \brief Diasble the step mask
+   */
+  void LMBD_INLINE cancel_step_mask()
+  {
+    // only available for indexable
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      uint8_t* writeable_currentMaskStep = const_cast<uint8_t*>(&currentMaskStep);
+      *writeable_currentMaskStep = 0;
+    }
+  }
 
   /** \brief Set brightness of the lamp
    *
@@ -562,7 +612,8 @@ public:
     assert((skipCallbacks || !skipUpdateBrightness) && "implicit callback skip!");
 
     // invalid call, fallback to enforcing
-    if (newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
+    if (newBrightness < ::lampda::brightness::absoluteMinimumBrightness ||
+        newBrightness > ::lampda::brightness::absoluteMaximumBrightness)
     {
       enforce_internal_brightness_limits();
       return;
@@ -596,11 +647,33 @@ public:
       static constexpr uint8_t minimumAllowedBrightness = ::lampda::minimumAllowedBrightness_8;
 #endif
       using curve_t = common::curves::LinearCurve<brightness_t, uint8_t>;
-      static curve_t brightnessCurve({curve_t::point_t {0, minimumAllowedBrightness},
-                                      curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255}});
+      static curve_t brightnessCurve = ::lampda::common::curves::make_linear_curve(
+              curve_t::point_t {ledMasking_brightnessThreshold, minimumAllowedBrightness},
+              curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, 255});
 
-      /// @warning: this is actually heavy to run
-      strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
+      bool applyStandardBrightnessUpdate = true;
+      // apply led masking below a threshold
+      if (trueNewBrightness < ledMasking_brightnessThreshold)
+      {
+        applyStandardBrightnessUpdate = false;
+        const uint8_t index = lmpd_map<uint8_t>(trueNewBrightness, 0, ledMasking_brightnessThreshold, maxMaskStep, 0);
+        if (index <= 0)
+        {
+          applyStandardBrightnessUpdate = true;
+        }
+        else
+        {
+          set_steps_mask(index);
+          strip.setBrightness(minimumAllowedBrightness);
+        }
+      }
+
+      if (applyStandardBrightnessUpdate)
+      {
+        // cancel the step masking
+        cancel_step_mask();
+        strip.setBrightness(brightnessCurve.sample(trueNewBrightness));
+      }
     }
 
     if constexpr (flavor == LampTypes::simple)
@@ -619,7 +692,7 @@ public:
 
       using curve_t = common::curves::ExponentialCurve<brightness_t, uint16_t>;
       static curve_t brightnessCurve(
-              curve_t::point_t {0, stripInputMinVoltage_mV},
+              curve_t::point_t {::lampda::brightness::absoluteMinimumBrightness, stripInputMinVoltage_mV},
               curve_t::point_t {::lampda::brightness::absoluteMaximumBrightness, stripInputMaxVoltage_mV},
               1.0);
 
@@ -630,18 +703,44 @@ public:
   /// Special call to update the internal brightness values to the system brightness
   void align_internal_to_system_brightness()
   {
-    saved_brightness = min<brightness_t>(logic::brightness::get_saved_brightness(), getMaxBrightness());
+    align_internal_to_system_brightness(logic::brightness::get_scaled_saved_brightness());
+  }
+
+  /** \brief Update the internal brightness values to a new system brightness
+   *
+   * Used by the system brightness callback: the system saves the brightness after this callback, so
+   * logic::brightness::get_scaled_saved_brightness() still holds the previous level at this point.
+   */
+  void align_internal_to_system_brightness(const brightness_t systemBrightness)
+  {
+    last_system_brightness = systemBrightness;
+    saved_brightness = min<brightness_t>(static_cast<brightness_t>(last_system_brightness), getMaxBrightness());
     temporary_brightness = saved_brightness;
   }
 
-  /// Enforce the brightness limits, if getMaxBrightness changed. Will call \ref setBrightness
+  /** \brief Follow the system brightness and enforce its limits, if they changed. Will call \ref setBrightness
+   *
+   * A mode may have moved the saved brightness below the system one (see jumpBrightness). To keep this offset without
+   * a visible jump, a rise is added to the saved brightness, and a fall only limits it.
+   * A temporary brightness set by a mode is left to this mode, unless it is above the limit: writing to it would
+   * show as a flash until the next frame of the mode.
+   */
   void enforce_internal_brightness_limits()
   {
     const auto maxAllowedBrightness = getMaxBrightness();
-    const brightness_t new_saved_brightness =
-            min<brightness_t>(static_cast<brightness_t>(saved_brightness), maxAllowedBrightness);
+    const brightness_t system_brightness = logic::brightness::get_scaled_saved_brightness();
+
+    const brightness_t followed_saved_brightness =
+            system_brightness >= last_system_brightness ?
+                    saved_brightness + (system_brightness - last_system_brightness) :
+                    min<brightness_t>(static_cast<brightness_t>(saved_brightness), system_brightness);
+    last_system_brightness = system_brightness;
+
+    const brightness_t new_saved_brightness = min<brightness_t>(followed_saved_brightness, maxAllowedBrightness);
     const brightness_t new_temporary_brightness =
-            min<brightness_t>(static_cast<brightness_t>(temporary_brightness), maxAllowedBrightness);
+            temporary_brightness == saved_brightness ?
+                    new_saved_brightness :
+                    min<brightness_t>(static_cast<brightness_t>(temporary_brightness), maxAllowedBrightness);
 
     const bool isChanged = new_saved_brightness != saved_brightness or new_temporary_brightness != temporary_brightness;
     if (isChanged)
@@ -716,6 +815,19 @@ public:
       setBrightness(saved, true, false, false);
   }
 
+  /** \brief Same as restoreBrightness(), but ignores the brightness update rate limit
+   *
+   * For the callers that will not try again: a rate limited update would leave the system on the temporary brightness
+   */
+  void LMBD_INLINE restoreBrightnessNow()
+  {
+    if (getBrightness() != getSavedBrightness())
+    {
+      logic::brightness::update_brightness(getSavedBrightness(), true);
+      restoreBrightness();
+    }
+  }
+
   /** \brief Fade currently displayed content by \p fadeBy units
    *
    * If LampTy::flavor is LampTypes::indexable then:
@@ -726,22 +838,27 @@ public:
    */
   void LMBD_INLINE fadeToBlackBy(uint8_t fadeBy)
   {
+    if (fadeBy == 0)
+      return; // optimization - no scaling to apply
+
     if constexpr (flavor == LampTypes::indexable)
     {
-      if (fadeBy == 0)
-        return; // optimization - no scaling to apply
-
       for (uint16_t i = 0; i < ledCount; ++i)
       {
         const uint32_t c = getPixelColor(i);
-        setPixelColor(i, colors::fade(c, 255 - fadeBy));
+        setPixelColor(i, colors::fade(c, UINT8_MAX - fadeBy));
       }
     }
     else
     {
-      uint8_t brightness = getBrightness();
-      brightness = (brightness < fadeBy) ? 0 : brightness - fadeBy;
-      setBrightness(brightness);
+      // scale fadeBy to the brightness range, and subtract it there (avoid a lossy round trip to 0-255)
+      constexpr uint32_t minBrightness = brightness::absoluteMinimumBrightness;
+      constexpr uint32_t brightnessRange = brightness::absoluteMaximumBrightness - minBrightness;
+      const uint32_t fadeAmount = (static_cast<uint32_t>(fadeBy) * brightnessRange) / UINT8_MAX;
+
+      const uint32_t current = getBrightness();
+      const uint32_t faded = (current <= minBrightness + fadeAmount) ? minBrightness : current - fadeAmount;
+      setBrightness(static_cast<brightness_t>(faded));
     }
   }
 
@@ -762,7 +879,7 @@ public:
     uint8_t seep = blurBy >> 1;
 
     uint32_t carryover = 0;
-    for (unsigned i = 0; i < ledCount; i++)
+    for (uint16_t i = 0; i < ledCount; i++)
     {
       uint32_t cur = getPixelColor(i);
       uint32_t c = cur;
@@ -778,9 +895,36 @@ public:
     }
   }
 
-  //
-  // public API (indexable-only)
-  //
+  /**
+   * public API (indexable-only)
+   */
+
+  /**
+   * \brief Apply the optional low level brightnes dithering
+   */
+  void LMBD_INLINE apply_low_brightness_mask()
+  {
+    // not enabled, skip
+    if (forceDisableLedDitherMask or currentMaskStep == 0 or currentMaskStep > maxMaskStep)
+      return;
+
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      static constexpr helixmask::Geometry kStrip {lampBodyRadius_mm, ledStripWidth_mm, ledSize_mm, ledCount};
+      static constexpr helixmask::StepTable kTable = helixmask::make_step_table(kStrip, helixMaskParameters);
+
+      for (uint16_t I = 0; I < ledCount; ++I)
+      {
+        // mask disabled leds
+        if (not helixmask::led_on(kTable, I, currentMaskStep))
+          mask_led_at_index(I, true);
+      }
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
 
   /** \brief (indexable) Fill lamp with target color, from start to end
    *
@@ -805,41 +949,11 @@ public:
     }
   }
 
-  /** \brief (indexable) Fill lamp with target color, from start to end. Apply a mask to display leds
-   *
-   * - See toLedCount() to set \p start and \p end
-   * - See modes::colors::fromRGB() to set \p color
-   */
-  void LMBD_INLINE fill(uint32_t color, uint16_t start, uint16_t end, const BufferTy& shouldDisplay)
-  {
-    if constexpr (flavor == LampTypes::indexable)
-    {
-      assert(start <= ledCount && "invalid start parameter");
-      assert(end <= ledCount && "invalid end parameter");
-
-      for (uint16_t I = start; I < end; ++I)
-      {
-        const uint8_t blendValue = min<uint32_t>(shouldDisplay[I], UINT8_MAX);
-        setPixelColor(I, colors::blend<uint8_t>(0, color, blendValue));
-      }
-    }
-    else
-    {
-      assert(false && "unsupported");
-    }
-  }
-
   /** \brief (indexable) Fill lamp with target color
    *
    * See modes::colors::fromRGB() to set \p color
    */
   void LMBD_INLINE fill(uint32_t color) { fill(color, 0, ledCount); }
-
-  /** \brief (indexable) Fill lamp with target color, with a mask
-   *
-   * See modes::colors::fromRGB() to set \p color
-   */
-  void LMBD_INLINE fill(uint32_t color, const BufferTy& shouldDisplay) { fill(color, 0, ledCount, shouldDisplay); }
 
   /** \brief (indexable) Fill lamp with target palette, from start to end
    *
@@ -850,7 +964,7 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      assert(start < ledCount && "invalid start parameter");
+      assert(start <= ledCount && "invalid start parameter");
       assert(end <= ledCount && "invalid end parameter");
 
       for (uint16_t I = start; I < end; ++I)
@@ -871,20 +985,38 @@ public:
    */
   void LMBD_INLINE fill(const colors::PaletteTy& palette) { fill(palette, 0, ledCount); }
 
+  /**
+   * \brief Mark a led to be masked at the next show
+   * \param[in] n Index of the led to disable
+   * \param[in] shouldMask If true, the led wont be displayed
+   */
+  void LMBD_INLINE mask_led_at_index(const size_t n, const bool shouldMask)
+  {
+    if constexpr (flavor == LampTypes::indexable)
+    {
+      strip.mask_led_at_index(n, shouldMask);
+    }
+    else
+    {
+      assert(false && "unsupported");
+    }
+  }
+  void LMBD_INLINE mask_led_at_XY(uint16_t X, uint16_t Y, const bool shouldMask)
+  {
+    mask_led_at_index(to_strip(X, Y), shouldMask);
+  }
+
   /** \brief (indexable) Set the n-th LED color
    *
    * See modes::fromRGB() to set \p color
+   * \param[in] forceSet Force set the pixel color, ignoring all check and masks rules
    */
   void LMBD_INLINE setPixelColor(uint16_t n, uint32_t color)
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      if (config.skipFirstLedsForEffect && n < config.skipFirstLedsForAmount)
-      {
-        return;
-      }
-
       assert(n < ledCount && "invalid LED index");
+      // apply color
       strip.setPixelColor(n, color);
     }
     else
@@ -899,17 +1031,13 @@ public:
   {
     if constexpr (flavor == LampTypes::indexable)
     {
-      if (config.skipFirstLedsForEffect && n < config.skipFirstLedsForAmount)
-      {
-        return 0;
-      }
-
       assert(n < ledCount && "invalid LED index");
       return strip.getPixelColor(n);
     }
     else
     {
       assert(false && "unsupported");
+      return 0;
     }
   }
 
@@ -972,17 +1100,11 @@ public:
    */
   template<uint8_t bufIdx = 0> void setColorsFromBuffer()
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& buffer = getTempBuffer<bufIdx>();
-    if (config.skipFirstLedsForEffect)
+
+    for (uint16_t I = 0; I < ledCount; I++)
     {
-      uint16_t Idx = config.skipFirstLedsForAmount;
-      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
-      memcpy(&strip._colors[Idx], &buffer[Idx], Sz);
-    }
-    else
-    {
-      memcpy(strip._colors, buffer.data(), sizeof(strip._colors));
+      setPixelColor(I, buffer[I]);
     }
   }
 
@@ -992,22 +1114,20 @@ public:
    */
   template<uint8_t dstBufIdx = 0, uint8_t srcBufIdx = 1> void setColorsFromMixedBuffers(float phase)
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& dstBuf = getTempBuffer<dstBufIdx>();
     const BufferTy& srcBuf = getTempBuffer<srcBufIdx>();
 
-    uint16_t start = 0, end = srcBuf.size();
-    if (config.skipFirstLedsForEffect)
-    {
-      start = config.skipFirstLedsForAmount;
-    }
-
+    uint16_t start = 0;
+    uint16_t end = srcBuf.size();
     for (uint16_t I = start; I < end; ++I)
     {
-      COLOR src, dst;
+      COLOR src;
+      COLOR dst;
       src.color = srcBuf[I];
       dst.color = dstBuf[I];
-      strip._colors[I].color = utils::get_gradient(src.color, dst.color, phase);
+
+      // use accessor
+      setPixelColor(I, utils::get_gradient(src.color, dst.color, phase));
     }
   }
 
@@ -1015,14 +1135,10 @@ public:
    */
   template<uint8_t bufIdx = 0> void setColorsFromBufferReversed(bool skipLastLine)
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
     const BufferTy& buffer = getTempBuffer<bufIdx>();
 
-    uint16_t start = 0, end = buffer.size();
-    if (config.skipFirstLedsForEffect)
-    {
-      start = config.skipFirstLedsForAmount;
-    }
+    uint16_t start = 0;
+    uint16_t end = buffer.size();
 
     if (skipLastLine)
     {
@@ -1031,7 +1147,7 @@ public:
 
     for (uint16_t I = 0, J = start; I < end - start; ++I, ++J)
     {
-      strip._colors[J].color = buffer[end - start - I - 1];
+      setPixelColor(J, buffer[end - start - I - 1]);
     }
   }
 
@@ -1041,20 +1157,11 @@ public:
    */
   template<uint8_t bufIdx = 0, bool forceFullRead = false> void getColorsToBuffer()
   {
-    static_assert(sizeof(BufferTy) == sizeof(strip._colors));
-
     BufferTy& buffer = getTempBuffer<bufIdx>();
-    if (!forceFullRead && config.skipFirstLedsForEffect)
-    {
-      uint16_t Idx = config.skipFirstLedsForAmount;
-      uint16_t Sz = sizeof(strip._colors) - Idx * sizeof(uint32_t);
 
-      buffer.fill(0);
-      memcpy(&buffer[Idx], &strip._colors[Idx], Sz);
-    }
-    else
+    for (uint16_t I = 0; I < ledCount; I++)
     {
-      memcpy(buffer.data(), strip._colors, sizeof(strip._colors));
+      buffer[I] = getPixelColor(I);
     }
   }
 
@@ -1070,6 +1177,8 @@ public:
   volatile brightness_t saved_brightness;
   /// Define a localy consistant temporary brightness
   volatile brightness_t temporary_brightness;
+  /// Value of the system brightness when the local saved brightness last followed it
+  volatile brightness_t last_system_brightness;
 
   /** \brief (physical) The "now" on milliseconds, updated just before loop.
    *
@@ -1094,6 +1203,17 @@ public:
    * may cause stutters or visible slowdowns during loads.
    */
   volatile const uint32_t raw_frame_count;
+
+  /**
+   * \brief If true, only a proportion of the leds will be available to control
+   * If 1, all leds are available, goes up to maxMaskStep
+   */
+  volatile const uint8_t currentMaskStep = 0;
+  volatile bool forceDisableLedDitherMask = false; ///< set to true to lock led mask brightness control
+  static constexpr uint8_t maxMaskStep = helixMaskParameters.max_level;
+  static constexpr brightness_t ledMasking_brightnessThreshold =
+          ::lampda::brightness::absoluteMaximumBrightness *
+          0.25f; ///< below this, the system will enable the led masking
 };
 
 } // namespace lampda::modes::hardware
@@ -1158,7 +1278,7 @@ static constexpr XYTy strip_to_XY(uint16_t n)
  */
 static constexpr HelixXYZTy strip_to_helix(int16_t n)
 {
-  if (n > hardware::LampTy::ledCount)
+  if (not is_led_index_valid(n))
     return HelixXYZTy {0.0, 0.0, 0.0};
 
   return strip_to_helix_unconstraint(n);
@@ -1211,15 +1331,18 @@ static constexpr bool is_lamp_coordinate_out_of_bounds(const float angle_rad, co
  */
 static constexpr uint16_t to_led_index(const float angle_rad, const float z_mm)
 {
-  constexpr uint16_t maxZCoordinate =
+  constexpr int32_t maxZCoordinate =
           floor(-to_helix_z(hardware::LampTy::ledCount) / hardware::LampTy::ledStripWidth_mm);
 
-  // snip Z per possible lines
-  uint16_t zIndex = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
-  if (zIndex < 0.0)
-    zIndex = 0.0;
-  if (zIndex > maxZCoordinate)
-    zIndex = maxZCoordinate;
+  // snip Z per possible lines.
+  // Clamp in floating point before the conversion: an out of range float converted to an integer is undefined (a
+  // point above the lamp gives a negative row, a point far away overflows). The negated test also catches NaN.
+  float zRow = floor(-z_mm / hardware::LampTy::ledStripWidth_mm);
+  if (not(zRow >= 0.0f))
+    zRow = 0.0f;
+  if (zRow > maxZCoordinate)
+    zRow = maxZCoordinate;
+  const int32_t zIndex = static_cast<int32_t>(zRow);
 
   // indexing around the led turn
   const float angularPosition = wrap_angle(angle_rad) / c_TWO_PI * hardware::LampTy::maxWidthFloat;

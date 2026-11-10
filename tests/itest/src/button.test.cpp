@@ -125,23 +125,21 @@ TEST_F(ButtonFixture, turn_on_start_click_early_release)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -180,23 +178,21 @@ TEST_F(ButtonFixture, turn_on_start_click)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -241,23 +237,21 @@ TEST_F(ButtonFixture, turn_on_start_multiple_clicks)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -300,23 +294,21 @@ TEST_F(ButtonFixture, turn_on_start_long_click)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -364,23 +356,21 @@ TEST_F(ButtonFixture, turn_on_start_multiple_long_clicks)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -426,23 +416,21 @@ TEST_F(ButtonFixture, debounce)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -496,23 +484,21 @@ TEST_F(ButtonFixture, start_click_then_4_clicks)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -572,23 +558,21 @@ TEST_F(ButtonFixture, standard_4_clicks_)
   {
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -663,23 +647,21 @@ TEST_F(ButtonFixture, standard_6_double_clicks)
 
     std::this_thread::sleep_for(1ms);
 
-    // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
@@ -727,29 +709,26 @@ TEST_F(ButtonFixture, long_click_fill_queue)
   while (hal::time_ms() < testTimeout_ms && not isTestDone)
   {
     // poll events from the event queue
-    const auto& event = logic::inputs::__private::buttonEventQueue.dequeue();
-    if (event.has_value())
+    // another redondant safety to avoid any risk of crash
+    logic::inputs::__private::ButtonEvent buttonEvent;
+    if (not logic::inputs::__private::pop_button_event(buttonEvent))
+      continue;
+
+    if (not buttonEvent.isLongPress)
     {
-      const auto& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      clickSerieCallback(buttonEvent.clickCount, isStartClick);
+      isStartClick = false;
+    }
+    else
+    {
+      clickHoldSerieCallback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
+      if (buttonEvent.isEndOfLongPress)
         isStartClick = false;
-      }
-      else
-      {
-        clickHoldSerieCallback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isStartClick);
-        if (buttonEvent.isEndOfLongPress)
-          isStartClick = false;
-      }
     }
   }
   ASSERT_TRUE(isTestDone);
   buttonThread.join();
 }
-
-// TODO:
-// long click start then click chain
 
 } // namespace lampda

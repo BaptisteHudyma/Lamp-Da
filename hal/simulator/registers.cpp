@@ -61,6 +61,8 @@ void go_to_sleep(const int, const bool) { simulator::mock_registers::isDeepSleep
 
 void sync_memory_protection() {}
 
+uint32_t get_mac_adress() { return 0; }
+
 } // namespace registers
 } // namespace hal
 } // namespace lampda

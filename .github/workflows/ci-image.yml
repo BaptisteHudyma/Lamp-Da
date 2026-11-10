@@ -1,0 +1,88 @@
+name: CI image
+
+# Builds and publishes the CI build environment (tools/ci/Dockerfile).
+# Run it manually when tools/ci/, requirements.txt or tools/arduino-cli change:
+# the main CI fails and asks for it when the matching image does not exist.
+# See docs/CIImage.md.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-push:
+    if: github.repository == 'BaptisteHudyma/Lamp-Da'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        persist-credentials: false
+        submodules: 'true'
+
+    - name: image name
+      id: image
+      run: echo "name=$(tools/ci/image-name.sh)" >> "$GITHUB_OUTPUT"
+
+    # BuildKit builder: required to publish zstd layers (see the push step)
+    - name: setup builder
+      run: docker buildx create --name lampda --driver docker-container --use
+
+    - name: build
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+      # no provenance attestation: it is pushed as a separate manifest without
+      # the image labels, which can create the package unlinked from this
+      # repository, and then the push of the image itself is denied
+      run: |
+        docker buildx build --provenance=false --load \
+          -f tools/ci/Dockerfile -t "$IMAGE" .
+
+    - name: smoke test
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+      run: |
+        docker run --rm "$IMAGE" bash -c '
+          set -e
+          arduino-cli version
+          arduino-cli board listall | grep -q "adafruit:nrf52:lampDa_nrf52840"
+          adafruit-nrfutil version
+          clang-format --version
+          cmake --version'
+
+    # catches a board package that does not match the firmware (version check)
+    - name: firmware build test
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+      run: |
+        docker run --rm -v "$PWD:/work/LampColorControler" -w /work/LampColorControler \
+          "$IMAGE" make indexable
+
+    # Layers are published with zstd compression: CI jobs unpack the image on
+    # every run, and zstd unpacks several times faster than the default gzip.
+    # Every build step is a cache hit from the "build" step, so the pushed
+    # image is the one tested above, only compressed differently.
+    - name: push
+      env:
+        IMAGE: ${{ steps.image.outputs.name }}
+        REGISTRY_USER: ${{ github.actor }}
+        REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "$REGISTRY_TOKEN" | docker login ghcr.io -u "$REGISTRY_USER" --password-stdin
+        docker buildx build --provenance=false --progress=plain -f tools/ci/Dockerfile \
+          --output "type=registry,name=$IMAGE,oci-mediatypes=true,compression=zstd,force-compression=true" \
+          . 2>&1 | tee push.log
+        # plain progress prints "#<n> [x/y] RUN ..." then "#<n> CACHED" for a cache hit
+        rebuilt=$(awk '/^#[0-9]+ \[.*\] RUN /{run[$1]=1} /^#[0-9]+ CACHED$/{hit[$1]=1}
+          END{for (s in run) if (!(s in hit)) n++; print n+0}' push.log)
+        if [ "$rebuilt" -ne 0 ]; then
+          echo "::warning title=Image rebuilt during push::$rebuilt build step(s) were not cached: the published image was rebuilt after the tests"
+        fi
+        echo "Published $IMAGE (zstd layers)" >> "$GITHUB_STEP_SUMMARY"

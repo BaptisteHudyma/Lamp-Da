@@ -27,8 +27,15 @@ $(BUILD_DIR)/tests: $(BUILD_DIR)/CMakeCache
 tests: check-dirs $(BUILD_DIR)/tests
 	@echo " --- ok: $@"
 
+run-%: check-dirs
+	@echo; echo " --- run: $*"
+	@test -x '$(BUILD_DIR)/$*/tests_$*' \
+		|| (echo 'Tests must be built before they can be run'; false)
+	cd $(BUILD_DIR)/$* && ./tests_$*
+
 clean:
 	rm -f $(BUILD_DIR)/utest/tests_utest
+	rm -f $(BUILD_DIR)/utest_simple/tests_utest_simple
 	rm -f $(BUILD_DIR)/itest/tests_itest
 	cd $(ROOT_DIR) && make clean
 

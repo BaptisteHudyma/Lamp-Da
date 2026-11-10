@@ -8,6 +8,7 @@
 #include "usb_pd_driver.h"
 #include "../../../../src/system/bsp/pd/usb_pd.h"
 #include "../../../../src/system/bsp/text_out.h"
+#include "../../../../src/system/bsp/pd/tcpm/tcpm.h"
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(t) (sizeof(t) / sizeof(t[0]))
@@ -19,7 +20,9 @@ struct SourcePowerParameters get_OTG_requested_parameters() { return otgParamete
 struct SinkUsableParameters allowedConsumption;
 struct SinkUsableParameters get_allowed_consuption() { return allowedConsumption; }
 
-int canBecomePowerSource = 1; // enabled by default
+// set by the power thread: the battery can power the partner. Disabled until the power system says so (startup,
+// battery recovery mode: the board runs from VBUS, becoming a source would brown it out)
+int canBecomePowerSource = 0;
 void set_allow_power_sourcing(const int allowPowerSourcing) { canBecomePowerSource = allowPowerSourcing != 0; }
 
 uint8_t batteryLevelPercent = 0;
@@ -34,11 +37,16 @@ int should_stop_vbus_charge() { return _shouldStopVbus; }
 const uint32_t pd_src_pdo[] = {
         // DO NOT GO ABOVE 3A ! the spec forbid this unless we use a vconn chip
 
-        // TODO issue #131 & #118: set the PDO with the battery pack watt
+        // \warning: those PDO can vary with the battery pack real values, but we do not have access from here.
+        // NEVER raise them without checking hardware capabilities
         PDO_FIXED(5000, 1500, PDO_FIXED_FLAGS),
         PDO_FIXED(9000, 3000, PDO_FIXED_FLAGS),
-        PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
-        PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
+        // No 15V nor 20V (issue #357): at 20V, the VBUS gate signals a fault and cuts VBUS as soon as a laptop starts
+        // to
+        // draw (~150mA, likely its inrush current), and the laptop detaches. 9V holds 2.8A without fault.
+        // Do not add them back before the VBUS gate behavior at those voltages is understood (and 15V is tested).
+        // PDO_FIXED(15000, 3000, PDO_FIXED_FLAGS),
+        // PDO_FIXED(20000, 3000, PDO_FIXED_FLAGS),
         // PPS (not supported)
         // PDO_VAR(4750, 20000, 3000)
 };
@@ -55,8 +63,9 @@ const uint32_t pd_snk_pdo[] = {
 };
 const int pd_snk_pdo_cnt = ARRAY_SIZE(pd_snk_pdo);
 
+#define SAVED_SRC_CAPS_COUNT 5
 int pdSources = 0;
-uint32_t srcCapsSaved[5];
+uint32_t srcCapsSaved[SAVED_SRC_CAPS_COUNT];
 
 void pd_startup()
 {
@@ -70,9 +79,11 @@ void pd_turn_off() { supsend_usb_pd(1); }
 // Called by the pd algo when the source capabilities are received
 void pd_process_source_cap_callback(int cnt, uint32_t* src_caps)
 {
-  pdSources = (cnt > 5) ? 5 : cnt;
-  for (int i = 0; i < cnt; i++)
+  // a source can send up to 7 PDOs (PPS chargers often do): only keep the first ones, never write past the array
+  const int saved = (cnt > SAVED_SRC_CAPS_COUNT) ? SAVED_SRC_CAPS_COUNT : ((cnt < 0) ? 0 : cnt);
+  for (int i = 0; i < saved; i++)
     srcCapsSaved[i] = src_caps[i];
+  pdSources = saved;
 }
 
 void typec_set_input_current_limit(typec_current_t max_ma, uint32_t supply_voltage)
@@ -85,7 +96,7 @@ void typec_set_input_current_limit(typec_current_t max_ma, uint32_t supply_volta
 uint8_t get_pd_source_cnt() { return pdSources; }
 uint32_t get_pd_source(const uint8_t index)
 {
-  if (index > pdSources)
+  if (index >= pdSources)
     return 0;
   return srcCapsSaved[index];
 }
@@ -123,6 +134,8 @@ void force_set_to_source(int force)
     pd_set_dual_role(PD_DRP_FORCE_SOURCE);
   }
 }
+
+void reset_source_capabilities() { pdSources = 0; }
 
 void reset_cache()
 {
@@ -230,8 +243,19 @@ int pd_check_data_swap(int data_role)
 
 int pd_is_power_swap_succesful()
 {
-  // accept power swap
-  return canBecomePowerSource != 0;
+  if (pd_get_power_role() == PD_ROLE_SOURCE)
+  {
+    // Forced source is the external battery mode: the user asked us to power the partner.
+    // Accepting a swap would make us the sink, and the partner (a phone) would power the lamp instead (issue #357)
+    const int accept = pd_get_dual_role() != PD_DRP_FORCE_SOURCE;
+    lampda_print("power role swap to sink %s", accept ? "accepted" : "rejected (battery mode)");
+    return accept;
+  }
+
+  // the partner asks us to power it (phone user request, while the phone charges the lamp)
+  const int accept = canBecomePowerSource != 0;
+  lampda_print("power role swap to source %s", accept ? "accepted" : "rejected (battery cannot be used)");
+  return accept;
 }
 
 // Check that the board health is good
@@ -263,6 +287,18 @@ void pd_transition_voltage(int idx)
           "sink requested a source %dmv %dmA", otgParameters.requestedVoltage_mV, otgParameters.requestedCurrent_mA);
 }
 
+int pd_is_source_voltage_ready()
+{
+  const int target_mV = otgParameters.requestedVoltage_mV;
+  if (target_mV == 0)
+    return 1;
+
+  // vSrcNew is +/-5%, and the FUSB302 measure has a 420mV resolution
+  const int vbus_mV = tcpm_get_vbus_voltage();
+  const int margin_mV = target_mV / 20 + 420;
+  return (vbus_mV >= target_mV - margin_mV && vbus_mV <= target_mV + margin_mV) ? 1 : 0;
+}
+
 void pd_check_dr_role(int dr_role, int flags)
 {
   /*
@@ -272,8 +308,29 @@ void pd_check_dr_role(int dr_role, int flags)
   */
 }
 
+// battery mode: the partner took the board Rd for a sink and powers us, ask for the source role (issue #357)
+int _isSourceRoleWanted = 0;
+void set_source_role_wanted(const int wanted)
+{
+  _isSourceRoleWanted = wanted != 0;
+  // the partner power is not used: do not let it raise VBUS before the swap
+  pd_set_max_voltage(_isSourceRoleWanted ? PD_MIN_VOLTAGE_MV : PD_MAX_VOLTAGE_MV);
+}
+
 void pd_check_pr_role(int pr_role, int flags)
 {
+  if (pr_role == PD_ROLE_SINK && _isSourceRoleWanted)
+  {
+    if (flags & PD_FLAGS_PARTNER_DR_POWER)
+    {
+      lampda_print("power role swap: requesting the source role");
+      pd_request_power_swap();
+    }
+    else
+      lampda_print("power role swap: the partner is not dual role, cannot become its source");
+    return;
+  }
+
   /*
    * If partner is dual-role power and dualrole toggling is on, consider
    * if a power swap is necessary.

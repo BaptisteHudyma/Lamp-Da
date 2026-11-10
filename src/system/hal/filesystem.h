@@ -60,7 +60,7 @@ struct HAL_File
   // operator bool() const;
 
 private:
-  std::unique_ptr<FileInternalTy> mInternalFile;
+  std::shared_ptr<FileInternalTy> mInternalFile;
 };
 
 } // namespace filesystem

@@ -1,11 +1,12 @@
+#include "logic/sun_timers.h"
 #include "src/compile.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/registers.h"
 
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/filesystem.h"
 #include "src/system/bsp/text_out.h"
@@ -16,7 +17,9 @@
 #include "src/system/logic/command_line_interface.h"
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/power_handler.h"
-#include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sun_timers.h"
+#include "src/system/logic/user_command_queue.h"
+#include "src/system/logic/user_signals.h"
 
 #include "src/system/component/battery.h"
 #include "src/system/component/charger.h"
@@ -55,13 +58,8 @@ void check_loop_runtime(const uint32_t runTime)
   static uint8_t isOnSlowLoopCount = 0;
   if (runTime > MAIN_LOOP_UPDATE_PERIOD_MS + 1)
   {
+    // a stuck loop is handled by the watchdog
     isOnSlowLoopCount = min<uint8_t>(isOnSlowLoopCount + 1, maxAlerts);
-
-    if (runTime > 500)
-    {
-      // if loop time is too long, go back to flash mode
-      hal::registers::enter_serial_dfu();
-    }
   }
   else if (isOnSlowLoopCount > 0)
   {
@@ -168,7 +166,7 @@ void main_setup()
   // setup imu
   component::imu::init();
   // Load BLE bounds
-  hal::bluetooth::load_bound_file();
+  bsp::ble::load_bound_file();
 
   if (shouldAlertUser)
   {
@@ -188,8 +186,8 @@ void main_setup()
   // let the user start in unpowered mode
   user::power_off_sequence();
 
-  // start sunset timer thread
-  logic::sunset::init();
+  // start sun timer threads
+  logic::sun_timers_init_all();
 
   // user requested another thread, spawn it
   if (user::should_spawn_thread())
@@ -210,12 +208,18 @@ void regulate_loop_runtime(const uint32_t addedDelay)
 
   const uint32_t loopStartTime = hal::time_ms();
 
-  // fix the initialization or long wait
-  static uint32_t lastLoopEndTime;
-  if (loopStartTime - lastLoopEndTime > 1000)
+  // End of the previous iteration, taken after its regulation wait below, so that this intentional wait is not
+  // counted. The startup time before the first iteration is not an iteration either: start the measure here.
+  // Do not reset the measure on long iterations, they are the ones the slow loop alert must detect.
+  static bool isFirstIteration = true;
+  static uint32_t lastLoopEndTime = 0;
+  if (isFirstIteration)
+  {
+    isFirstIteration = false;
     lastLoopEndTime = loopStartTime;
+  }
 
-  // wait for a delay if we are faster than the set refresh rate
+  // duration of the previous iteration work (with the added delay). Wait if we are faster than the set refresh rate
   const uint32_t loopDuration = loopStartTime - lastLoopEndTime;
   if (loopDuration < MAIN_LOOP_UPDATE_PERIOD_MS)
   {
@@ -249,6 +253,12 @@ void main_loop(const uint32_t addedDelay)
 
   // handle user serial events
   logic::cli::handleSerialEvents();
+
+  // run the user commands posted by other threads (sun timers, bluetooth): user code only runs on the main loop
+  logic::user_command_queue::loop();
+
+  // refresh user signals
+  logic::user_signals::loop();
 
   // loop the behavior
   logic::behavior::loop();

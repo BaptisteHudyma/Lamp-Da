@@ -7,7 +7,8 @@
 
 #include "src/compile.h"
 #include <cstdint>
-#include <string>
+
+#include <etl/string.h>
 
 namespace lampda {
 namespace logic {
@@ -19,6 +20,11 @@ namespace behavior {
  * \return True is the parameters where loaded
  */
 extern bool read_parameters();
+
+/**
+ * \brief Write the parameters to the filesystem
+ */
+extern void write_parameters();
 
 /**
  * \return true if the user code is runing
@@ -34,10 +40,10 @@ extern void set_woke_up_from_vbus(const bool wokeUp);
 // main loop of the system
 extern void loop();
 
-std::string get_state();
+etl::string<32> get_state();
 
 /// return the error message associated with the error state
-std::string get_error_state_message();
+etl::string<128> get_error_state_message();
 
 /// true if system can work at all (charger or output mode)
 bool can_system_allowed_to_be_powered();
@@ -71,11 +77,6 @@ void handle_shutdown_state();
 uint32_t get_bluetooth_auto_activation_left();
 
 } // namespace internal
-
-namespace sunset {
-/// signal to behavior the advance of the sunset timer
-void progress_update(const float progress);
-} // namespace sunset
 
 } // namespace behavior
 } // namespace logic

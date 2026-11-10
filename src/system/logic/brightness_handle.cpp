@@ -7,6 +7,7 @@
 #include "src/system/bsp/indicator.h"
 
 #include "src/system/logic/behavior.h"
+#include "src/system/logic/user_signals.h"
 
 #include "src/system/utils/utils.h"
 
@@ -24,6 +25,8 @@ struct BrightnessParameters
   brightness_t MaxBrightnessLimit = ::lampda::brightness::absoluteMaximumBrightness;
   /// Upper bound of the brightness, limited to MaxBrightnessLimit. This only locks user uses.
   brightness_t MaxUserBrightnessLimit = ::lampda::brightness::absoluteMaximumBrightness;
+  /// Scale of the user brightness, between 0 and 1. Lowered by the sun timers during their brightness phase
+  float userBrightnessScale = 1.0f;
 
   /// Hold the current level of brightness.
   /// This is the true reference value that is stored in memory at system shutdown
@@ -45,35 +48,40 @@ brightness_t get_max_user_brightness() { return __internal.MaxUserBrightnessLimi
 void set_max_brightness(const brightness_t brg)
 {
   __internal.MaxBrightnessLimit = min<brightness_t>(brg, ::lampda::brightness::absoluteMaximumBrightness);
-  // update saved user brightness
-  set_max_user_brightness(__internal.MaxUserBrightnessLimit);
+  // keep the user brightness scaled from the new max system brightness
+  __internal.MaxUserBrightnessLimit = __internal.userBrightnessScale * get_max_brightness();
 }
 
-void set_max_user_brightness(const brightness_t brg)
+void set_user_brightness_scale(const float scale)
 {
-  // limited to the max system brightness
-  __internal.MaxUserBrightnessLimit = min<brightness_t>(brg, get_max_brightness());
+  __internal.userBrightnessScale = lmpd_constrain<float>(scale, 0.0f, 1.0f);
+  __internal.MaxUserBrightnessLimit = __internal.userBrightnessScale * get_max_brightness();
 }
 
 void update_saved_brightness()
 {
+  user_signals::send_brightness(__internal.BRIGHTNESS);
+
   __internal.savedBrightness = __internal.BRIGHTNESS;
-  __internal.MaxUserBrightnessLimit = __internal.MaxBrightnessLimit;
+  set_user_brightness_scale(1.0f);
 }
 
 brightness_t get_saved_brightness() { return __internal.savedBrightness; }
 
-void update_brightness(const brightness_t newBrightness, const bool shouldCallUserBrightnessCallback)
+brightness_t get_scaled_saved_brightness() { return __internal.userBrightnessScale * __internal.savedBrightness; }
+
+void update_brightness(const brightness_t newBrightness, const bool shouldSkipUserCallbacks)
 {
   // set to the user max limit (limit can be changed by system)
-  const brightness_t trueNewBrightness = min<brightness_t>(newBrightness, get_max_brightness());
+  const brightness_t trueNewBrightness = lmpd_constrain<brightness_t>(
+          newBrightness, ::lampda::brightness::absoluteMinimumBrightness, get_max_brightness());
 
   if (__internal.BRIGHTNESS != trueNewBrightness)
   {
     __internal.BRIGHTNESS = trueNewBrightness;
 
     // do not call user functions when reading parameters
-    if (!shouldCallUserBrightnessCallback)
+    if (not shouldSkipUserCallbacks)
     {
       user::brightness_update(trueNewBrightness);
     }
@@ -126,6 +134,8 @@ void set_brightness_level(const uint8_t level)
 
   // update the level timer
   levelUpdateTime = hal::time_ms();
+
+  user_signals::send_indicator(_level);
 }
 
 uint8_t get_brightness_level() { return _level; }
@@ -151,6 +161,24 @@ bool should_indicator_be_visible()
   }
   // default is true
   return true;
+}
+
+static inline bool _hasColorOverride = false;
+static inline uint32_t _colorOverride = 0;
+
+void set_color_override(const uint8_t red, const uint8_t green, const uint8_t blue)
+{
+  _colorOverride = (static_cast<uint32_t>(red) << 16) | (static_cast<uint32_t>(green) << 8) | blue;
+  _hasColorOverride = true;
+}
+
+void clear_color_override() { _hasColorOverride = false; }
+
+bool get_color_override(uint32_t& color)
+{
+  if (_hasColorOverride)
+    color = _colorOverride;
+  return _hasColorOverride;
 }
 
 } // namespace indicator

@@ -54,6 +54,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   // required to support group-level context
   using HasAnyMode = details::anyOf<AllModesTy, earlyFail>;
   static constexpr bool hasSunsetAnimation = HasAnyMode::hasSunsetAnimation;
+  static constexpr bool hasSunriseAnimation = HasAnyMode::hasSunriseAnimation;
   static constexpr bool hasBrightCallback = HasAnyMode::hasBrightCallback;
   static constexpr bool hasSystemCallbacks = HasAnyMode::hasSystemCallbacks;
   static constexpr bool requireUserThread = HasAnyMode::requireUserThread;
@@ -62,6 +63,7 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
 
   // useful for runtime tests of mode properties
   static constexpr auto everySunsetCallback = HasAnyMode::everySunsetCallback;
+  static constexpr auto everySunriseCallback = HasAnyMode::everySunriseCallback;
   static constexpr auto everyBrightCallback = HasAnyMode::everyBrightCallback;
   static constexpr auto everySystemCallbacks = HasAnyMode::everySystemCallbacks;
   static constexpr auto everyRequireUserThread = HasAnyMode::everyRequireUserThread;
@@ -224,7 +226,9 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   static void enter_mode(auto& ctx)
   {
     // restore brightness before entering a mode
-    ctx.lamp.setBrightness(logic::brightness::get_saved_brightness(), false, false, true);
+    // align the internal references first, so enforcement does not add the restored step again
+    ctx.lamp.align_internal_to_system_brightness();
+    ctx.lamp.setBrightness(logic::brightness::get_scaled_saved_brightness(), false, false, true);
 
     // set ramps if they exist
     uint8_t modeIdAfter = ctx.get_active_mode(nbModes);
@@ -239,10 +243,15 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   /// Callback for a mode exit point
   static void quit_mode(auto& ctx)
   {
-    // save ramps if they exist
-    uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
-    // save ramps if they exist
-    ctx.state.save_ramps(ctx, modeIdBefore);
+    // Do not save presets in favorite group
+    if (not ctx.is_in_favorite_group())
+    {
+      // save ramps if they exist
+      uint8_t modeIdBefore = ctx.get_active_mode(nbModes);
+
+      // save ramps if they exist
+      ctx.state.save_ramps(ctx, modeIdBefore);
+    }
 
     // start new mode we switched to
     dispatch_mode(ctx, [](auto mode) {
@@ -267,6 +276,14 @@ template<typename AllModes, bool earlyFail = verifyGroup<AllModes>()> struct Gro
   {
     dispatch_mode(ctx, [&](auto mode) {
       mode.sunset_update(progress);
+    });
+  }
+
+  /// Binds to local BasicMode::sunrise_update()
+  static void sunrise_update(auto& ctx, float progress)
+  {
+    dispatch_mode(ctx, [&](auto mode) {
+      mode.sunrise_update(progress);
     });
   }
 

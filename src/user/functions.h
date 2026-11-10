@@ -45,9 +45,6 @@ void power_off_sequence();
  */
 void brightness_update(const lampda::brightness_t brightness);
 
-/// Called when the sunset timer progresses [0; 1]
-void sunset_timer_update(const float progress);
-
 /// Called when system wants to write parameters to filesystem
 void write_parameters();
 
@@ -81,8 +78,8 @@ bool button_clicked_default(const uint8_t clicks);
 /** \brief Called to handle button click+hold events for user mode behaviors
  *
  * Default behavior is the "default UI" navigation mode, that supports:
- *  - 3 click+hold: configure custom user ramp
- *  - 4 click+hold: configure favorite modes
+ *  - configure custom user ramp, on the clicks set in logic/button_bindings.h (default is 3 click+hold)
+ *  - configure favorite modes, on the clicks set in logic/button_bindings.h (default is 4 click+hold)
  *
  * Event 1H/2H (brightness) is handled by
  * button_hold_callback() in inputs.h

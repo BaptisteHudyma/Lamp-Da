@@ -19,8 +19,9 @@ struct RainMode : public BasicMode
 {
   /// hint manager to save our custom ramp
   static constexpr bool hasCustomRamp = true;
-  /// sunset animation on the rain
+  /// sunset & sunrise animation on the rain
   static constexpr bool hasSunsetAnimation = true;
+  static constexpr bool hasSunriseAnimation = true;
   /// average drops per seconds for a light rain
   static constexpr float lightRainDropsPerSecond = 1;
   /// average drops per seconds for heavy rain
@@ -37,7 +38,7 @@ struct RainMode : public BasicMode
     // ramp saturates
     ctx.template set_config_bool<ConfigKeys::rampSaturates>(true);
 
-    state.rainDropSpawn = 0.0;
+    state.rainDropSpawn = 0.0f;
     state.persistance = 100;
 
     // set default value
@@ -61,6 +62,14 @@ struct RainMode : public BasicMode
     ctx.state.rainDensity = ctx.state.rainDensityCommand * (1.0 - progress);
   }
 
+  /// Sunrise timer will fade in the rain from 0 to saved limit
+  static void sunrise_update(auto& ctx, float progress)
+  {
+    // progress goes from 0 to 1
+    // rain will turn on slowly
+    ctx.state.rainDensity = ctx.state.rainDensityCommand * progress;
+  }
+
   static void loop(auto& ctx)
   {
     auto& state = ctx.state;
@@ -74,9 +83,16 @@ struct RainMode : public BasicMode
     ctx.state.rainDropSpawn += expectedDropPerSecond * ctx.lamp.frameDurationMs / 1000.0;
 
     if (ctx.state.rainDropSpawn > 1.0)
-    {
+    { // break palette size to display more colors per drops
+      const uint8_t particlesToSpawn = 2 * ctx.state.rainDropSpawn;
+      const auto activeParticles = particleSystem.get_number_of_active() + particlesToSpawn;
+      auto colorFunction = [&](size_t n) {
+        const uint16_t wrapIndex = (activeParticles <= 0) ? 0 : (n * 5) / static_cast<float>(activeParticles) * 255;
+        return colors::from_palette(static_cast<uint8_t>(wrapIndex % 255), ctx.state.palette);
+      };
+
       // initialize particules in a deffered way, when free spots are available
-      particleSystem.init_deferred_particules(2 * ctx.state.rainDropSpawn, generate_particule_at_extremes);
+      particleSystem.init_deferred_particules(particlesToSpawn, generate_particule_at_extremes, colorFunction);
       ctx.state.rainDropSpawn = 0.0;
     }
 
@@ -85,16 +101,11 @@ struct RainMode : public BasicMode
     particleSystem.iterate_no_collisions(
             state.imuEvent.lastReading.accel, ctx.lamp.frameDurationMs / 1000.0, shouldKeepInLampBounds);
     // depop particules that fell too far
-    const uint16_t activeParticles = particleSystem.depop_particules(recycle_particules_if_too_far);
+    particleSystem.depop_particules(recycle_particules_if_too_far);
 
     ctx.lamp.fadeToBlackBy(255 - ctx.state.persistance);
 
-    // break palette size to display more colors per drops
-    auto colorFunction = [&](int16_t n, const Particle& particle) {
-      const uint16_t wrapIndex = (n * 5) / static_cast<float>(activeParticles) * 255;
-      return colors::from_palette(static_cast<uint8_t>(wrapIndex % 255), ctx.state.palette);
-    };
-    particleSystem.show(colorFunction, ctx.lamp);
+    particleSystem.show(ctx.lamp);
   }
 
   struct StateTy

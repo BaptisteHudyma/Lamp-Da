@@ -1,5 +1,6 @@
 #include "balancer.h"
 
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/i2c.h"
 
@@ -22,7 +23,7 @@ namespace balancer {
 constexpr uint16_t unbalancedMv = 3;
 
 //
-static_assert(HARDWARE_VERSION_MAJOR == 1 and batteryCount == 3,
+static_assert(HARDWARE_VERSION_MAJOR == 1 and physical_constants::batterySeriesCount == 3,
               "The 1.X hardware only supports 3 cells for balancing");
 
 bool Status::is_valid() const
@@ -34,7 +35,27 @@ bool Status::is_valid() const
   return true;
 }
 
+/// Working balancer status: only accessed by the power thread, that runs the balancer loop
 Status _status;
+
+/// Copy of the balancer status given to the readers of all threads, see get_status().
+/// The power thread updates it from _status once a measurement is complete: only access it under
+/// _publishedStatusMutex
+static Status _publishedStatus;
+
+/// Guards _publishedStatus: a reader never sees a partial measurement. Not recursive
+static hal::mutex::hal_mutex_t _publishedStatusMutex;
+/// Initialized at program start: the status can be read before the balancer init
+[[maybe_unused]] static const bool _isPublishedStatusMutexInit =
+        (hal::mutex::hal_mutex_init(&_publishedStatusMutex), true);
+
+/// Publish the working balancer status to the readers
+static void publish_status()
+{
+  hal::mutex::hal_mutex_lock(&_publishedStatusMutex);
+  _publishedStatus = _status;
+  hal::mutex::hal_mutex_unlock(&_publishedStatusMutex);
+}
 
 using balancer_t = bq76905::BQ76905;
 balancer_t balancer;
@@ -47,8 +68,9 @@ bool isInitFirstFullScanDone = false;
 
 uint16_t get_battery_voltage_mv(const uint8_t index)
 {
-  static_assert(batteryCount >= 2 and batteryCount <= 5, "balancer can only handle 2 to 5 batteries");
-  if (index >= batteryCount)
+  static_assert(physical_constants::batterySeriesCount >= 2 and physical_constants::batterySeriesCount <= 5,
+                "balancer can only handle 2 to 5 batteries");
+  if (index >= physical_constants::batterySeriesCount)
     return 0;
 
   switch (index)
@@ -96,8 +118,9 @@ uint8_t compute_cell_balancing_max()
 // balancerRegisters.cbActiveCells.write();
 void set_balancing(uint8_t cellIndex, bool shouldBalance)
 {
-  static_assert(batteryCount >= 2 and batteryCount <= 5, "balancer can only handle 2 to 5 batteries");
-  if (cellIndex >= batteryCount)
+  static_assert(physical_constants::batterySeriesCount >= 2 and physical_constants::batterySeriesCount <= 5,
+                "balancer can only handle 2 to 5 batteries");
+  if (cellIndex >= physical_constants::batterySeriesCount)
     return;
 
   switch (cellIndex)
@@ -129,8 +152,9 @@ void set_balancing(uint8_t cellIndex, bool shouldBalance)
 // balancerRegisters.cbActiveCells.read_reg();
 bool is_balancing(uint8_t cellIndex)
 {
-  static_assert(batteryCount >= 2 and batteryCount <= 5, "balancer can only handle 2 to 5 batteries");
-  if (cellIndex >= batteryCount)
+  static_assert(physical_constants::batterySeriesCount >= 2 and physical_constants::batterySeriesCount <= 5,
+                "balancer can only handle 2 to 5 batteries");
+  if (cellIndex >= physical_constants::batterySeriesCount)
     return false;
 
   switch (cellIndex)
@@ -160,8 +184,8 @@ void balance_batteries()
     return;
 
   // min cell voltage
-  uint16_t batteryVoltageMin = maxSingularBatteryVoltage_mV;
-  for (uint8_t i = 0; i < batteryCount; i++)
+  uint16_t batteryVoltageMin = physical_constants::maxSingularBatteryVoltage_mV;
+  for (uint8_t i = 0; i < physical_constants::batterySeriesCount; i++)
   {
     // do not use invalid voltage as balancing reference
     if (is_cell_voltage_valid(status.batteryVoltages_mV[i]) and status.batteryVoltages_mV[i] < batteryVoltageMin)
@@ -175,7 +199,7 @@ void balance_batteries()
 
   // all cells too far above should be throttled down
   bool hasChanged = false;
-  for (uint8_t i = 0; i < batteryCount; i++)
+  for (uint8_t i = 0; i < physical_constants::batterySeriesCount; i++)
   {
     const bool isBalancing = is_balancing(i);
 
@@ -187,7 +211,7 @@ void balance_batteries()
       shouldBalance = false;
     }
     // battery is too high, and should be emptied a litte bit
-    else if (status.batteryVoltages_mV[i] >= maxLiionVoltage_mV)
+    else if (status.batteryVoltages_mV[i] >= physical_constants::maxLiionVoltage_mV)
     {
       shouldBalance = true;
     }
@@ -221,14 +245,20 @@ void balance_batteries()
 void disable_battery_balancing()
 {
   // turn off all balancing
-  for (uint8_t i = 0; i < batteryCount; i++)
+  for (uint8_t i = 0; i < physical_constants::batterySeriesCount; i++)
   {
     set_balancing(i, false);
   }
   balancerRegisters.cbActiveCells.write();
 }
 
-Status get_status() { return _status; }
+Status get_status()
+{
+  hal::mutex::hal_mutex_lock(&_publishedStatusMutex);
+  const Status status = _publishedStatus;
+  hal::mutex::hal_mutex_unlock(&_publishedStatusMutex);
+  return status;
+}
 
 bool init()
 {
@@ -275,7 +305,7 @@ bool init()
 
   // set number of cells
   balancerRegisters.configurateVcell.read_reg();
-  balancerRegisters.configurateVcell.set_VCELL(batteryCount);
+  balancerRegisters.configurateVcell.set_VCELL(physical_constants::batterySeriesCount);
   balancerRegisters.configurateVcell.write();
 
   // exist config mode after startup
@@ -310,7 +340,7 @@ void loop()
 
     balancerRegisters.cbActiveCells.read_reg();
     // set battery voltages, and balancing status
-    for (uint8_t i = 0; i < batteryCount; ++i)
+    for (uint8_t i = 0; i < physical_constants::batterySeriesCount; ++i)
     {
       _status.batteryVoltages_mV[i] = get_battery_voltage_mv(i);
       _status.isBalancing[i] = is_balancing(i);
@@ -332,6 +362,9 @@ void loop()
 
     // update measurments
     _status.lastMeasurmentUpdate = hal::time_ms();
+
+    // the measurement is complete: give it to the readers
+    publish_status();
   }
 
   // if the balancing process is enabled, balance batteries

@@ -1,10 +1,11 @@
 #include "alerts.h"
 
 #include "src/system/hal/time.h"
-#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/registers.h"
 
 #include "src/system/bsp/balancer.h"
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/text_out.h"
 
@@ -15,7 +16,7 @@
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/power_handler.h"
 #include "src/system/logic/statistics_handler.h"
-#include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/utils/utils.h"
 #include "src/system/utils/constants.h"
@@ -27,6 +28,23 @@ namespace alerts {
 
 /// Instanciation of the AlertManager
 AlertManager_t manager;
+
+/// Guards the raise times of all alerts (AlertBase::raisedTime): refreshed by raise() from any thread (power thread,
+/// BLE, ...), while the main loop takes its timeout decisions on them.
+/// The elapsed times are computed under the lock, so a refresh can never be seen as "in the future" of the decision.
+/// Not recursive.
+static hal::mutex::hal_mutex_t _raiseTimeMutex;
+/// Initialized at program start: alerts can be raised before the main setup
+[[maybe_unused]] static const bool _isRaiseTimeMutexInit = (hal::mutex::hal_mutex_init(&_raiseTimeMutex), true);
+
+/// Hold _raiseTimeMutex for the scope
+struct RaiseTimeLock
+{
+  RaiseTimeLock() { hal::mutex::hal_mutex_lock(&_raiseTimeMutex); }
+  ~RaiseTimeLock() { hal::mutex::hal_mutex_unlock(&_raiseTimeMutex); }
+  RaiseTimeLock(const RaiseTimeLock&) = delete;
+  RaiseTimeLock& operator=(const RaiseTimeLock&) = delete;
+};
 
 /// Set to true if an alert requested an emmergency shutdown
 bool _request_shutdown = false;
@@ -87,6 +105,8 @@ inline const char* AlertsToText(const Type type)
       return "BATTERY_MISSING";
     case Type::CHARGER_ERROR:
       return "CHARGER_ERROR";
+    case Type::OTG_OVER_LIMITS:
+      return "OTG_OVER_LIMITS";
     default:
       return "UNSUPPORTED TYPE";
   }
@@ -104,7 +124,7 @@ uint16_t get_battery_level()
     const uint16_t newPercent = component::battery::get_battery_minimum_cell_level();
     if ((lastPercent / 100) != (newPercent / 100))
     {
-      hal::bluetooth::write_battery_level(static_cast<uint8_t>(newPercent / 100));
+      bsp::ble::write_battery_level(static_cast<uint8_t>(newPercent / 100));
     }
     lastPercent = newPercent;
   }
@@ -140,6 +160,10 @@ struct AlertBase
   /// return true if this alert type should be raised
   virtual bool should_be_raised() const { return false; }
 
+  /// Maximum output brightness allowed while this alert is raised.
+  /// The system limit is the lowest of the raised alerts limits, see handle_all()
+  virtual brightness_t max_brightness() const { return ::lampda::brightness::absoluteMaximumBrightness; }
+
   /// return true if this alert type should be cleared
   virtual bool should_be_cleared() const { return false; }
 
@@ -150,12 +174,24 @@ struct AlertBase
   virtual Type get_type() const = 0;
 
   /// Return true if the system should shutdown from this alert
-  virtual bool should_shutdown_system(const uint32_t time) final
+  virtual bool should_shutdown_system() final
   {
     const auto shutdownTimeout = alert_shutdown_timeout();
     if (shutdownTimeout == UINT32_MAX)
       return false;
-    return (time - raisedTime) > shutdownTimeout;
+    return time_since_raised() > shutdownTimeout;
+  }
+
+  /// Time elapsed since the latest raise (or refresh) of this alert, 0 if the raise time is not set.
+  /// Synchronized with the raise time refreshes. Can be called from any thread.
+  uint32_t time_since_raised() const
+  {
+    RaiseTimeLock lock;
+    // the validity is tracked apart: a raise at the clock value 0 is a valid raise time
+    if (not isRaisedTimeSet)
+      return 0;
+    // time read under the lock: always after the latest refresh
+    return hal::time_ms() - raisedTime;
   }
 
   /**
@@ -167,7 +203,14 @@ struct AlertBase
   {
     if (not _isRaisedHandled)
     {
-      raisedTime = time;
+      {
+        RaiseTimeLock lock;
+        // keep the latest of the two: a refresh since \p time was captured must not be overwritten by an older time
+        // (elapsed time comparison, safe across a time_ms wrap)
+        if (not isRaisedTimeSet or static_cast<int32_t>(time - raisedTime) > 0)
+          raisedTime = time;
+        isRaisedTimeSet = true;
+      }
       loweredTime = 0;
       _isRaisedHandled = true;
       _isLoweredHandled = false;
@@ -179,8 +222,15 @@ struct AlertBase
   }
 
   /// Update the raised time of this alert.
-  /// An alert continuously firing as to be updated
-  void update_raise_time(const uint32_t time) { raisedTime = time; }
+  /// An alert continuously firing as to be updated. Call it with _raiseTimeMutex held (see AlertManager_t::raise).
+  void update_raise_time_locked()
+  {
+    // time read under the lock: never older than a raise time set before
+    raisedTime = hal::time_ms();
+    isRaisedTimeSet = true;
+    // signal the refresh to a clear decision taken concurrently, see AlertManager_t::clear_unless_refreshed
+    refreshCount.fetch_add(1);
+  }
 
   /**
    * \brief Handler for the lowered state of the alert.
@@ -191,7 +241,11 @@ struct AlertBase
   {
     if (not _isLoweredHandled)
     {
-      raisedTime = 0;
+      {
+        RaiseTimeLock lock;
+        raisedTime = 0;
+        isRaisedTimeSet = false;
+      }
       loweredTime = time;
       _isLoweredHandled = true;
       _isRaisedHandled = false;
@@ -213,8 +267,15 @@ struct AlertBase
   bool _isRaisedHandled = false;
   /// Alert lower signal has been handled
   bool _isLoweredHandled = false;
-  /// Store the latest time at which this alert raise() was called
+  /// Store the latest time at which this alert raise() was called, 0 if not set.
+  /// Refreshed by raise() from other threads, while the main loop reads it for the timeout decisions:
+  /// only access it under _raiseTimeMutex (see time_since_raised())
   uint32_t raisedTime = 0;
+  /// True if raisedTime holds a raise time (that can be 0). Only access it under _raiseTimeMutex
+  bool isRaisedTimeSet = false;
+  /// Incremented on every raise() refresh of the raised alert, under _raiseTimeMutex.
+  /// See AlertManager_t::clear_unless_refreshed
+  std::atomic<uint32_t> refreshCount {0};
   /// Store the latest time at which this alert lower() was called
   uint32_t loweredTime = 0;
 };
@@ -242,7 +303,7 @@ struct Alert_BatteryReadingIncoherent : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 2000;
+    return time_since_raised() > 2000;
   }
 
   bool should_prevent_lamp_output() const override { return true; }
@@ -266,16 +327,14 @@ struct Alert_BatteryCritical : public AlertBase
     if (not chargerState.areMeasuresOk)
       return false;
 
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
     if (not ::lampda::bsp::balancer::get_status().is_valid())
       return false;
-#endif
 
     if (manager.is_raised(Type::BATTERY_MISSING) or manager.is_raised(Type::BATTERY_READINGS_INCOHERENT))
       return false;
 
-    return not chargerState.is_effectivly_charging() and __internal::get_battery_level() < batteryCritical;
+    return not chargerState.is_effectivly_charging() and
+           __internal::get_battery_level() < physical_constants::batteryCritical;
   }
 
   bool should_be_cleared() const override
@@ -320,11 +379,8 @@ struct Alert_BatteryLow : public AlertBase
     if (logic::power::is_in_error_state())
       return false;
 
-// TODO issue #132 remove when the mock components will be running
-#ifndef LMBD_SIMULATION
     if (not ::lampda::bsp::balancer::get_status().is_valid())
       return false;
-#endif
 
     const auto& chargerState = ::lampda::component::charger::get_state();
     if (not chargerState.areMeasuresOk)
@@ -333,10 +389,11 @@ struct Alert_BatteryLow : public AlertBase
       return false;
 
     const auto& batteryLevel = __internal::get_battery_level();
-    const bool isBatteryLow = not chargerState.is_effectivly_charging() and batteryLevel < batteryLow;
+    const bool isBatteryLow =
+            not chargerState.is_effectivly_charging() and batteryLevel < physical_constants::batteryLow;
     // battery low will be raise, notify bluetooth
     if (isBatteryLow)
-      hal::bluetooth::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
+      bsp::ble::notify_battery_level(static_cast<uint8_t>(batteryLevel / 100));
     return isBatteryLow;
   }
 
@@ -351,20 +408,23 @@ struct Alert_BatteryLow : public AlertBase
     return chargerState.is_effectivly_charging();
   }
 
+  /// limit brightness to quarter of the max value
+  brightness_t max_brightness() const override
+  {
+    return static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
+  }
+
   /// Execution will lower the brightness output
   void on_raised() const override
   {
-    // limit brightness to quarter of the max value
-    constexpr brightness_t clampedBrightness =
-            static_cast<brightness_t>(0.25 * ::lampda::brightness::absoluteMaximumBrightness);
-
-    logic::brightness::set_max_brightness(clampedBrightness);
+    // apply the limit now, before the brightness update (it is kept by handle_all() while raised)
+    logic::brightness::set_max_brightness(min(max_brightness(), logic::brightness::get_max_brightness()));
     logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
 
     // this alert may lead to a shutdown, start phasing out the sunset timer
     // If the user decides to set the timer up again, it wont be lowered again by this alert
-    sunset::shortcut_to_phaseout();
+    logic::sunset_timer.shortcut_to_brightness_phase();
   }
 
   bool show() const override
@@ -417,29 +477,32 @@ struct Alert_TempTooHigh : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return hal::registers::read_CPU_temperature_degreesC() >= maxSystemTemp_c;
+    return hal::registers::read_CPU_temperature_degreesC() >= physical_constants::maxSystemTemp_c;
   }
 
   bool should_be_cleared() const override
   {
     // cleared below a threshold
-    return hal::registers::read_CPU_temperature_degreesC() <= maxSystemTemp_c * 0.75;
+    return hal::registers::read_CPU_temperature_degreesC() <= physical_constants::maxSystemTemp_c * 0.75;
+  }
+
+  /// limit brightness to half the max value
+  brightness_t max_brightness() const override
+  {
+    return static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
   }
 
   /// Execution will lower the max brightness of the output
   void on_raised() const override
   {
-    // limit brightness to half the max value
-    constexpr brightness_t clampedBrightness =
-            static_cast<brightness_t>(0.5 * ::lampda::brightness::absoluteMaximumBrightness);
-
-    logic::brightness::set_max_brightness(clampedBrightness);
+    // apply the limit now, before the brightness update (it is kept by handle_all() while raised)
+    logic::brightness::set_max_brightness(min(max_brightness(), logic::brightness::get_max_brightness()));
     logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
     logic::brightness::update_saved_brightness();
 
     // this alert may lead to a shutdown, start phasing out the sunset timer
     // If the user decides to set the timer up again, it wont be lowered again by this alert
-    sunset::shortcut_to_phaseout();
+    logic::sunset_timer.shortcut_to_brightness_phase();
   }
 
   bool show() const override { return bsp::indicator::blink(300, 300, utils::ColorSpace::DARK_ORANGE); }
@@ -456,7 +519,7 @@ struct Alert_TempCritical : public AlertBase
   bool should_be_raised() const override
   {
     // raised above a threshold
-    return hal::registers::read_CPU_temperature_degreesC() >= criticalSystemTemp_c;
+    return hal::registers::read_CPU_temperature_degreesC() >= physical_constants::criticalSystemTemp_c;
   }
 
   /// Shutdown fast
@@ -496,7 +559,7 @@ struct Alert_BluetoothAdvertisement : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay anyway
-    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 60000;
+    return time_since_raised() > 60000;
   }
 };
 
@@ -548,7 +611,7 @@ struct Alert_FavoriteSet : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return raisedTime > 0 and (hal::time_ms() - raisedTime) > 1000;
+    return time_since_raised() > 1000;
   }
 };
 
@@ -585,7 +648,7 @@ struct Alert_SystemShutdownFailed : public AlertBase
   /// Cleared after a delay
   bool should_be_cleared() const override
   {
-    if (raisedTime > 0 and (hal::time_ms() - raisedTime) > 2000)
+    if (time_since_raised() > 2000)
     {
       // is this fails, the system is just too broken to be repaired
       hal::registers::enter_serial_dfu();
@@ -672,7 +735,7 @@ struct Alert_SkippedCleanSleep : public AlertBase
   bool should_be_cleared() const override
   {
     // cleared after a delay
-    return (raisedTime > 0 and (hal::time_ms() - raisedTime) > 3000);
+    return time_since_raised() > 3000;
   }
 };
 
@@ -687,7 +750,7 @@ struct Alert_UsbPortShort : public AlertBase
   Type get_type() const override { return Type::USB_PORT_SHORT; }
 
   /// auto cleared after a delay
-  bool should_be_cleared() const override { return (raisedTime > 0 and (hal::time_ms() - raisedTime) > 5000); }
+  bool should_be_cleared() const override { return time_since_raised() > 5000; }
 
   /// Prevent charge
   bool should_prevent_battery_charge() const override { return true; }
@@ -695,42 +758,111 @@ struct Alert_UsbPortShort : public AlertBase
   bool should_prevent_usb_port_use() const override { return true; }
 };
 
-/// Alerts must be sorted by importance, only the first activated one will be shown
-AlertBase* allAlerts[] = {
-        new Alert_SystemShutdownFailed,
-        new Alert_BatteryMissing, // if battery is missing, the system will also have the hardware alert
-        new Alert_HardwareAlert,
-        new Alert_TempCritical,
-        new Alert_UsbPortShort,
-        //
-        new Alert_SkippedCleanSleep,
-        // battery and temp related
-        new Alert_BatteryCritical,
-        new Alert_TempTooHigh,
-        new Alert_BatteryReadingIncoherent,
-        new Alert_BatteryLow,
-        //
-        new Alert_OtgFailed,
-        new Alert_SystemInErrorState,
-        new Alert_SystemInLockout,
-        // user side low priority alerts
-        new Alert_LongLoopUpdate,
-        new Alert_BluetoothAdvertisement,
-        new Alert_FavoriteSet,
-        new Alert_SunsetTimerSet,
+/**
+ * \brief This alert is raised when the output power goes out of the limits : overcurrent or overvoltage.
+ * Clear on total reboot
+ */
+struct Alert_OtgOverLimits : public AlertBase
+{
+  bool show() const override
+  {
+    return bsp::indicator::blink(300, 200, {utils::ColorSpace::BLUE, utils::ColorSpace::YELLOW});
+  }
 
-        new Alert_ChargerError};
+  Type get_type() const override { return Type::OTG_OVER_LIMITS; }
+
+  /// Block power output
+  bool should_prevent_lamp_output() const override { return true; }
+  /// Prevent USB use
+  bool should_prevent_usb_port_use() const override { return true; }
+};
+
+// Init all alert objects
+inline static Alert_SystemShutdownFailed alertSystemShutdownFailed {};
+inline static Alert_BatteryMissing alertBatteryMissing {};
+inline static Alert_HardwareAlert alertHardwareAlert {};
+inline static Alert_TempCritical alertTempCritical {};
+inline static Alert_UsbPortShort alertUsbPortShort {};
+inline static Alert_SkippedCleanSleep alertSkippedCleanSleep {};
+inline static Alert_OtgOverLimits alert_OtgOverLimits {};
+inline static Alert_BatteryCritical alertBatteryCritical {};
+inline static Alert_TempTooHigh alertTempTooHigh {};
+inline static Alert_BatteryReadingIncoherent alertBatteryReadingIncoherent {};
+inline static Alert_BatteryLow alertBatteryLow {};
+inline static Alert_OtgFailed alertOtgFailed {};
+inline static Alert_SystemInErrorState alertSystemInErrorState {};
+inline static Alert_SystemInLockout alertSystemInLockout {};
+inline static Alert_LongLoopUpdate alertLongLoopUpdate {};
+inline static Alert_BluetoothAdvertisement alertBluetoothAdvertisement {};
+inline static Alert_FavoriteSet alertFavoriteSet {};
+inline static Alert_SunsetTimerSet alertSunsetTimerSet {};
+inline static Alert_ChargerError alertChargerError {};
+
+/// Alerts must be sorted by importance, only the first activated one will be shown
+inline static AlertBase* const allAlerts[] = {
+        &alertSystemShutdownFailed,
+        &alertBatteryMissing, // if battery is missing, the system will also have the hardware alert
+        &alertHardwareAlert,
+        &alertTempCritical,
+        &alertUsbPortShort,
+        //
+        &alertSkippedCleanSleep,
+        // battery and temp related
+        &alertBatteryCritical,
+        &alertTempTooHigh,
+        &alertBatteryReadingIncoherent,
+        &alertBatteryLow,
+        //
+        &alert_OtgOverLimits,
+        &alertOtgFailed,
+        &alertSystemInErrorState,
+        &alertSystemInLockout,
+
+        // user side low priority alerts
+        &alertLongLoopUpdate,
+        &alertBluetoothAdvertisement,
+        &alertFavoriteSet,
+        &alertSunsetTimerSet,
+
+        &alertChargerError,
+};
+
+/// Set by signal_usb_port_fault(), from the USB fault interrupt. Consumed by process_interrupt_signals()
+static std::atomic<bool> _isUsbPortFaultSignaled {false};
+
+void signal_usb_port_fault()
+{
+  // interrupt context: no lock, no print, no statistics. The raise is deferred to process_interrupt_signals()
+  _isUsbPortFaultSignaled.store(true);
+}
+
+void process_interrupt_signals()
+{
+  // a fault signaled while the alert is raised refreshes it
+  if (_isUsbPortFaultSignaled.exchange(false))
+  {
+    // shown: it stops the USB port use (issue #357)
+    if (not manager.is_raised(Type::USB_PORT_SHORT))
+      bsp::lampda_print("USB port protection fault signaled");
+    manager.raise(Type::USB_PORT_SHORT);
+  }
+}
 
 void update_alerts()
 {
+  // before the alerts update: an interrupt alert is raised in this turn
+  process_interrupt_signals();
+
   const uint32_t currTime = hal::time_ms();
   for (auto alert: allAlerts)
   {
     if (manager.is_raised(alert->get_type()))
     {
+      // read before the decision: a raise() refreshing the alert meanwhile cancels the clear
+      const uint32_t refreshCount = alert->refreshCount.load();
       if (alert->should_be_cleared())
       {
-        manager.clear(alert->get_type());
+        manager.clear_unless_refreshed(alert->get_type(), alert->refreshCount, refreshCount);
       }
       else
       {
@@ -743,7 +875,7 @@ void update_alerts()
         // execute loop
         alert->execute_loop();
 
-        if (alert->should_shutdown_system(currTime))
+        if (alert->should_shutdown_system())
         {
           // notify the system shutdown request
           _request_shutdown = true;
@@ -767,6 +899,17 @@ void update_alerts()
 
 void signal_wake_up_from_charger() { _startupChargerTime = hal::time_ms(); }
 
+brightness_t get_alerts_max_brightness()
+{
+  brightness_t maxBrightness = ::lampda::brightness::absoluteMaximumBrightness;
+  for (auto alert: allAlerts)
+  {
+    if (manager.is_raised(alert->get_type()))
+      maxBrightness = min(maxBrightness, alert->max_brightness());
+  }
+  return maxBrightness;
+}
+
 void handle_all(const bool shouldIgnoreAlerts)
 {
   // update all alerts
@@ -774,12 +917,9 @@ void handle_all(const bool shouldIgnoreAlerts)
 
   const bool isNoAlertsRaised = manager.is_clear();
 
-  // no alerts: reset the max brightness
-  if (isNoAlertsRaised)
-  {
-    // This should be called on no alerts only, not ignore alerts
-    logic::brightness::set_max_brightness(::lampda::brightness::absoluteMaximumBrightness);
-  }
+  // the max brightness is the lowest limit of the raised alerts: a cleared alert releases its limit, even if other
+  // alerts are still raised (not affected by shouldIgnoreAlerts)
+  logic::brightness::set_max_brightness(get_alerts_max_brightness());
 
   //
   if (shouldIgnoreAlerts or isNoAlertsRaised)
@@ -791,14 +931,29 @@ void handle_all(const bool shouldIgnoreAlerts)
       return;
     }
 
-    // red to green
+    // red to green, unless the user chose a color
+    uint32_t overrideColor = 0;
+    const bool hasOverrideColor = logic::indicator::get_color_override(overrideColor);
     const auto& batteryLevel = __internal::get_battery_level();
-    const auto buttonColor = utils::ColorSpace::RGB(utils::get_gradient(
-            utils::ColorSpace::RED.get_rgb().color, utils::ColorSpace::GREEN.get_rgb().color, batteryLevel / 10000.0f));
+    const auto buttonColor =
+            utils::ColorSpace::RGB(hasOverrideColor ? overrideColor :
+                                                      utils::get_gradient(utils::ColorSpace::RED.get_rgb().color,
+                                                                          utils::ColorSpace::GREEN.get_rgb().color,
+                                                                          batteryLevel / 10000.0f));
 
     // display battery level
     const auto& chargerStatus = ::lampda::component::charger::get_state();
-    if (!logic::power::is_in_output_mode() and chargerStatus.isInOtg)
+    // output mode: the lamp does not charge, a plugged cable is only signaled (breezing is reserved for a real charge)
+    if (logic::power::is_in_output_mode())
+    {
+      if (::lampda::component::charger::is_vbus_powered())
+        // slow blinking
+        bsp::indicator::blink(1000, 1000, buttonColor);
+      else
+        // normal output mode
+        bsp::indicator::set_color(buttonColor);
+    }
+    else if (chargerStatus.isInOtg)
     {
       bsp::indicator::breeze(500, 500, buttonColor);
     }
@@ -817,11 +972,9 @@ void handle_all(const bool shouldIgnoreAlerts)
         bsp::indicator::breeze(2000, 1000, buttonColor);
       }
     }
-    // output mode, or end of charge : standard display
-    else if (logic::power::is_in_output_mode() or chargerStatus.is_charge_finished())
+    // end of charge : standard display
+    else if (chargerStatus.is_charge_finished())
     {
-      // normal output mode
-      // chargerStatus.isInOtg should be true
       bsp::indicator::set_color(buttonColor);
     }
     else
@@ -879,32 +1032,70 @@ void AlertManager_t::raise(const Type type)
 {
   if (is_raised(type))
   {
-    // update raise time
-    for (auto& alert: allAlerts)
+    // The refresh and the clear decision of clear_unless_refreshed() hold the same lock: either the clear ran first
+    // (the alert is not raised anymore, this raise is a new one), or it runs after the refresh, sees it and keeps the
+    // alert. A refresh done here can not be cleared afterward.
+    RaiseTimeLock lock;
+    if (is_raised(type))
     {
-      if (type == alert->get_type())
+      // update raise time
+      for (auto& alert: allAlerts)
       {
-        alert->update_raise_time(hal::time_ms());
-        break;
+        if (type == alert->get_type())
+        {
+          alert->update_raise_time_locked();
+          break;
+        }
       }
+      return;
     }
-    return;
-  }
-  else
-  {
-    statistics::signal_alert_raised(static_cast<uint32_t>(type));
   }
 
+  // atomic: only the caller that actually set the bit signals the raise
+  const uint32_t previous = _current.fetch_or(static_cast<uint32_t>(type));
+  if ((previous & static_cast<uint32_t>(type)) != 0)
+    return;
+
+  statistics::signal_alert_raised(static_cast<uint32_t>(type));
   bsp::lampda_print("ALERT raised: %s", AlertsToText(type));
-  _current |= static_cast<uint32_t>(type);
 }
 
 void AlertManager_t::clear(const Type type)
 {
-  if (not is_raised(type))
+  // atomic, and an AND (not a XOR): a concurrent clear of the same bit cannot set it again
+  const uint32_t previous = _current.fetch_and(~static_cast<uint32_t>(type));
+  if ((previous & static_cast<uint32_t>(type)) == 0)
     return;
   bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
-  _current ^= static_cast<uint32_t>(type);
+}
+
+bool AlertManager_t::clear_unless_refreshed(const Type type,
+                                            const std::atomic<uint32_t>& refreshCount,
+                                            const uint32_t refreshCountAtDecision)
+{
+  const uint32_t bit = static_cast<uint32_t>(type);
+  {
+    // same lock as the refresh in raise(): no refresh can complete between the refresh check and the clear
+    RaiseTimeLock lock;
+    uint32_t expected = _current.load();
+    while (true)
+    {
+      // already cleared by someone else
+      if ((expected & bit) == 0)
+        return false;
+      // refreshed while the clear was decided: the alert is still active, keep it
+      if (refreshCount.load() != refreshCountAtDecision)
+        return false;
+      // the bit is never removed when the clear is cancelled, so other threads never see a transient clear.
+      // The CAS is still needed: the other bits of _current change without this lock
+      if (_current.compare_exchange_weak(expected, expected & ~bit))
+        break;
+      // _current changed (or spurious failure): expected is reloaded, check again
+    }
+  }
+
+  bsp::lampda_print("ALERT cleared: %s", AlertsToText(type));
+  return true;
 }
 
 uint32_t AlertManager_t::get_time_since_raised(const Type type) const
@@ -917,7 +1108,7 @@ uint32_t AlertManager_t::get_time_since_raised(const Type type) const
       if (not is_raised(type) or not alert->_isRaisedHandled)
         return 0;
       // compute raised time
-      return hal::time_ms() - alert->raisedTime;
+      return alert->time_since_raised();
     }
   }
   return 0;
@@ -930,7 +1121,7 @@ bool AlertManager_t::can_use_output_power() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_lamp_output())
+    if (is_raised(alert->get_type()) && alert->should_prevent_lamp_output())
     {
       return false;
     }
@@ -945,7 +1136,7 @@ bool AlertManager_t::can_charge_battery() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_battery_charge())
+    if (is_raised(alert->get_type()) && alert->should_prevent_battery_charge())
     {
       return false;
     }
@@ -960,7 +1151,7 @@ bool AlertManager_t::can_use_usb_port() const
 
   for (auto alert: allAlerts)
   {
-    if (alert->_isRaisedHandled && alert->should_prevent_usb_port_use())
+    if (is_raised(alert->get_type()) && alert->should_prevent_usb_port_use())
     {
       return false;
     }

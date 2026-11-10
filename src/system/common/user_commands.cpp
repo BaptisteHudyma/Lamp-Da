@@ -1,9 +1,21 @@
 #include "user_commands.h"
 
 #include "src/system/utils/colorspace.h"
+#include <cstring>
 
 namespace lampda {
 namespace common {
+
+namespace {
+
+/// Read 4 little endian bytes as an uint32_t (bytes are widened before shifting, to avoid int overflow)
+uint32_t read_u32_le(const uint8_t* data)
+{
+  return static_cast<uint32_t>(data[0]) | (static_cast<uint32_t>(data[1]) << 8u) |
+         (static_cast<uint32_t>(data[2]) << 16u) | (static_cast<uint32_t>(data[3]) << 24u);
+}
+
+} // namespace
 
 UserCommand::UserCommand() : _type(UserCommand::Type::Invalid), _dataCnt(0) {}
 
@@ -69,6 +81,18 @@ UserCommand UserCommand::make_set_sunset_to_time_command(const component::time::
   return cmd;
 }
 
+UserCommand UserCommand::make_set_sunrise_to_time_command(const component::time::RealTime& time)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SetSunriseToTime;
+  cmd._dataCnt = 4;
+  cmd._data[0] = time.hour;
+  cmd._data[1] = time.minutes;
+  cmd._data[2] = time.seconds;
+  cmd._data[3] = time.dayOfTheWeek;
+  return cmd;
+}
+
 UserCommand UserCommand::make_set_ble_custom_color_mode_command(const uint8_t red,
                                                                 const uint8_t green,
                                                                 const uint8_t blue)
@@ -109,6 +133,92 @@ UserCommand UserCommand::make_set_favorite_command(const uint8_t index)
   return cmd;
 }
 
+UserCommand UserCommand::make_signal_sunset_progress_command(const float progress)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SignalSunsetProgress;
+  cmd._dataCnt = 4;
+
+  uint32_t internal;
+  memcpy(&internal, &progress, sizeof(progress));
+
+  cmd._data[0] = (internal >> 0u) & 0xFFu;
+  cmd._data[1] = (internal >> 8u) & 0xFFu;
+  cmd._data[2] = (internal >> 16u) & 0xFFu;
+  cmd._data[3] = (internal >> 24u) & 0xFFu;
+  return cmd;
+}
+
+UserCommand UserCommand::make_signal_sunrise_progress_command(const float progress)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SignalSunriseProgress;
+  cmd._dataCnt = 4;
+
+  uint32_t internal;
+  memcpy(&internal, &progress, sizeof(progress));
+
+  cmd._data[0] = (internal >> 0u) & 0xFFu;
+  cmd._data[1] = (internal >> 8u) & 0xFFu;
+  cmd._data[2] = (internal >> 16u) & 0xFFu;
+  cmd._data[3] = (internal >> 24u) & 0xFFu;
+  return cmd;
+}
+
+UserCommand UserCommand::make_signal_suntimer_cancel_command()
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SignalSuntimerCancel;
+  cmd._dataCnt = 0;
+  return cmd;
+}
+
+UserCommand UserCommand::make_disable_sun_timer_command(const bool isSunrise)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::DisableSunTimer;
+  cmd._dataCnt = 1;
+  cmd._data[0] = isSunrise ? 1 : 0;
+  return cmd;
+}
+
+UserCommand UserCommand::make_set_mic_sensitivity_command(const uint8_t sensitivity)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::SetMicSensitivity;
+  cmd._dataCnt = 1;
+  cmd._data[0] = sensitivity;
+  return cmd;
+}
+
+UserCommand UserCommand::make_print_status_command()
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::PrintStatus;
+  cmd._dataCnt = 0;
+  return cmd;
+}
+
+UserCommand UserCommand::make_print_favorites_command()
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::PrintFavorites;
+  cmd._dataCnt = 0;
+  return cmd;
+}
+
+UserCommand UserCommand::make_blip_output_command(const uint32_t duration_ms)
+{
+  UserCommand cmd;
+  cmd._type = UserCommand::Type::BlipOutput;
+  cmd._dataCnt = 4;
+  cmd._data[0] = (duration_ms >> 0u) & 0xFFu;
+  cmd._data[1] = (duration_ms >> 8u) & 0xFFu;
+  cmd._data[2] = (duration_ms >> 16u) & 0xFFu;
+  cmd._data[3] = (duration_ms >> 24u) & 0xFFu;
+  return cmd;
+}
+
 /**
  *
  *
@@ -117,7 +227,7 @@ UserCommand UserCommand::make_set_favorite_command(const uint8_t index)
 
 bool UserCommand::parse_ramp(uint8_t& ramp) const
 {
-  if (_dataCnt != 1)
+  if (get_type() != Type::SetUserRamp or _dataCnt != 1)
     return false;
   ramp = _data[0];
   return true;
@@ -127,13 +237,14 @@ bool UserCommand::parse_brightness(brightness_t& brightness) const
 {
   if (get_type() != Type::Brightness or _dataCnt != 2)
     return false;
-  const brightness_t tmpCrigthness = static_cast<brightness_t>((_data[1] << 8) | _data[0]);
+  const brightness_t tmpBrigthness = static_cast<brightness_t>((_data[1] << 8) | _data[0]);
 
   // check validity
-  if (tmpCrigthness > ::lampda::brightness::absoluteMaximumBrightness)
+  if (tmpBrigthness < ::lampda::brightness::absoluteMinimumBrightness ||
+      tmpBrigthness > ::lampda::brightness::absoluteMaximumBrightness)
     return false;
 
-  brightness = tmpCrigthness;
+  brightness = tmpBrigthness;
   return true;
 }
 
@@ -186,6 +297,22 @@ bool UserCommand::parse_set_sunset_to_time_command(component::time::RealTime& ti
   return true;
 }
 
+bool UserCommand::parse_set_sunrise_to_time_command(component::time::RealTime& time) const
+{
+  if (get_type() != Type::SetSunriseToTime or _dataCnt != 4)
+    return false;
+  component::time::RealTime tmpTime;
+  tmpTime.hour = _data[0];
+  tmpTime.minutes = _data[1];
+  tmpTime.seconds = _data[2];
+  tmpTime.dayOfTheWeek = _data[3];
+  if (not tmpTime.is_valid())
+    return false;
+
+  time = tmpTime;
+  return true;
+}
+
 bool UserCommand::parse_set_ble_custom_color_mode_command(uint32_t& color) const
 {
   if (get_type() != Type::SetBleCustomColorMode or _dataCnt != 3)
@@ -218,6 +345,63 @@ bool UserCommand::parse_set_favorite_command(uint8_t& index) const
   index = _data[0];
   return true;
 }
+
+bool UserCommand::parse_signal_sunset_progress_command(float& progress) const
+{
+  if (get_type() != Type::SignalSunsetProgress or _dataCnt != 4)
+    return false;
+
+  const uint32_t internal = read_u32_le(_data.data());
+
+  memcpy(&progress, &internal, sizeof(internal));
+  return true;
+}
+
+bool UserCommand::parse_signal_sunrise_progress_command(float& progress) const
+{
+  if (get_type() != Type::SignalSunriseProgress or _dataCnt != 4)
+    return false;
+
+  const uint32_t internal = read_u32_le(_data.data());
+
+  memcpy(&progress, &internal, sizeof(internal));
+  return true;
+}
+
+bool UserCommand::parse_signal_suntimer_cancel_command() const
+{
+  if (get_type() != Type::SignalSuntimerCancel or _dataCnt != 0)
+    return false;
+  return true;
+}
+
+bool UserCommand::parse_disable_sun_timer_command(bool& isSunrise) const
+{
+  if (get_type() != Type::DisableSunTimer or _dataCnt != 1)
+    return false;
+  isSunrise = _data[0] != 0;
+  return true;
+}
+
+bool UserCommand::parse_set_mic_sensitivity_command(uint8_t& sensitivity) const
+{
+  if (get_type() != Type::SetMicSensitivity or _dataCnt != 1)
+    return false;
+  sensitivity = _data[0];
+  return true;
+}
+
+bool UserCommand::parse_blip_output_command(uint32_t& duration_ms) const
+{
+  if (get_type() != Type::BlipOutput or _dataCnt != 4)
+    return false;
+  duration_ms = read_u32_le(_data.data());
+  return true;
+}
+
+bool UserCommand::parse_print_status_command() const { return get_type() == Type::PrintStatus and _dataCnt == 0; }
+
+bool UserCommand::parse_print_favorites_command() const { return get_type() == Type::PrintFavorites and _dataCnt == 0; }
 
 } // namespace common
 } // namespace lampda

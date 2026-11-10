@@ -1,9 +1,14 @@
 #include "power_delivery.h"
 
+#include <etl/string.h>
+#include <cstdio>
+#include <cstring>
+
 #include "src/system/driver/pd/usb_pd_driver.h"
 #include "src/system/driver/pd/tcpm_driver.h"
 
 #include "usb_pd.h"
+#include "input_power_policy.h"
 
 #include "src/system/utils/time_utils.h"
 
@@ -16,6 +21,11 @@
 #include "src/system/bsp/power_gates.h"
 #include "src/system/bsp/text_out.h"
 #include "src/system/bsp/threads.h"
+
+// TODO issue #132 remove when the mock components will be running
+#ifdef LMBD_SIMULATION
+#include "simulator/include/hardware_influencer.h"
+#endif
 
 // remove this to remove all PD algorithms
 #define USE_PD_ALGO_LOOP
@@ -45,10 +55,24 @@ void suspend_pd_state_machine()
     supsend_usb_pd(1);
   should_run_pd_state_machine = false;
 }
+void allow_source_resets(const bool allow)
+{
+  // only on change: this restarts the negociation timers
+  if (allow != (pd_is_reset_allowed() != 0))
+    pd_set_reset_allowed(allow ? 1 : 0);
+}
+
 void resume_pd_state_machine()
 {
   if (!should_run_pd_state_machine)
+  {
+    // the state machine restarts from a disconnected state: the source capabilities known before are not valid
+    // anymore, and the PD negociation must be given time before falling back to the standard port current
+    reset_source_capabilities();
+    powerSourceDetectedTime_s = hal::time_ms();
+
     supsend_usb_pd(0);
+  }
   should_run_pd_state_machine = true;
 }
 
@@ -56,19 +80,16 @@ int get_vbus_voltage()
 {
   static int vbusVoltage = 0;
   // do not spam the system
-  EVERY_N_MILLIS(100) { vbusVoltage = tcpm_get_vbus_voltage(); }
+  EVERY_N_MILLIS(100)
+  {
+// TODO issue #132 remove when the mock components will be running
+#ifdef LMBD_SIMULATION
+    vbusVoltage = ::simulator::mock_electrical::inputVbusVoltage * 1000.0;
+#else
+    vbusVoltage = tcpm_get_vbus_voltage();
+#endif
+  }
   return vbusVoltage;
-}
-
-// check if the charger can use the max power
-bool can_use_PD_full_power()
-{
-  // voltage on VBUS is greater than (negociated voltage minus a threshold)
-  return get_available_pd_voltage_mV() > 0 and
-         // the algo confirms that we are a sink
-         is_sink_ready() and
-         // the voltage/current rise should be over
-         get_vbus_voltage() >= get_available_pd_voltage_mV() - 1000;
 }
 
 uint32_t lastPDdetected = 0;
@@ -82,20 +103,55 @@ bool is_usb_pd()
   return isPd;
 }
 
-// check if the source is simple USB, with a stabilize delay
-bool is_standard_port()
+// snapshot of the source status, for the input power rules
+policy::SourceStatus get_source_status()
 {
-  return isPowerSourceDetected_s and
-         // let some time pass after a new detection
-         hal::time_ms() - powerSourceDetectedTime_s > 1500 and
-         // last pd detected was some time ago
-         hal::time_ms() - lastPDdetected > 1000;
+  policy::SourceStatus status;
+  // first, it updates the last PD detection time
+  status.isUsbPd = is_usb_pd();
+
+  const uint32_t time = hal::time_ms();
+  status.isPowerSourceDetected = isPowerSourceDetected_s;
+  status.timeSinceSourceDetected_ms = time - powerSourceDetectedTime_s;
+  status.timeSinceLastPdDetected_ms = time - lastPDdetected;
+  status.isSinkReady = is_sink_ready() != 0;
+  status.isSinkNegotiating = is_sink_negotiating() != 0;
+  status.negotiatedVoltage_mV = get_available_pd_voltage_mV();
+  status.negotiatedCurrent_mA = get_available_pd_current_mA();
+  const int vbus = get_vbus_voltage();
+  status.vbusVoltage_mV = vbus > 0 ? static_cast<uint32_t>(vbus) : 0;
+  return status;
 }
+
+// check if the charger can use the max power
+bool can_use_PD_full_power() { return policy::can_use_pd_full_power(get_source_status()); }
+
+// check if the source is simple USB, with a stabilize delay
+bool is_standard_port() { return policy::is_standard_port(get_source_status()); }
 
 void ic_interrupt()
 {
   // wake up interrupt thread (cannot run code in the interrupt callback)
   bsp::threads::notify_thread(bsp::threads::pdInterruptHandle_taskName, 2);
+}
+
+static bool isSetup = false;
+
+// debug counters of the interrupt servicing (see show_pd_status)
+static uint32_t interruptStuckKicks_s = 0;
+static uint32_t interruptAlertReruns_s = 0;
+
+/**
+ * The FUSB302 interrupt line is level triggered (active low, until all interrupt registers are read), but we only get
+ * a callback on the falling edge. If an interrupt is raised before the callback is attached (VBUS and CC are already
+ * there at boot, the CC lines have a permanent Rd), or while another one is pending, there is no new falling edge: the
+ * line stays low forever, no message is received and no transmission completes (issue #633).
+ * So service the interrupt on the line level.
+ */
+bool is_ic_interrupt_pending()
+{
+  static const hal::gpio::DigitalPin interruptPin(hal::gpio::DigitalPin::GPIO::Signal_PowerDelivery);
+  return isSetup and not interruptPin.is_high();
 }
 
 bool is_vbus_powered()
@@ -129,7 +185,9 @@ struct UsbPDData
   uint32_t maxInputVoltage;
 
   /// Debug status for the algorithm
-  std::string pdAlgoStatus;
+  etl::string<32> pdAlgoStatus;
+  /// last contract shown
+  char lastContract[64] = {0};
 
   /// when true, this struct has changed !
   bool hasChanged = false;
@@ -179,7 +237,7 @@ struct UsbPDData
       maxInputVoltage = newmaxInputVoltage;
     }
 
-    const auto& newStatus = std::string(get_state_cstr());
+    const auto& newStatus = etl::string<32>(get_state_cstr());
     if (newStatus != pdAlgoStatus)
     {
       hasChanged = true;
@@ -192,8 +250,8 @@ struct UsbPDData
     }
   }
 
-  /// Debug to serial output
-  void serial_show()
+  /// Debug to serial output. The contract is shown on change only, unless forced
+  void serial_show(const bool forceContract = false)
   {
     bsp::lampda_print("PD algo: %d %d%d%d: [PDO %.2fV %.2fA] %.2fV | %s",
                       should_run_pd_state_machine,
@@ -205,13 +263,137 @@ struct UsbPDData
                       vbusVoltage / 1000.0,
                       pdAlgoStatus.c_str());
     hasChanged = false;
-    bsp::lampda_print(
-            "allowed usage: %d mA, %d mV", get_allowed_consuption().current_mA, get_allowed_consuption().voltage_mV);
+    // the negociated contract (0 when there is none): published on PS_RDY, cleared on disconnection and hard reset
+    struct pd_contract_info info;
+    pd_get_contract_info(&info);
+    // as a source, the contract is what the sink requested: the input values stay at 0
+    const bool isSource = info.power_role == PD_ROLE_SOURCE;
+    // only on change: the bluetooth log is slow, and drops lines when it is flooded
+    char contract[64];
+    snprintf(contract,
+             sizeof(contract),
+             "PD contract: %s %s %lu mV, %lu mA",
+             info.is_explicit_contract ? "EXP" : "X",
+             isSource ? "(source, given)" : "(sink, received)",
+             static_cast<unsigned long>(isSource ? info.requested_mv : get_available_pd_voltage_mV()),
+             static_cast<unsigned long>(isSource ? info.requested_ma : get_available_pd_current_mA()));
+    if (forceContract or strcmp(contract, lastContract) != 0)
+    {
+      strcpy(lastContract, contract);
+      bsp::lampda_print("%s", contract);
+    }
   }
 };
 UsbPDData data;
 
-void show_pd_status() { data.serial_show(); }
+const char* cc_level_str(const int level)
+{
+  switch (level)
+  {
+    case TYPEC_CC_VOLT_OPEN:
+      return "open";
+    case TYPEC_CC_VOLT_RA:
+      return "Ra";
+    case TYPEC_CC_VOLT_RD:
+      return "Rd";
+    case TYPEC_CC_VOLT_RP_DEF:
+      return "Rp default";
+    case TYPEC_CC_VOLT_RP_1_5:
+      return "Rp 1.5A";
+    case TYPEC_CC_VOLT_RP_3_0:
+      return "Rp 3A";
+    default:
+      return "?";
+  }
+}
+
+void show_pd_contract()
+{
+  struct pd_contract_info info;
+  pd_get_contract_info(&info);
+
+  bsp::lampda_print("Contract: %s, role %s, CC%d. Request %lumV %lumA",
+                    info.is_explicit_contract ? "EXPLICIT" : "none",
+                    info.power_role == PD_ROLE_SOURCE ? "source" : "sink",
+                    info.polarity + 1,
+                    static_cast<unsigned long>(info.requested_mv),
+                    static_cast<unsigned long>(info.requested_ma));
+  bsp::lampda_print(
+          "Partner PD capable: %d, VBUS never low: %d, hard reset count: %d, negotiating: %d, resets "
+          "allowed: %d",
+          info.is_pd_capable,
+          info.is_vbus_never_low,
+          info.hard_reset_count,
+          is_sink_negotiating(),
+          pd_is_reset_allowed());
+
+  // what the charger is allowed to use, and why
+  const auto status = get_source_status();
+  bsp::lampda_print("Input: published %lumV %lumA, VBUS %lumV. Detected %d since %lums, last PD %lums ago",
+                    static_cast<unsigned long>(status.negotiatedVoltage_mV),
+                    static_cast<unsigned long>(status.negotiatedCurrent_mA),
+                    static_cast<unsigned long>(status.vbusVoltage_mV),
+                    status.isPowerSourceDetected,
+                    static_cast<unsigned long>(status.timeSinceSourceDetected_ms),
+                    static_cast<unsigned long>(status.timeSinceLastPdDetected_ms));
+  bsp::lampda_print("Charger use: %s, max %umA (PD full power %d, standard port %d)",
+                    policy::can_use_power(status) ? "ALLOWED" : "blocked",
+                    policy::max_input_current_mA(status),
+                    policy::can_use_pd_full_power(status),
+                    policy::is_standard_port(status));
+
+  // raw CC levels: the board permanent Rd halves the CC voltage, a default Rp source can read as open
+  int cc1 = 0;
+  int cc2 = 0;
+  fusb302_get_last_cc(&cc1, &cc2);
+  bsp::lampda_print("CC levels (last read): CC1 %s, CC2 %s", cc_level_str(cc1), cc_level_str(cc2));
+
+  const auto& c = info.counters;
+  bsp::lampda_print(
+          "Events: attach %lu, caps rx %lu, contracts %lu, soft reset tx %lu (fail %lu), hard reset tx %lu (fail %lu), "
+          "hard reset rx %lu",
+          static_cast<unsigned long>(c.attaches),
+          static_cast<unsigned long>(c.src_caps_received),
+          static_cast<unsigned long>(c.contracts),
+          static_cast<unsigned long>(c.soft_resets_sent),
+          static_cast<unsigned long>(c.soft_resets_failed),
+          static_cast<unsigned long>(c.hard_resets_sent),
+          static_cast<unsigned long>(c.hard_resets_tx_failed),
+          static_cast<unsigned long>(c.hard_resets_received));
+  bsp::lampda_print("Source events: attach %lu, caps tx %lu (acked %lu), contracts %lu",
+                    static_cast<unsigned long>(c.src_attaches),
+                    static_cast<unsigned long>(c.src_caps_sent),
+                    static_cast<unsigned long>(c.src_caps_acked),
+                    static_cast<unsigned long>(c.src_contracts));
+  bsp::lampda_print("Power role swaps: accepted %lu, rejected %lu, to source %lu (VBUS timeout %lu), to sink %lu",
+                    static_cast<unsigned long>(c.pr_swaps_accepted),
+                    static_cast<unsigned long>(c.pr_swaps_rejected),
+                    static_cast<unsigned long>(c.pr_swaps_to_source),
+                    static_cast<unsigned long>(c.pr_swaps_vbus_timeout),
+                    static_cast<unsigned long>(c.pr_swaps_to_sink));
+
+  uint32_t txSuccess = 0;
+  uint32_t txCollisions = 0;
+  uint32_t txRetryFails = 0;
+  fusb302_get_tx_counters(&txSuccess, &txCollisions, &txRetryFails);
+  bsp::lampda_print("TX: success %lu, collisions %lu, retry fails %lu. RX: %lu",
+                    static_cast<unsigned long>(txSuccess),
+                    static_cast<unsigned long>(txCollisions),
+                    static_cast<unsigned long>(txRetryFails),
+                    static_cast<unsigned long>(fusb302_get_rx_count()));
+  bsp::lampda_print("PD state machine: last ran %lums ago",
+                    static_cast<unsigned long>(hal::time_ms() - pd_get_last_run_ms()));
+  bsp::lampda_print("Interrupt: line %s, stuck line kicks %lu, alert reruns %lu",
+                    is_ic_interrupt_pending() ? "LOW (pending)" : "high",
+                    static_cast<unsigned long>(interruptStuckKicks_s),
+                    static_cast<unsigned long>(interruptAlertReruns_s));
+}
+
+void show_pd_status()
+{
+  data.serial_show(true);
+  show_pd_contract();
+}
 
 /**
  *
@@ -227,6 +409,14 @@ void interrupt_handle()
 #ifdef USE_PD_ALGO_LOOP
   // only waken up on thread update
   tcpc_alert();
+
+  // new interrupts were raised while reading the registers: the line stayed low, and there will be no new edge
+  static constexpr uint8_t maxAlertRuns = 8;
+  for (uint8_t i = 0; i < maxAlertRuns and is_ic_interrupt_pending(); ++i)
+  {
+    interruptAlertReruns_s++;
+    tcpc_alert();
+  }
 #endif
 }
 
@@ -308,8 +498,6 @@ void pd_run()
 #endif
 }
 
-static bool isSetup = false;
-
 bool setup()
 {
   // 0 is success
@@ -335,21 +523,12 @@ void start_threads()
   if (!isSetup)
     return;
 
-  static constexpr uint16_t taskSchedulerThreadBufferSize = 255;
-  static bsp::threads::TaskBuffer_t taskSchedulerThreadBuffer[taskSchedulerThreadBufferSize];
-
   static constexpr uint16_t pdInterruptThreadBufferSize = 255;
   static bsp::threads::TaskBuffer_t pdInterruptThreadBuffer[pdInterruptThreadBufferSize];
 
   static constexpr uint16_t powerDeliveryThreadBufferSize = 1024;
   static bsp::threads::TaskBuffer_t powerDeliveryThreadBuffer[powerDeliveryThreadBufferSize];
 
-  // start task scheduler, in suspended state
-  bsp::threads::start_thread(task_scheduler,
-                             bsp::threads::taskScheduler_taskName,
-                             2,
-                             taskSchedulerThreadBufferSize,
-                             taskSchedulerThreadBuffer);
   // start interrupt handle, in suspended state
   bsp::threads::start_thread(interrupt_handle,
                              bsp::threads::pdInterruptHandle_taskName,
@@ -359,25 +538,45 @@ void start_threads()
   // start pd handle loop
   bsp::threads::start_thread(
           pd_run, bsp::threads::pd_taskName, 1, powerDeliveryThreadBufferSize, powerDeliveryThreadBuffer);
+
+  // service the interrupts raised before the threads existed (the notifications were lost)
+  ic_interrupt();
 }
 
 void loop()
 {
+  // safety net: an interrupt edge was missed, the line is stuck low.
+  // Throttled: the interrupt thread is the normal path, this must not flood the i2c line
+  static uint32_t lastInterruptKick_ms = 0;
+  if (hal::time_ms() - lastInterruptKick_ms >= 5 and is_ic_interrupt_pending())
+  {
+    lastInterruptKick_ms = hal::time_ms();
+    interruptStuckKicks_s++;
+    ic_interrupt();
+  }
+
   data.update();
 
   // update battery level
   set_battery_level(static_cast<uint8_t>(component::battery::get_battery_level() / 100));
 
-  // ignore source activity if we are otg (prevent spurious reset)
-  if (is_switching_to_otg())
+  static policy::VbusLossTracker vbusLoss;
+  const uint32_t time = hal::time_ms();
+
+  // ignore source activity if we are otg (prevent spurious reset).
+  // The PD state machine only flags the OTG activation when a sink is attached, but the charger can output on VBUS
+  // without one (manual battery mode, or right after a detachment): our own VBUS is not a power source.
+  // A VBUS loss is counted from the end of the OTG: after a power role swap back to sink, the partner needs some time
+  // to turn its VBUS on.
+  // In output mode, the OTG only powers the output gate: VBUS is still followed (issue #646)
+  if (policy::is_vbus_from_own_output(
+              is_switching_to_otg(), bsp::charger::is_in_OTG(), bsp::powergates::is_power_gate_enabled()))
   {
+    vbusLoss.on_vbus_valid(time);
     return;
   }
 
-  static uint32_t lastVbusValid = 0;
-
   // source detected
-  const uint32_t time = hal::time_ms();
   if (is_vbus_powered())
   {
     if (not isPowerSourceDetected_s)
@@ -385,62 +584,35 @@ void loop()
       powerSourceDetectedTime_s = time;
       isPowerSourceDetected_s = true;
     }
-    lastVbusValid = time;
-  }
-  // deglitch time
-  else if (isPowerSourceDetected_s and
-           // plugged in power can flicker
-           time - powerSourceDetectedTime_s > 100 and
-           // vbus can become briefly invalid when using the ICO algorithm
-           time - lastVbusValid > 1000)
-  {
-    isPowerSourceDetected_s = false;
-    reset_cache();
-  }
-
-  if (
-          // valid input source
-          isPowerSourceDetected_s and (
-                                              // is pd with power
-                                              (is_usb_pd() and can_use_PD_full_power()) or
-                                              // is standard usb c
-                                              (is_standard_port())))
-  {
-    canUseSourcePower_s = true;
+    vbusLoss.on_vbus_valid(time);
   }
   else
   {
-    // no deglitch, this needs to be reactive
-    canUseSourcePower_s = false;
+    // vbus can become briefly invalid when using the ICO algorithm, and the source drops it on a hard reset (up to ~2s,
+    // this is not an unplug). Always updated (not short circuited), so that a hard reset during the loss is not missed.
+    // The hard reset grace is bounded, never trust the PD state alone: a stalled state machine would keep the source
+    // detected forever (issue #642)
+    // A power role swap also drops VBUS, from the old source turn off to the new source turn on (up to ~1.4s)
+    const bool isUnplugged =
+            vbusLoss.is_unplugged(time, is_sink_hard_resetting() != 0 or ::is_power_role_swapping() != 0);
+
+    // deglitch time
+    if (isPowerSourceDetected_s and
+        // plugged in power can flicker
+        time - powerSourceDetectedTime_s > 100 and isUnplugged)
+    {
+      isPowerSourceDetected_s = false;
+      reset_cache();
+    }
   }
+
+  // no deglitch, this needs to be reactive
+  canUseSourcePower_s = policy::can_use_power(get_source_status());
 }
 
 void shutdown() { pd_turn_off(); }
 
-uint16_t get_max_input_current()
-{
-  // safety
-  if (!isPowerSourceDetected_s)
-    return 0;
-
-  // power delivery detected
-  if (is_usb_pd())
-  {
-    if (can_use_PD_full_power())
-    {
-      // do not use the whole current capabilities, or the source will cut us off
-      return static_cast<uint16_t>(get_available_pd_current_mA() * 0.90);
-    }
-  }
-  // no usb pd since some time, and vbus seems stable so try to use it
-  else if (is_standard_port())
-  {
-    // maximum USB current (hacky, would prefer USB type detection)
-    return 800;
-  }
-  // we dont known for now the type of connection
-  return 0;
-}
+uint16_t get_max_input_current() { return policy::max_input_current_mA(get_source_status()); }
 
 bool is_power_available() { return isPowerSourceDetected_s; }
 
@@ -459,18 +631,32 @@ OTGParameters get_otg_parameters()
 
 void allow_otg(const bool allow) { set_allow_power_sourcing(allow); }
 
+void want_source_role_by_swap(const bool wanted) { set_source_role_wanted(wanted ? 1 : 0); }
+
+bool is_attached_as_sink() { return pd_get_power_role() == PD_ROLE_SINK and pd_is_connected() != 0; }
+
+void retry_source_role_swap() { pd_request_pr_role_check(); }
+
+bool is_source_contract_ready() { return pd_get_task_state() == PD_STATE_SRC_READY; }
+
 bool is_switching_to_otg() { return is_activating_otg() != 0; }
 
-std::vector<PDOTypes> get_available_pd()
+bool is_source_hard_resetting() { return ::is_source_hard_resetting() != 0; }
+
+std::array<PDOTypes, 5> get_available_pd()
 {
-  std::vector<PDOTypes> pdos;
-  for (uint8_t i = 0; i < get_pd_source_cnt(); ++i)
+  std::array<PDOTypes, 5> pdos;
+  uint8_t i = 0;
+  for (; i < min<uint8_t>(5, get_pd_source_cnt()); ++i)
   {
     PDOTypes t;
     pd_extract_pdo_power(get_pd_source(i), &t.maxCurrent_mA, &t.voltage_mv);
-    pdos.emplace_back(t);
+    pdos[i] = t;
   }
-
+  for (; i < 5; i++)
+  {
+    pdos[i] = PDOTypes();
+  }
   return pdos;
 }
 

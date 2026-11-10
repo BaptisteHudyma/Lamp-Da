@@ -2,7 +2,7 @@
 
 #include "src/user/functions.h"
 
-#include "src/system/hal/bluetooth.h"
+#include "src/system/hal/mutex.h"
 #include "src/system/hal/time.h"
 
 #include "src/system/bsp/indicator.h"
@@ -11,8 +11,9 @@
 #include "src/system/logic/alerts.h"
 #include "src/system/logic/behavior.h"
 #include "src/system/logic/brightness_handle.h"
+#include "src/system/logic/button_bindings.h"
 #include "src/system/logic/power_handler.h"
-#include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/component/button.h"
 
@@ -20,6 +21,7 @@
 #include "src/system/utils/time_utils.h"
 
 #include <cstdint>
+#include <etl/queue.h>
 namespace lampda {
 namespace logic {
 namespace inputs {
@@ -31,13 +33,190 @@ static constexpr uint32_t BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS =
         5000; ///< duration of the brightness ramp saturation before switching behavior
 
 namespace __private {
-common::Queue<ButtonEvent, maxButtonEventStore> buttonEventQueue; ///< button event asynchroneous queue
+
+/// Button event asynchroneous queue: filled by the button thread, emptied by the main loop.
+/// etl::queue is not thread safe: only access it under _buttonEventQueueMutex
+static etl::queue<ButtonEvent, maxButtonEventStore> buttonEventQueue;
+
+/// Guards buttonEventQueue. Never held while running the button callbacks. Not recursive
+static hal::mutex::hal_mutex_t _buttonEventQueueMutex;
+/// Initialized at program start: events can be pushed as soon as the button thread starts
+[[maybe_unused]] static const bool _isButtonEventQueueMutexInit =
+        (hal::mutex::hal_mutex_init(&_buttonEventQueueMutex), true);
+
+/// Hold _buttonEventQueueMutex for the scope
+struct ButtonEventQueueLock
+{
+  ButtonEventQueueLock() { hal::mutex::hal_mutex_lock(&_buttonEventQueueMutex); }
+  ~ButtonEventQueueLock() { hal::mutex::hal_mutex_unlock(&_buttonEventQueueMutex); }
+  ButtonEventQueueLock(const ButtonEventQueueLock&) = delete;
+  ButtonEventQueueLock& operator=(const ButtonEventQueueLock&) = delete;
+};
+
+bool pop_button_event(ButtonEvent& event)
+{
+  ButtonEventQueueLock lock;
+  if (buttonEventQueue.empty())
+    return false;
+  buttonEventQueue.pop_into(event);
+  return true;
 }
+
+size_t get_button_event_count()
+{
+  ButtonEventQueueLock lock;
+  return buttonEventQueue.size();
+}
+
+void clear_button_events()
+{
+  ButtonEventQueueLock lock;
+  buttonEventQueue.clear();
+}
+
+/// Push a button event, if the queue fill stays below \p maxFillPercent. Thread safe
+bool push_button_event(const ButtonEvent& event, const size_t maxFillPercent)
+{
+  ButtonEventQueueLock lock;
+  // pushing in a full etl::queue is an assert
+  if (buttonEventQueue.full())
+    return false;
+  if ((buttonEventQueue.size() * 100) / maxButtonEventStore >= maxFillPercent)
+    return false;
+  buttonEventQueue.push(event);
+  return true;
+}
+
+/**
+ * \brief Handle a brightness change control:
+ * 1 long clic raises brightness to maximum, then goes down if press continue, then shuts down the system.
+ * 2 long clics lower brightness to minimum, then if press continue shuts down the system.
+ */
+void handle_brightness_change(uint8_t consecutiveButtonCheck, uint32_t buttonHoldDuration, bool isEndOfHoldEvent)
+{
+  // number of steps to update brightness
+  static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
+  static const uint32_t brightnessUpdateStepSize = max<uint32_t>(
+          1,
+          (::lampda::brightness::absoluteMaximumBrightness - ::lampda::brightness::absoluteMinimumBrightness) /
+                  brightnessUpdateSteps);
+
+  static bool rampGoesUp = true; ///< keep track of the ramp side : up of down
+  static uint32_t lastBrightnessUpdateTime_ms = 0;
+  static uint32_t latestBrightnessSaturationDuration_ms =
+          0; ///< keep track of the latest brightness saturation press duration
+
+  // prevent sunset updates when we are updating it ourself
+  logic::sunset_timer.lock_brightness_update(not isEndOfHoldEvent);
+  /// user controled brightness, no more sunrise
+  logic::sunrise_timer.cancel_at_current_brightness();
+
+  if (isEndOfHoldEvent)
+  {
+    // update logic
+    lastBrightnessUpdateTime_ms = hal::time_ms();
+    logic::brightness::update_saved_brightness();
+
+    // if user set the brightness up, alert of sunset update
+    if (rampGoesUp)
+      logic::sunset_timer.bump_timer();
+
+    // reverse ramp on release
+    rampGoesUp = not rampGoesUp;
+    return;
+  }
+
+  // update brightness every N milliseconds (or end of hold)
+  EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
+  {
+    // start from the level currently followed by the modes
+    const brightness_t brightness = logic::brightness::get_scaled_saved_brightness();
+
+    // first actions, set ramp side
+    if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
+    {
+      latestBrightnessSaturationDuration_ms = 0;
+
+      // 2 clics always go low
+      if (consecutiveButtonCheck == 2)
+        rampGoesUp = false;
+      // ramp at maximum, go low
+      else if (brightness >= logic::brightness::get_max_brightness())
+        rampGoesUp = false;
+      // if more than 1 second elapsed since last brightness update, fall back to default raise ramp
+      else if (lastBrightnessUpdateTime_ms == 0 or hal::time_ms() - lastBrightnessUpdateTime_ms >= 1000)
+        rampGoesUp = true;
+    }
+    // press for too long, go down
+    else if (buttonHoldDuration >= BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + latestBrightnessSaturationDuration_ms)
+    {
+      // stayed pressed too long, turn off after a delay
+      if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + BRIGHTNESS_RAMP_DURATION_MS +
+                                        latestBrightnessSaturationDuration_ms)
+      {
+        bsp::lampda_print("System shutdown: button pressed too long for brightness control");
+        behavior::set_power_off();
+        return;
+      }
+      else
+        rampGoesUp = false;
+    }
+
+    // go down
+    if (not rampGoesUp)
+    {
+      if (brightness <= brightnessUpdateStepSize or
+          brightness - brightnessUpdateStepSize <= ::lampda::brightness::absoluteMinimumBrightness)
+      {
+        // min level
+        logic::brightness::update_brightness(::lampda::brightness::absoluteMinimumBrightness);
+      }
+      else
+        logic::brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
+    }
+    /// go up
+    else
+    {
+      // limit to max brightness
+      const auto _maxBrightness = logic::brightness::get_max_brightness();
+      if (brightness + brightnessUpdateStepSize >= _maxBrightness)
+      {
+        logic::brightness::update_brightness(_maxBrightness);
+        // set saturation timer
+        if (latestBrightnessSaturationDuration_ms == 0)
+          latestBrightnessSaturationDuration_ms = buttonHoldDuration;
+      }
+      else
+        logic::brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
+    }
+
+    // update saved brightness
+    logic::brightness::update_saved_brightness();
+  }
+}
+
+} // namespace __private
 
 /// holds the state of system on
 bool isSystemOn = false;
+/// Keep track of a long click event
+bool isInLongClick = false;
 /// hold the boolean that configures if button's usermode UI is enabled
 bool isButtonUsermodeEnabled = false;
+/// If true, we are waiting for a button event before starting the check logic
+bool isStartChainPending = false;
+
+/// Update the on/off status when outside of a long button press
+void update_isSystemOn_status()
+{
+  if (not isInLongClick)
+  {
+    isSystemOn = behavior::is_system_should_be_powered();
+    // deactivate custom user mode on turn off
+    if (not isSystemOn)
+      button_disable_usermode();
+  }
+}
 
 namespace button_press_handles {
 
@@ -95,15 +274,10 @@ bool usermode_button_click_callback(const uint8_t consecutiveButtonCheck)
  */
 bool always_button_click_callback(const uint8_t consecutiveButtonCheck)
 {
-  switch (consecutiveButtonCheck)
+  if (button_bindings::get_click_behavior(consecutiveButtonCheck) == button_bindings::Behavior::Indicator)
   {
-    case 7:
-      {
-        indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1);
-        return false;
-      }
-    default:
-      break;
+    indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1);
+    return false;
   }
   return true;
 }
@@ -246,17 +420,12 @@ bool always_button_hold_callback(const uint8_t consecutiveButtonCheck,
                                  const bool isEndOfHoldEvent,
                                  const uint32_t buttonHoldDuration)
 {
-  switch (consecutiveButtonCheck)
+  // clics and hold : toggle indicator
+  if (button_bindings::get_hold_behavior(consecutiveButtonCheck) == button_bindings::Behavior::Indicator)
   {
-    // 7 clics and hold : toggle indicator
-    case 7:
-      {
-        // every seconds, update the indicator
-        EVERY_N_MILLIS(1000) { indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1); }
-        return false;
-      }
-    default:
-      break;
+    // every seconds, update the indicator
+    EVERY_N_MILLIS(1000) { indicator::set_brightness_level(logic::indicator::get_brightness_level() + 1); }
+    return false;
   }
 
   return true;
@@ -270,6 +439,15 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
                                          const bool isEndOfHoldEvent,
                                          const uint32_t buttonHoldDuration)
 {
+  const bool hasUserHandledAction =
+          user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
+  // the user handled an action and requested a skip
+  if (hasUserHandledAction)
+  {
+    // system is already on, no need to continue
+    return;
+  }
+
   // basic "default" UI:
   //
   switch (consecutiveButtonCheck)
@@ -278,113 +456,13 @@ void system_enabled_button_hold_callback(const uint8_t consecutiveButtonCheck,
     case 1:
     case 2:
       {
-        // number of steps to update brightness
-        static constexpr uint32_t brightnessUpdateSteps = BRIGHTNESS_RAMP_DURATION_MS / BRIGHTNESS_LOOP_UPDATE_EVERY;
-        static const uint32_t brightnessUpdateStepSize =
-                max<uint32_t>(1, ::lampda::brightness::absoluteMaximumBrightness / brightnessUpdateSteps);
-
-        // negative go low, positive go high
-        static int rampSide = 1;
-        static uint32_t lastBrightnessUpdateTime_ms = 0;
-        static uint32_t latestBrightnessSaturationDuration_ms =
-                0; ///< keep track of the latest brightness saturation press duration
-
-        // prevent sunset updates when we are updating it ourself
-        logic::sunset::lock_brightness_update(not isEndOfHoldEvent);
-
-        if (isEndOfHoldEvent)
-        {
-          // update logic
-          lastBrightnessUpdateTime_ms = hal::time_ms();
-          logic::brightness::update_saved_brightness();
-
-          // if user set the brightness up, alert of sunset update
-          if (rampSide > 0)
-            logic::sunset::bump_timer();
-
-          // reverse ramp on release
-          rampSide = -rampSide;
-          break;
-        }
-
-        // update brightness every N milliseconds (or end of hold)
-        EVERY_N_MILLIS(BRIGHTNESS_LOOP_UPDATE_EVERY)
-        {
-          // use minimum of saved vs max user brightness
-          const brightness_t brightness = std::min<brightness_t>(logic::brightness::get_saved_brightness(),
-                                                                 logic::brightness::get_max_user_brightness());
-
-          // first actions, set ramp side
-          if (buttonHoldDuration <= BRIGHTNESS_LOOP_UPDATE_EVERY)
-          {
-            latestBrightnessSaturationDuration_ms = 0;
-
-            // 2 clics always go low
-            if (consecutiveButtonCheck == 2)
-              rampSide = -1;
-            // ramp at maximum, go low
-            else if (brightness >= logic::brightness::get_max_brightness())
-              rampSide = -1;
-            // if more than 1 second elapsed, fall back to raise ramp
-            else if (lastBrightnessUpdateTime_ms == 0 or hal::time_ms() - lastBrightnessUpdateTime_ms >= 1000)
-              rampSide = 1;
-          }
-          // press for too long, go down
-          else if (buttonHoldDuration >=
-                   BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + latestBrightnessSaturationDuration_ms)
-          {
-            // stayed pressed too long, turn off after a delay
-            if (buttonHoldDuration >= 2 * BRIGHTNESS_RAMP_SATURATION_MAX_DURATION_MS + BRIGHTNESS_RAMP_DURATION_MS +
-                                              latestBrightnessSaturationDuration_ms)
-            {
-              bsp::lampda_print("System shutdown: button pressed too long for brightness control");
-              behavior::set_power_off();
-              break;
-            }
-            else
-              rampSide = -1;
-          }
-
-          // go down
-          if (rampSide < 0)
-          {
-            if (brightness <= brightnessUpdateStepSize)
-              // min level
-              logic::brightness::update_brightness(1);
-            else
-              logic::brightness::update_brightness(static_cast<brightness_t>(brightness - brightnessUpdateStepSize));
-          }
-          /// go up
-          else
-          {
-            // limit max brightness
-            const auto _maxBrightness = logic::brightness::get_max_brightness();
-            if (brightness + brightnessUpdateStepSize >= _maxBrightness)
-            {
-              logic::brightness::update_brightness(_maxBrightness);
-              // set saturation timer
-              if (latestBrightnessSaturationDuration_ms == 0)
-                latestBrightnessSaturationDuration_ms = buttonHoldDuration;
-            }
-            else
-              logic::brightness::update_brightness(static_cast<brightness_t>(brightness + brightnessUpdateStepSize));
-          }
-
-          // update saved brightness
-          logic::brightness::update_saved_brightness();
-        }
+        __private::handle_brightness_change(consecutiveButtonCheck, buttonHoldDuration, isEndOfHoldEvent);
+        return;
       }
-      break;
+      // let event pass through to user for special case handling
 
     // other behaviors
     default:
-      const bool hasUserHandledAction =
-              user::button_hold_default(consecutiveButtonCheck, isEndOfHoldEvent, buttonHoldDuration);
-      if (hasUserHandledAction)
-      {
-        // system is already on, no need to continue
-        return;
-      }
       break;
   }
 }
@@ -495,16 +573,20 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
   {
     bool canContinue =
             button_press_handles::system_start_button_hold_callback(consecutiveButtonCheck, isEndOfPress, holdDuration);
+    // we handled a start action, skip other actions
     if (not canContinue)
       return;
 
     const bool isStartedInLockout = logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
+    // Check that the system is not locked
     if (not isStartedInLockout)
     {
       // user mode may return "True" to skip default action
       canContinue = not user::button_start_hold_default(consecutiveButtonCheck, isEndOfPress, holdDuration);
+      // an action was handled by user, do not continue
       if (not canContinue)
       {
+        // check if the user requested to power on the system
         if (not behavior::is_system_should_be_powered())
         {
           // user returned a command handle, so we should start
@@ -552,75 +634,78 @@ void button_hold_callback(const uint8_t consecutiveButtonCheck,
 
 void init(const bool wasPoweredByUserInterrupt)
 {
+  isStartChainPending = wasPoweredByUserInterrupt;
   component::button::init(wasPoweredByUserInterrupt);
   bsp::indicator::init();
 }
 
 void loop()
 {
-  // loop is not ran in shutdown mode
-
   // Check a maximum of events per loop turn, events can be refilled by other threads
   size_t maxEventsChecks = __private::maxButtonEventStore;
-  while (maxEventsChecks != 0 && __private::buttonEventQueue.has_elements())
+  while (maxEventsChecks != 0)
   {
     maxEventsChecks--;
-    const auto& event = __private::buttonEventQueue.dequeue();
-    if (event.has_value())
-    {
-      const __private::ButtonEvent& buttonEvent = event.value();
-      if (not buttonEvent.isLongPress)
-      {
-        button_clicked_callback(buttonEvent.clickCount, not isSystemOn);
-      }
-      else
-      {
-        button_hold_callback(
-                buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, not isSystemOn);
-      }
 
-      // update system on
-      if (not buttonEvent.isLongPress or buttonEvent.isEndOfLongPress)
+    // popped under the queue lock, the callbacks run without it
+    __private::ButtonEvent buttonEvent;
+    if (not __private::pop_button_event(buttonEvent))
+      break;
+
+    // First click checks if system is on, or if started from button interrupt where the first event could have been
+    // missed
+    const bool isFirstClick = isStartChainPending or not isSystemOn;
+
+    if (not buttonEvent.isLongPress)
+    {
+      isInLongClick = false;
+      button_clicked_callback(buttonEvent.clickCount, isFirstClick);
+      isStartChainPending = false;
+
+      // update status between clicks, for some special case where it could change between two registered events
+      update_isSystemOn_status();
+    }
+    else
+    {
+      isInLongClick = not buttonEvent.isEndOfLongPress;
+      button_hold_callback(
+              buttonEvent.clickCount, buttonEvent.longPressDuration, buttonEvent.isEndOfLongPress, isFirstClick);
+      if (buttonEvent.isEndOfLongPress)
       {
-        isSystemOn = behavior::is_system_should_be_powered();
-        // deactivate custom user mode on turn off
-        if (not isSystemOn)
-          button_disable_usermode();
+        isStartChainPending = false;
+        // update status between clicks, for some special case where it could change between two registered events
+        update_isSystemOn_status();
       }
     }
   }
+
+  // Update the system on status when possible.
+  // It may have been updated by another actor in the system.
+  update_isSystemOn_status();
 }
 
 void button_disable_usermode() { isButtonUsermodeEnabled = false; }
 
 bool is_button_usermode_enabled() { return isButtonUsermodeEnabled; }
 
-bool add_button_click_event(uint32_t clickCount)
+bool add_button_click_event(uint8_t clickCount)
 {
   __private::ButtonEvent event;
   event.isLongPress = false;
   event.clickCount = clickCount;
-  return __private::buttonEventQueue.enqueue(event);
+  return __private::push_button_event(event, 100);
 }
 
-bool add_button_press_event(uint32_t clickCount, uint32_t pressDuration, bool isEndOfPress)
+bool add_button_press_event(uint8_t clickCount, uint32_t pressDuration, bool isEndOfPress)
 {
-  // special case for long press events: if there is too much events, the end of hold event can get rejected.
-  // Do not fill the queue above a percentage with hold events
-  if (not isEndOfPress)
-  {
-    const size_t fillPercent =
-            (__private::buttonEventQueue.get_stored_item_count() * 100) / __private::maxButtonEventStore;
-    // Prevent any hold events if queue is getting full
-    if (fillPercent >= 80)
-      return false;
-  }
   __private::ButtonEvent event;
   event.isLongPress = true;
   event.clickCount = clickCount;
   event.isEndOfLongPress = isEndOfPress;
   event.longPressDuration = pressDuration;
-  return __private::buttonEventQueue.enqueue(event);
+  // special case for long press events: if there is too much events, the end of hold event can get rejected.
+  // Do not fill the queue above a percentage with hold events
+  return __private::push_button_event(event, isEndOfPress ? 100 : 80);
 }
 
 } // namespace inputs

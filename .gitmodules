@@ -7,3 +7,6 @@
 [submodule "src/depends/arduinoFFT"]
 	path = src/depends/arduinoFFT
 	url = https://github.com/kosme/arduinoFFT.git
+[submodule "libs/etl"]
+	path = libs/etl
+	url = https://github.com/ETLCPP/etl.git

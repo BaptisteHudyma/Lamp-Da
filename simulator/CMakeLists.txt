@@ -10,6 +10,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/compile.cmake)
 
 install_sfml()
 
+find_package(ETLCPP)
+
+
 # Compiler and Flags
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,12 +23,15 @@ add_compile_definitions(
     LMBD_SIMULATION
     LMBD_IN_SIMULATION
     LMBD_CPP17
+    LMBD_SIMULATOR_RESOURCES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
 )
 
 set(SIM_BUILD_FLAGS "-O3 -g -fdump-rtl-expand -fstack-usage -fsanitize=address -fno-omit-frame-pointer")
 set(SIM_LINK_FLAGS "-fsanitize=address")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SIM_BUILD_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SIM_BUILD_FLAGS} -fconcepts --template-backtrace-limit=1")
+
+add_subdirectory(${LMBD_ROOT_DIR}/libs/etl [EXCLUDE_FROM_ALL])
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -35,6 +41,7 @@ include_directories(
 # Create simulator targets dynamically
 create_simulator_target(indexable)
 create_simulator_target(simple)
+create_simulator_target(indexable-hd BASE indexable DEFINES LMBD_LAMP_TYPE__INDEXABLE_IS_HD)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/simulation_parameters.txt

@@ -5,20 +5,22 @@
 #include "src/system/ext/math8.h"
 #include "src/system/ext/noise.h"
 
-#include "src/system/hal/bluetooth.h"
 #include "src/system/hal/time.h"
 #include "src/system/hal/gpio.h"
 #include "src/system/hal/i2c.h"
 #include "src/system/hal/registers.h"
 
+#include "src/system/bsp/ble.h"
 #include "src/system/bsp/text_out.h"
 
 #include "src/system/logic/alerts.h"
+#include "src/system/logic/battery_blink.h"
+#include "src/system/logic/button_bindings.h"
 #include "src/system/logic/inputs_bluetooth.h"
 #include "src/system/logic/inputs.h"
 #include "src/system/logic/statistics_handler.h"
 #include "src/system/logic/power_handler.h"
-#include "src/system/logic/sunset_timer.h"
+#include "src/system/logic/sun_timers.h"
 
 #include "src/system/bsp/indicator.h"
 #include "src/system/bsp/filesystem.h"
@@ -46,12 +48,27 @@ namespace lampda {
 namespace logic {
 namespace behavior {
 
+/**
+ * Debug only: at shutdown, wait for the bluetooth log to send its queued lines (it is much slower than the system, the
+ * lines still queued are lost when the link closes). The shutdown can then take up to 30 seconds.
+ * Enabled by DEBUG_MODE, or alone with LMBD_EXTRA_FLAGS="-DLMBD_FLUSH_BLE_LOG_AT_SHUTDOWN".
+ */
+#if defined(DEBUG_MODE) and not defined(LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN)
+#define LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN
+#endif
+
+#ifdef LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN
+/// At shutdown, maximum time given to the bluetooth log to send its queued lines
+static constexpr uint32_t shutdownBleLogFlushTimeout_ms = 30000;
+#endif
+
 static constexpr uint32_t cleanSleepKey = utils::hash("cleanSleep");
 static constexpr uint32_t brightnessKey = utils::hash("brightness");
 static constexpr uint32_t indicatorLevelKey = utils::hash("indLvl");
 static constexpr uint32_t isLockoutModeKey = utils::hash("lckMode");
 static constexpr uint32_t buttonPinKey = utils::hash("bttPin");
 static constexpr uint32_t bluetoothAutoKey = utils::hash("ble");
+static constexpr uint32_t batteryBlinkKey = utils::hash("batBlink");
 
 // time to block turn off since turn on
 static constexpr uint32_t SYSTEM_TURN_ON_ALLOW_TURN_OFF_DELAY = 500;
@@ -73,7 +90,7 @@ static bool wokeUpFromVbus_s = false;
 // indicates that the output should be turned on/off
 static bool isTargetPoweredOn_s = false;
 // indicates the error that started the error state
-static std::string errorStateRaisedStr = "";
+static etl::string<128> errorStateRaisedStr = "";
 // indicates the time at which the pre-charge state started
 static uint32_t preChargeCalled = 0;
 // indicates the  time at which the output state is enabled
@@ -143,13 +160,6 @@ bool is_in_charge_state()
          mainMachine.get_state() == BehaviorStates::PRE_CHARGER_OPERATION;
 }
 
-namespace sunset {
-
-// signal update to user
-void progress_update(const float progress) { user::sunset_timer_update(progress); }
-
-} // namespace sunset
-
 // allow system to be powered if no hardware alert and power is setup
 bool can_system_allowed_to_be_powered()
 {
@@ -202,6 +212,12 @@ bool read_parameters()
       logic::alerts::manager.raise(logic::alerts::Type::SYSTEM_IN_LOCKOUT);
     }
 
+    uint32_t isBatteryBlinkEnabled = 0;
+    if (bsp::filesystem::system::get_value(batteryBlinkKey, isBatteryBlinkEnabled))
+    {
+      logic::battery_blink::set_enabled(isBatteryBlinkEnabled != 0);
+    }
+
     uint32_t buttonPin = 0;
     if (bsp::filesystem::system::get_value(buttonPinKey, buttonPin) and buttonPin > 0)
     {
@@ -215,7 +231,7 @@ bool read_parameters()
       bluetoothAutoActivationLeftCount = min<uint32_t>(maxBluetoothAutoActivations, bluetoothAutoActivation - 1);
 
       // bounded device, advertize but only allow the bounded device, if it exist
-      hal::bluetooth::start_advertising(false);
+      bsp::ble::start_advertising(false);
     }
     else
     {
@@ -231,6 +247,9 @@ bool read_parameters()
 
   // Load the user anyway, there is a default parameter logic in here
   user::read_parameters();
+
+  // After the user parameters: they can erase the stored values on migration
+  button_bindings::load_from_memory();
 
   return isSuccess;
 }
@@ -258,6 +277,7 @@ void write_parameters()
   bsp::filesystem::system::set_value(isLockoutModeKey,
                                      logic::alerts::manager.is_raised(logic::alerts::Type::SYSTEM_IN_LOCKOUT));
   bsp::filesystem::system::set_value(buttonPinKey, static_cast<uint32_t>(component::button::get_button_pin()));
+  bsp::filesystem::system::set_value(batteryBlinkKey, logic::battery_blink::is_enabled() ? 1 : 0);
 
   // if the user used the bluetooth, it will be written here for auto activation
   const uint32_t nextWakeUpWithBluetooth =
@@ -267,6 +287,9 @@ void write_parameters()
   // write user parameters
   user::write_parameters();
 
+  // After the user parameters: they clear the cached values before writing theirs
+  button_bindings::write_to_memory();
+
   // write all
   bsp::filesystem::user::write_to_file();
   bsp::filesystem::system::write_to_file();
@@ -275,21 +298,21 @@ void write_parameters()
 // user code is running when state is output
 bool is_user_code_running() { return mainMachine.get_state() == BehaviorStates::OUTPUT_LIGHT; }
 
-void set_error_state_message(const std::string& errorMsg)
+void set_error_state_message(const etl::string<128>& errorMsg)
 {
   if (errorStateRaisedStr.empty())
   {
-    errorStateRaisedStr = "\n\t" + errorMsg;
+    errorStateRaisedStr = etl::string<128>("\n\t").append(errorMsg);
   }
 }
-std::string get_error_state_message()
+etl::string<128> get_error_state_message()
 {
   if (errorStateRaisedStr.empty())
     return "x";
   return errorStateRaisedStr;
 }
 
-void go_to_error_state(const std::string& errorMsg)
+void go_to_error_state(const etl::string<128>& errorMsg)
 {
   statistics::signal_output_off();
 
@@ -338,7 +361,7 @@ void handle_start_logic_state()
   // safety for failure of components at startup
   if (not can_system_allowed_to_be_powered())
   {
-    go_to_error_state("system not allow to power on in start logic state");
+    go_to_error_state("system not allowed to power on in start logic state");
     return;
   }
   if (logic::power::is_in_error_state())
@@ -467,7 +490,8 @@ bool check_handle_exit_output_mode()
   // should go to sleep
   if (not is_system_should_be_powered())
   {
-    logic::sunset::cancel_timer();
+    // cancel both
+    logic::sun_timers_cancel_all();
 
     if (is_charger_powered())
     {
@@ -481,10 +505,9 @@ bool check_handle_exit_output_mode()
     }
     return true;
   }
-#ifndef LMBD_SIMULATION
   else if (not component::battery::is_battery_usable_as_power_source())
   {
-    logic::sunset::cancel_timer();
+    logic::sunset_timer.cancel();
 
     // wait a bit then shutdown
     if (hal::time_ms() - preOutputLightCalled > 3000)
@@ -494,7 +517,6 @@ bool check_handle_exit_output_mode()
     }
     return true;
   }
-#endif
 
   return false;
 }
@@ -534,6 +556,8 @@ void handle_pre_output_light_state()
       bsp::lampda_print("not output in lockout state");
       isMessageDisplayed = true;
     }
+    // waiting for the user is not a failure to toggle: a button chain exiting lockout can last longer than the timeout
+    mainMachine.reset_state_raised_time();
     // check if we may go to sleep
     check_handle_exit_output_mode();
     return;
@@ -543,7 +567,7 @@ void handle_pre_output_light_state()
   isMessageDisplayed = false;
 
   // critical battery level, do not wake up
-  if (component::battery::get_battery_minimum_cell_level() <= batteryCritical + 1)
+  if (component::battery::get_battery_minimum_cell_level() <= physical_constants::batteryCritical + 1)
   {
     // alert user of low battery
     for (uint8_t i = 0; i < 10; i++)
@@ -571,8 +595,10 @@ void handle_pre_output_light_state()
 
   logic::power::go_to_output_mode();
 
-  // update brightness with saved brightness
-  logic::brightness::update_brightness(logic::brightness::get_saved_brightness());
+  // update brightness with saved brightness, only when the system was not enabled by sunrise
+  if (not logic::sunrise_timer.is_enabled())
+    logic::brightness::set_user_brightness_scale(1.0f);
+  logic::brightness::update_brightness(logic::brightness::get_scaled_saved_brightness());
 
   // let the user power on the system
   user::power_on_sequence();
@@ -581,6 +607,7 @@ void handle_pre_output_light_state()
 
   // this function is executed ONCE
   statistics::signal_output_on();
+  logic::battery_blink::signal_output_on();
   mainMachine.set_state(BehaviorStates::OUTPUT_LIGHT);
 }
 
@@ -614,9 +641,11 @@ void handle_output_light_state()
 
     if (hal::time_ms() - lastOutputLightValidTime > 1000)
     {
-      go_to_error_state("power gate took too long to switch in output light state " +
-                        std::to_string(::lampda::bsp::powergates::is_power_gate_enabled()) +
-                        std::to_string(logic::power::is_output_mode_ready()));
+      etl::string<128> errStr("power gate took too long to switch in output light state: gate=");
+      errStr.push_back(::lampda::bsp::powergates::is_power_gate_enabled() ? '1' : '0');
+      errStr.append(" output_ready=");
+      errStr.push_back(logic::power::is_output_mode_ready() ? '1' : '0');
+      go_to_error_state(errStr);
     }
     return;
   }
@@ -630,6 +659,9 @@ void handle_output_light_state()
     // resume secondary thread
     if (user::should_spawn_thread())
       bsp::threads::resume_thread(bsp::threads::user_taskName);
+
+    // before the user loop, that handles the blips
+    logic::battery_blink::loop();
 
     // user loop call
     user::loop();
@@ -669,11 +701,11 @@ void handle_shutdown_state()
    * Software shutdown phase
    */
 
-  // Phase 1: bluetooth & com shutdown
-  component::button::shutdown();                ///< prevent more button commands
-  hal::bluetooth::stop_bluetooth_advertising(); ///< stop bluetooth
-  hal::bluetooth::shutdown();                   ///< deactivate bluetooth
-  hal::delay_ms(20);
+  // Phase 1: com shutdown
+  component::button::shutdown();          ///< prevent more button commands
+  bsp::ble::stop_bluetooth_advertising(); ///< no new bluetooth connection, and no advertising restart on disconnect
+  // The bluetooth link is closed after the flash writes (phase 3): with the SoftDevice, a flash operation done while a
+  // disconnection is in progress can wait for the peer supervision timeout (several seconds), see #590
 
   // Phase 2: peripheral shutdown
   component::microphone::disable();
@@ -682,12 +714,24 @@ void handle_shutdown_state()
   hal::delay_ms(10);
 
   // Phase 3: power / filesystem
-  if (not logic::power::go_to_shutdown())
-  {
-    // TODO: error ?
-  }
+  logic::power::go_to_shutdown();
+
   // save the current config to a file
   write_parameters();
+
+#ifdef LMBD_FLUSH_BLE_LOG_AT_SHUTDOWN
+  // debug: give the bluetooth log time to send the last lines (shutdown reason), they are lost when the link closes
+  const uint32_t logFlushStart_ms = hal::time_ms();
+  while (bsp::lampda_print_ble_pending() > 0 and hal::time_ms() - logFlushStart_ms < shutdownBleLogFlushTimeout_ms)
+  {
+    hal::registers::kick_watchdog(POWER_WATCHDOG_ID);
+    hal::registers::kick_watchdog(USER_WATCHDOG_ID);
+    hal::delay_ms(50);
+  }
+#endif
+
+  // all flash writes are done: deactivate bluetooth (saves the bond if needed, then closes all links)
+  bsp::ble::shutdown();
   hal::delay_ms(20);
   bsp::filesystem::shutdown();
 
@@ -837,7 +881,7 @@ void loop()
   }
 }
 
-std::string get_state() { return std::string(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]); }
+etl::string<32> get_state() { return etl::string<32>(BehaviorStatesStr[static_cast<size_t>(mainMachine.get_state())]); }
 
 } // namespace behavior
 } // namespace logic

@@ -47,15 +47,19 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   static constexpr bool isGroupManager = false;
 
   // useful proxies (exposes mode properties)
-  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation; ///< \private
-  static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;   ///< \private
-  static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks; ///< \private
-  static constexpr bool requireUserThread = LocalModeTy::requireUserThread;   ///< \private
-  static constexpr bool hasCustomRamp = LocalModeTy::hasCustomRamp;           ///< \private
-  static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;   ///< \private
+  static constexpr bool hasSunsetAnimation = LocalModeTy::hasSunsetAnimation;                       ///< \private
+  static constexpr bool hasSunriseAnimation = LocalModeTy::hasSunriseAnimation;                     ///< \private
+  static constexpr bool usesSunsetGravityDissolveMode = LocalModeTy::usesSunsetGravityDissolveMode; ///< \private
+  static constexpr bool usesSunriseGravityAppearMode = LocalModeTy::usesSunriseGravityAppearMode;   ///< \private
+  static constexpr bool hasBrightCallback = LocalModeTy::hasBrightCallback;                         ///< \private
+  static constexpr bool hasSystemCallbacks = LocalModeTy::hasSystemCallbacks;                       ///< \private
+  static constexpr bool requireUserThread = LocalModeTy::requireUserThread;                         ///< \private
+  static constexpr bool hasCustomRamp = LocalModeTy::hasCustomRamp;                                 ///< \private
+  static constexpr bool hasButtonCustomUI = LocalModeTy::hasButtonCustomUI;                         ///< \private
 
   // more proxies (exposes tables of mode properties)
   static constexpr auto everySunsetCallback = LocalModeTy::everySunsetCallback;       ///< \private
+  static constexpr auto everySunriseCallback = LocalModeTy::everySunriseCallback;     ///< \private
   static constexpr auto everyBrightCallback = LocalModeTy::everyBrightCallback;       ///< \private
   static constexpr auto everySystemCallbacks = LocalModeTy::everySystemCallbacks;     ///< \private
   static constexpr auto everyRequireUserThread = LocalModeTy::everyRequireUserThread; ///< \private
@@ -116,6 +120,21 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
+  void LMBD_INLINE jump_to_new_active_index(const auto& newActiveIndex,
+                                            const bool ignoreRampAndIndex = false,
+                                            const bool quitFavoriteGroup = false)
+  {
+    if constexpr (LocalModeTy::isGroupManager)
+    {
+      LocalModeTy::jump_to_new_active_index(*this, newActiveIndex, ignoreRampAndIndex, quitFavoriteGroup);
+    }
+    else
+    {
+      auto manager = modeManager.get_context();
+      manager.jump_to_new_active_index(newActiveIndex, ignoreRampAndIndex, quitFavoriteGroup);
+    }
+  }
+
   /// \private Jump to favorite mode
   bool LMBD_INLINE jump_to_favorite(uint8_t which_one, bool shouldSaveLastActiveIndex)
   {
@@ -145,16 +164,16 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   }
 
   /// \private Set active favorite now
-  auto LMBD_INLINE set_favorite_now(uint8_t which_one = 0)
+  auto LMBD_INLINE set_favorite_at(uint8_t which_one, auto activeIndex)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      return LocalModeTy::set_favorite_now(*this, which_one);
+      return LocalModeTy::set_favorite_at(*this, which_one, activeIndex);
     }
     else
     {
       auto manager = modeManager.get_context();
-      return manager.set_favorite_now(which_one);
+      return manager.set_favorite_at(which_one, activeIndex);
     }
   }
 
@@ -291,9 +310,8 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
 
     auto manager = modeManager.get_context();
 
-    // cancel any blip
-    // TODO: this should be in quit_mode
-    manager.cancel_blip();
+    // signal that we are quitting the mode
+    modeManager.quit_mode(manager);
 
     // if next mode is the same as current one, add a blip to help user differenciate
     if (modeManager.activeIndex.modeIndex == value)
@@ -305,8 +323,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
       manager.blip(100);
     }
 
-    // signal that we are quitting the mode
-    modeManager.quit_mode(manager);
     // switch mode
     modeManager.activeIndex.modeIndex = value;
     // signal that we entered a new mode
@@ -319,6 +335,22 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
    * \see BasicMode::custom_ramp_update()
    */
   uint8_t LMBD_INLINE get_active_custom_ramp() const { return modeManager.activeIndex.rampIndex; }
+
+  /**
+   * \brief Update the sunset timer drop animation
+   */
+  void update_sunset_drop_animation(float progress)
+  {
+    modeManager.sunsetHandler.update_suntimer_drop_animation(*this, progress);
+  }
+
+  /**
+   * \brief Update the sunrise timer drop animation
+   */
+  void update_sunrise_drop_animation(float progress)
+  {
+    modeManager.sunriseHandler.update_suntimer_drop_animation(*this, progress);
+  }
 
   /** \brief (setter) Set active custom ramp value (overrides user choice)
    *
@@ -582,21 +614,6 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     return ctx.lamp.is_bliping();
   }
 
-  /** \brief Skip the first few LEDs update during several frames
-   *
-   * Next calls to @ref modes::hardware::LampTy.setPixelColor() no longer write
-   * on the \p amount first lower LEDs, making them static.
-   *
-   * See modes::colors::rampColorRing
-   *
-   */
-  void LMBD_INLINE skipFirstLedsForFrames(uint8_t amount, uint8_t count = 1)
-  {
-    auto ctx = modeManager.get_context();
-    ctx.lamp.config.skipFirstLedsForAmount = amount;
-    ctx.lamp.config.skipFirstLedsForEffect = count;
-  }
-
   //
   // Binder for group and mode enter/quit
   //
@@ -662,7 +679,28 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   //
 
   /// Binds to local BasicMode::loop()
-  void LMBD_INLINE loop() { LocalModeTy::loop(*this); }
+  void LMBD_INLINE loop()
+  {
+    LocalModeTy::loop(*this);
+
+    // this mode special case
+    if constexpr (isMode)
+    {
+      auto manager = modeManager.get_context();
+
+      // this mode has sunset and internal sunset animation
+      if constexpr (LocalModeTy::hasSunsetAnimation && LocalModeTy::usesSunsetGravityDissolveMode)
+      {
+        manager.sunset_timer_animation_internal_loop();
+      }
+
+      // this mode has sunset and internal sunset animation
+      if constexpr (LocalModeTy::hasSunriseAnimation && LocalModeTy::usesSunriseGravityAppearMode)
+      {
+        manager.sunrise_timer_animation_internal_loop();
+      }
+    }
+  }
 
   /// Binds to local BasicMode::on_enter_mode()
   void LMBD_INLINE on_enter_mode()
@@ -671,6 +709,25 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     {
       LocalStore::template migrateStoreIfNeeded<LocalModeTy::storeId>();
     }
+
+    // this mode special case
+    if constexpr (isMode)
+    {
+      auto manager = modeManager.get_context();
+
+      // this mode has sunset and internal sunset animation
+      if constexpr (LocalModeTy::hasSunsetAnimation && LocalModeTy::usesSunsetGravityDissolveMode)
+      {
+        manager.sunset_timer_internal_reset();
+      }
+
+      // this mode has sunset and internal sunset animation
+      if constexpr (LocalModeTy::hasSunriseAnimation && LocalModeTy::usesSunriseGravityAppearMode)
+      {
+        manager.sunrise_timer_internal_reset();
+      }
+    }
+
     LocalModeTy::on_enter_mode(*this);
   }
 
@@ -686,9 +743,50 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
   {
     if constexpr (LocalModeTy::hasSunsetAnimation)
     {
+      if constexpr (isMode)
+      {
+        // special handle case if we specifically have a dissolve mode
+        if constexpr (LocalModeTy::usesSunsetGravityDissolveMode)
+          modeManager.get_context().update_sunset_drop_animation(progress);
+      }
+
       LocalModeTy::sunset_update(*this, progress);
     }
   }
+
+  /// Binds to local BasicMode::sunrise_update()
+  void LMBD_INLINE sunrise_update(LMBD_USED float progress)
+  {
+    if constexpr (LocalModeTy::hasSunriseAnimation)
+    {
+      if constexpr (isMode)
+      {
+        // special handle case if we specifically have a gravity appear mode
+        if constexpr (LocalModeTy::usesSunriseGravityAppearMode)
+          modeManager.get_context().update_sunrise_drop_animation(progress);
+      }
+
+      LocalModeTy::sunrise_update(*this, progress);
+    }
+  }
+
+  /// Run the internal sunset animation loop
+  void LMBD_INLINE sunset_timer_animation_internal_loop() { LocalModeTy::sunset_timer_animation_internal_loop(*this); }
+  /// Run the internal sunrise animation loop
+  void LMBD_INLINE sunrise_timer_animation_internal_loop()
+  {
+    LocalModeTy::sunrise_timer_animation_internal_loop(*this);
+  }
+
+  /**
+   * \brief Signal a end of sunset timer event
+   */
+  void LMBD_INLINE sunset_timer_internal_reset() { LocalModeTy::sunset_timer_internal_reset(*this); }
+
+  /**
+   * \brief Signal a end of sunrise timer event
+   */
+  void LMBD_INLINE sunrise_timer_internal_reset() { LocalModeTy::sunrise_timer_internal_reset(*this); }
 
   /// Binds to local BasicMode::brightness_update()
   void LMBD_INLINE brightness_update(LMBD_USED brightness_t brightness)
@@ -779,30 +877,46 @@ template<typename LocalBasicMode, typename ModeManager> struct ContextTy
     }
   }
 
-  template<bool displayFavoriteNumber = true> auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize)
+  bool is_in_favorite_group()
   {
-    if constexpr (LocalModeTy::isModeManager)
+    if constexpr (LocalModeTy::isGroupManager)
     {
-      return modeManager.template animate_favorite_pick<displayFavoriteNumber>(*this, holdDuration, stepSize);
+      return modeManager.template is_in_favorite_group(*this);
     }
     else
     {
-      auto& manager = modeManager.get_context();
-      return manager.template animate_favorite_pick<displayFavoriteNumber>(holdDuration, stepSize);
+      auto manager = modeManager.get_context();
+      return manager.is_in_favorite_group();
     }
   }
 
   template<bool displayFavoriteNumber = true>
-  auto LMBD_INLINE animate_favorite_delete(float holdDuration, float stepSize)
+  auto LMBD_INLINE animate_favorite_pick(float holdDuration, float stepSize, bool isEndOfHold)
   {
     if constexpr (LocalModeTy::isModeManager)
     {
-      return modeManager.template animate_favorite_delete<displayFavoriteNumber>(*this, holdDuration, stepSize);
+      return modeManager.template animate_favorite_pick<displayFavoriteNumber>(
+              *this, holdDuration, stepSize, isEndOfHold);
     }
     else
     {
       auto& manager = modeManager.get_context();
-      return manager.template animate_favorite_delete<displayFavoriteNumber>(holdDuration, stepSize);
+      return manager.template animate_favorite_pick<displayFavoriteNumber>(holdDuration, stepSize, isEndOfHold);
+    }
+  }
+
+  template<bool displayFavoriteNumber = true>
+  auto LMBD_INLINE animate_favorite_delete(float holdDuration, float stepSize, bool isEndOfHold)
+  {
+    if constexpr (LocalModeTy::isModeManager)
+    {
+      return modeManager.template animate_favorite_delete<displayFavoriteNumber>(
+              *this, holdDuration, stepSize, isEndOfHold);
+    }
+    else
+    {
+      auto& manager = modeManager.get_context();
+      return manager.template animate_favorite_delete<displayFavoriteNumber>(holdDuration, stepSize, isEndOfHold);
     }
   }
 

@@ -11,6 +11,8 @@
 #include "src/system/bsp/imu_wrapper.h"
 #include "src/system/bsp/text_out.h"
 
+#include "src/system/logic/alerts.h"
+
 namespace lampda {
 namespace component {
 namespace imu {
@@ -26,9 +28,12 @@ hal::gpio::DigitalPin interrupt2Pin(hal::gpio::DigitalPin::GPIO::Signal_ImuInter
 bool isInitialized = false;
 
 /// Transform imu coordinates to board coordinates
-const utils::TransformationMatrix imuToBoardTransformation(
-        utils::vec3d(imuToCircuitRotationX_rad, imuToCircuitRotationY_rad, imuToCircuitRotationZ_rad),
-        utils::vec3d(imuToCircuitPositionX_m, imuToCircuitPositionY_m, imuToCircuitPositionZ_m));
+const utils::TransformationMatrix imuToBoardTransformation(utils::vec3d(physical_constants::imuToCircuitRotationX_rad,
+                                                                        physical_constants::imuToCircuitRotationY_rad,
+                                                                        physical_constants::imuToCircuitRotationZ_rad),
+                                                           utils::vec3d(physical_constants::imuToCircuitPositionX_m,
+                                                                        physical_constants::imuToCircuitPositionY_m,
+                                                                        physical_constants::imuToCircuitPositionZ_m));
 
 /// Transform board coordinates to first pixel
 const utils::TransformationMatrix boardToFirstPixelTransformation(
@@ -41,9 +46,11 @@ void init()
 {
   if (not imuInstance.init())
   {
-    // TODO: something ?
+#ifndef LMBD_SIMULATION // TODO #132
+    logic::alerts::manager.raise(logic::alerts::Type::HARDWARE_ALERT);
     bsp::lampda_print("IMU failed to start");
     isInitialized = false;
+#endif
   }
   else
   {
@@ -293,7 +300,7 @@ bsp::imu::Reading get_filtered_reading(const bool resetFilter)
 #endif
 
   // transform to lamp body space
-  // this new object is necessary or the computation returns garbage. TODO: WHY
+  // this new object is necessary or the computation returns garbage.
   bsp::imu::Reading lampSpaceVector;
   lampSpaceVector.accel = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.accel));
   lampSpaceVector.gyro = boardToFirstPixelTransformation.transform(imuToBoardTransformation.transform(filtered.gyro));

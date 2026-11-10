@@ -106,6 +106,9 @@ public:
     reset();
   }
 
+  FftAnalyzer(const FftAnalyzer&) = delete;
+  FftAnalyzer& operator=(FftAnalyzer const&) = delete;
+
   /// Map frequency to bin index
   int to_bin_index(const T frequency) const noexcept
   {

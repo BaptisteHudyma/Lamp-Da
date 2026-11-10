@@ -38,6 +38,6 @@ To try X11 forwarding:
 ```sh
 vagrant ssh -c "sudo vim /etc/ssh/sshd_config" # verify sshd config: AddressFamily inet
 vagrant ssh -c "sudo systemctl restart sshd"
-vagrant ssh -c "cd /LampColorControler && make simulator"
+vagrant ssh -c "cd /LampColorControler && make simulator-indexable"
 vagrant ssh -c "cd /LampColorControler/_build/simulator && ./indexable-simulator" -- -Y
 ```

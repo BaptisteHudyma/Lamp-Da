@@ -40,6 +40,13 @@ struct PaletteFadeMode : public modes::BasicMode
 
     ctx.lamp.fill(modes::colors::from_palette(static_cast<uint8_t>(ctx.state.paletteIndex), ctx.state.palette));
   }
+
+  /// sunset & sunrise animation on the fixed modes
+  static constexpr bool hasSunsetAnimation = true;
+  static constexpr bool hasSunriseAnimation = true;
+  // Use the two internal gravity modes, so no need to define the callbacks
+  static constexpr bool usesSunsetGravityDissolveMode = true;
+  static constexpr bool usesSunriseGravityAppearMode = true;
 };
 
 /**

@@ -11,6 +11,7 @@ set(TEST_BUILD_FLAGS "-O3 -g -fsanitize=address -fno-omit-frame-pointer")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${TEST_BUILD_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TEST_BUILD_FLAGS} -fconcepts --template-backtrace-limit=1")
 
+add_subdirectory(${LMBD_ROOT_DIR}/libs/etl [EXCLUDE_FROM_ALL])
 
 # Compiler and Flags
 set(CMAKE_CXX_STANDARD 17)
@@ -22,6 +23,7 @@ add_compile_definitions(
     LMBD_SIMULATION
     LMBD_IN_SIMULATION
     LMBD_CPP17
+    LMBD_SIMULATOR_RESOURCES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
 )
 
 include_directories(
@@ -34,10 +36,14 @@ include(${LMBD_ROOT_DIR}/simulator/compile.cmake)
 
 install_sfml()
 create_simulator_target(indexable)
+# for the tests of the behaviors that only exist on the simple lamp (such as the output blips)
+create_simulator_target(simple)
 
 
 # Unit tests
 add_subdirectory("utest")
+# Unit tests on the simple lamp
+add_subdirectory("utest_simple")
 
 # Integration test
 add_subdirectory("itest")

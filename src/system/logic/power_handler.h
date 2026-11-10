@@ -6,7 +6,8 @@
 #define POWER_POWER_HANDLER_H
 
 #include <cstdint>
-#include <string>
+
+#include <etl/string.h>
 
 namespace lampda {
 namespace logic {
@@ -55,7 +56,9 @@ bool go_to_otg_mode();
 bool go_to_idle();
 /**
  * \brief Set the power handler to SHUTDOWN mode (last mode before shuting system down)
- * \return true if the mode switch is accepted
+ * The power thread shuts the power components down, then stops running their loops. This call blocks until the
+ * shutdown is completed (or a timeout, after which the shutdown is forced from the calling thread).
+ * \return true if the power components shutdown is completed
  */
 bool go_to_shutdown();
 /**
@@ -100,12 +103,12 @@ bool enable_charge(const bool);
 /**
  * \brief Return the current state, as a string
  */
-std::string get_state();
+etl::string<32> get_state();
 /**
  * \brief Return the current error message, as a string.
  * If not errors are present, will return "x".
  */
-std::string get_error_string();
+etl::string<128> get_error_string();
 
 /**
  * \brief Return true when the current state is OUTPUT_VOLTAGE_MODE, and the desired voltage are set and gates are
@@ -124,6 +127,12 @@ bool is_in_otg_mode();
 
 /// Indicates if the charger tried the battery recovery system
 bool was_started_in_battery_recovery();
+/// Indicates that the system is currently attempting battery recovery
+bool is_in_in_battery_recovery();
+
+/// Read-only startup trace and current status. Does not initialize or enable charging.
+void show_recovery_diagnostics();
+void show_recovery_trace();
 
 } // namespace power
 } // namespace logic

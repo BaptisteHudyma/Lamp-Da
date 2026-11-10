@@ -66,6 +66,8 @@ bool button_clicked_default(const uint8_t clicks)
           fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
           if (manager.everySunsetCallback[_groupId][_modeId])
             fprintf(stderr, " - hasSunsetAnimation\n");
+          if (manager.everySunriseCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasSunriseAnimation\n");
           if (manager.everyBrightCallback[_groupId][_modeId])
             fprintf(stderr, " - hasBrightCallback\n");
           if (manager.everyCustomRamp[_groupId][_modeId])
@@ -104,6 +106,8 @@ bool button_clicked_default(const uint8_t clicks)
           fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
           if (manager.everySunsetCallback[_groupId][_modeId])
             fprintf(stderr, " - hasSunsetAnimation\n");
+          if (manager.everySunriseCallback[_groupId][_modeId])
+            fprintf(stderr, " - hasSunriseAnimation\n");
           if (manager.everyBrightCallback[_groupId][_modeId])
             fprintf(stderr, " - hasBrightCallback\n");
           if (manager.everyCustomRamp[_groupId][_modeId])
@@ -120,37 +124,40 @@ bool button_clicked_default(const uint8_t clicks)
 #endif
         return true;
       }
+  }
 
-    case 4: // 4 clicks: jump to favorite
-      {
-        if (not manager.state.isInFavoriteMockGroup)
-        {
-          // jump and save last used mode
-          manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
-        }
+  // jump to favorite, on its configured clicks
+  if (logic::button_bindings::get_click_behavior(clicks) == logic::button_bindings::Behavior::Favorite)
+  {
+    if (not manager.state.isInFavoriteMockGroup)
+    {
+      // jump and save last used mode
+      manager.jump_to_favorite(manager.state.lastFavoriteStep, true);
+    }
 #ifdef LMBD_SIMULATION
-        {
-          int _groupId = manager.get_active_group();
-          int _modeId = manager.get_active_mode();
-          fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
-          if (manager.everySunsetCallback[_groupId][_modeId])
-            fprintf(stderr, " - hasSunsetAnimation\n");
-          if (manager.everyBrightCallback[_groupId][_modeId])
-            fprintf(stderr, " - hasBrightCallback\n");
-          if (manager.everyCustomRamp[_groupId][_modeId])
-            fprintf(stderr, " - hasCustomRamp\n");
-          if (manager.state.rampHandler.animEffect)
-            fprintf(stderr, " - has anim effect\n");
-          if (manager.everyRequireUserThread[_groupId][_modeId])
-            fprintf(stderr, " - requireUserThread\n");
-          if (manager.everySystemCallbacks[_groupId][_modeId])
-            fprintf(stderr, " - hasSystemCallbacks\n");
-          if (manager.everyButtonCustomUI[_groupId][_modeId])
-            fprintf(stderr, " - hasButtonCustomUI\n");
-        }
+    {
+      int _groupId = manager.get_active_group();
+      int _modeId = manager.get_active_mode();
+      fprintf(stderr, "group %d *mode %d\n", _groupId, _modeId);
+      if (manager.everySunsetCallback[_groupId][_modeId])
+        fprintf(stderr, " - hasSunsetAnimation\n");
+      if (manager.everySunriseCallback[_groupId][_modeId])
+        fprintf(stderr, " - hasSunriseAnimation\n");
+      if (manager.everyBrightCallback[_groupId][_modeId])
+        fprintf(stderr, " - hasBrightCallback\n");
+      if (manager.everyCustomRamp[_groupId][_modeId])
+        fprintf(stderr, " - hasCustomRamp\n");
+      if (manager.state.rampHandler.animEffect)
+        fprintf(stderr, " - has anim effect\n");
+      if (manager.everyRequireUserThread[_groupId][_modeId])
+        fprintf(stderr, " - requireUserThread\n");
+      if (manager.everySystemCallbacks[_groupId][_modeId])
+        fprintf(stderr, " - hasSystemCallbacks\n");
+      if (manager.everyButtonCustomUI[_groupId][_modeId])
+        fprintf(stderr, " - hasButtonCustomUI\n");
+    }
 #endif
-        return true;
-      }
+    return true;
   }
 
   return false;
@@ -168,33 +175,85 @@ bool button_hold_default(const uint8_t clicks, const bool isEndOfHoldEvent, cons
   auto manager = get_context();
   auto& rampHandler = manager.state.rampHandler;
 
+  /// Keep track of the lock click event
+  static bool isBrightnessLocked =
+          logic::brightness::get_brightness() > ::lampda::brightness::absoluteMaximumBrightness * 0.25f;
+
   switch (clicks)
   {
-    case 4: // 4 click+hold: configure favorite
+    // raise/lower brightness handle
+    case 1:
+    case 2:
       {
-        if (not isEndOfHoldEvent)
+        const brightness_t newBrightness = logic::brightness::get_brightness();
+        static brightness_t latestBrightness = newBrightness;
+        static uint32_t lockFirstCall = 0;
+
+        const bool isGoingDown = newBrightness <= latestBrightness;
+        // prevent brigthness to drop below the dithering threshold
+        bool shouldPreventBrightnessUpdate =
+                isGoingDown and isBrightnessLocked and newBrightness <= manager.lamp.ledMasking_brightnessThreshold;
+
+        if (not shouldPreventBrightnessUpdate)
         {
-          // lock to prevent addition of favorite from favorite & if we are deleting favorites
-          // the second case can happen when the user delete all favorites
-          if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
-          {
-            // no new favorite in favorite
-            manager.animate_favorite_pick(holdDuration, 1500);
-          }
-          else
-          {
-            // remove current favorite
-            manager.animate_favorite_delete(holdDuration, 2000);
-          }
+          lockFirstCall = 0;
         }
         else
+        {
+          if (lockFirstCall == 0)
+            lockFirstCall = hal::time_ms();
+
+          // allow to go down after a set time
+          if (lockFirstCall > 0 and hal::time_ms() - lockFirstCall >= 2000)
+            shouldPreventBrightnessUpdate = false;
+        }
+
+        // end of hold: allow brigthness down
+        if (isEndOfHoldEvent)
+        {
+          isBrightnessLocked = false;
+          lockFirstCall = 0;
+          latestBrightness = newBrightness;
+          // release event shall always allow control
+          shouldPreventBrightnessUpdate = false;
+        }
+        // rising up: block next downward
+        if (not isGoingDown)
+        {
+          isBrightnessLocked = newBrightness > manager.lamp.ledMasking_brightnessThreshold;
+        }
+        return shouldPreventBrightnessUpdate;
+      }
+
+    default:
+      break;
+  }
+
+  switch (logic::button_bindings::get_hold_behavior(clicks))
+  {
+    case logic::button_bindings::Behavior::Favorite: // click+hold: configure favorite
+      {
+        // lock to prevent addition of favorite from favorite & if we are deleting favorites
+        // the second case can happen when the user delete all favorites
+        if (not manager.state.isInFavoriteMockGroup && not manager.state.isInDeleteFavorite)
+        {
+          // no new favorite in favorite
+          manager.animate_favorite_pick(holdDuration, 1500, isEndOfHoldEvent);
+        }
+        else
+        {
+          // remove current favorite
+          manager.animate_favorite_delete(holdDuration, 2000, isEndOfHoldEvent);
+        }
+
+        if (isEndOfHoldEvent)
         {
           manager.state.isInDeleteFavorite = false;
         }
         return true;
       }
 
-    case 6: // 6 click+hold: scroll across modes and group
+    case logic::button_bindings::Behavior::Scroll: // click+hold: scroll across modes and group
       {
         // no scroll in favorite
         if (not manager.state.isInFavoriteMockGroup)
@@ -255,8 +314,16 @@ void handle_pattern_select_command(const uint8_t patternIndex, const uint32_t re
   }
 
   manager.exit_favorite_group(manager.state.beforeFavoriteActiveIndex);
-  manager.set_active_group(bluetoothGroup);
-  manager.set_active_mode(patternIndex);
+
+  // remove the mode change on the special case of mode 0 : custom color can be changed without changing the mode
+  const bool alreadyInCorrectMode = patternIndex == 0 and manager.get_active_group() == bluetoothGroup and
+                                    manager.get_active_mode() == patternIndex;
+
+  if (not alreadyInCorrectMode)
+  {
+    manager.set_active_group(bluetoothGroup);
+    manager.set_active_mode(patternIndex);
+  }
 
   // sanity check
   const int trueIndex = manager.template get_mode_id<modes::bluetooth::ColorControlMode>();

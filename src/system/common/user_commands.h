@@ -30,10 +30,19 @@ public:
     OnOff,                 ///< turn on or off
     SetRealTime,           ///< set the system real time
     SetSunsetToTime,       ///< set the sunset to a target real time
+    SetSunriseToTime,      ///< set the sunrise to a target real time
     SetBleCustomColorMode, ///< switch to BLE custom color mode
     SetBleMode,            ///< switch to a target BLE mode
     GoToFavoriteIndex,     ///< Go to the target favorite index
     SetFavoriteIndex,      ///< Set the current mode to the target favorite index
+    SignalSunsetProgress,  ///< Signal a sunset update event
+    SignalSunriseProgress, ///< Signal a sunrise update event
+    SignalSuntimerCancel,  ///< Signal that a suntimer was canceled
+    BlipOutput,            ///< Turn off the output for a short time
+    PrintStatus,           ///< Print the current mode, group, ramp, brightness and favorite state on one line
+    PrintFavorites,        ///< Print the favorite mode count
+    DisableSunTimer,       ///< Disable the sunset or the sunrise timer
+    SetMicSensitivity,     ///< Set the microphone sensitivity
   };
   static constexpr uint8_t maxDataSize = 8;
 
@@ -83,6 +92,13 @@ public:
   static UserCommand make_set_sunset_to_time_command(const component::time::RealTime& time);
 
   /**
+   * \brief Set this commant to set sunrise to real time
+   * \param[in] time
+   * \return The correct user command
+   */
+  static UserCommand make_set_sunrise_to_time_command(const component::time::RealTime& time);
+
+  /**
    * \brief Set this commant to set ble custom color
    * \param[in] red
    * \param[in] green
@@ -111,6 +127,60 @@ public:
    * \return The correct user command
    */
   static UserCommand make_set_favorite_command(const uint8_t index);
+
+  /**
+   * \brief Set this commant to signal a sunset update
+   * \param[in] progress
+   * \return The correct user command
+   */
+  static UserCommand make_signal_sunset_progress_command(const float progress);
+
+  /**
+   * \brief Set this commant to signal a sunrise update
+   * \param[in] progress
+   * \return The correct user command
+   */
+  static UserCommand make_signal_sunrise_progress_command(const float progress);
+
+  /**
+   * \brief Set this commant to signal a suntimer cancel event
+   * \return The correct user command
+   */
+  static UserCommand make_signal_suntimer_cancel_command();
+
+  /**
+   * \brief Set this command to disable a sun timer.
+   * A disabled sunrise keeps the brightness it reached, as for a user brightness change
+   * \param[in] isSunrise True to disable the sunrise timer, false for the sunset timer
+   * \return The correct user command
+   */
+  static UserCommand make_disable_sun_timer_command(const bool isSunrise);
+
+  /**
+   * \brief Set this command to set the microphone sensitivity
+   * \param[in] sensitivity Sensitivity, see component::microphone::set_sensitivity
+   * \return The correct user command
+   */
+  static UserCommand make_set_mic_sensitivity_command(const uint8_t sensitivity);
+
+  /**
+   * \brief Set this commant to blip the output
+   * \param[in] duration_ms
+   * \return The correct user command
+   */
+  static UserCommand make_blip_output_command(const uint32_t duration_ms);
+
+  /**
+   * \brief Set this commant to print the user status line
+   * \return The correct user command
+   */
+  static UserCommand make_print_status_command();
+
+  /**
+   * \brief Set this commant to print the favorite modes infos
+   * \return The correct user command
+   */
+  static UserCommand make_print_favorites_command();
 
   /**
    *
@@ -162,6 +232,13 @@ public:
   bool parse_set_sunset_to_time_command(component::time::RealTime& time) const;
 
   /**
+   * \brief Parse the current command for a set sunrise to time value
+   * \param[out] time
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_set_sunrise_to_time_command(component::time::RealTime& time) const;
+
+  /**
    * \brief Parse the current command for a set current mode to BLE custom color
    * \param[out] color
    * \return True if the current message is valid, and parameter is set
@@ -188,6 +265,59 @@ public:
    * \return True if the current message is valid, and parameter is set
    */
   bool parse_set_favorite_command(uint8_t& index) const;
+
+  /**
+   * \brief Parse the current command for a sunset update signal
+   * \param[out] progress
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_signal_sunset_progress_command(float& progress) const;
+
+  /**
+   * \brief Parse the current command for a sunrise update signal
+   * \param[out] progress
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_signal_sunrise_progress_command(float& progress) const;
+
+  /**
+   * \brief Parse the current command for a suntimer cancel signal
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_signal_suntimer_cancel_command() const;
+
+  /**
+   * \brief Parse the current command for a sun timer disable
+   * \param[out] isSunrise True if the sunrise timer must be disabled, false for the sunset timer
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_disable_sun_timer_command(bool& isSunrise) const;
+
+  /**
+   * \brief Parse the current command for a microphone sensitivity change
+   * \param[out] sensitivity The requested sensitivity
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_set_mic_sensitivity_command(uint8_t& sensitivity) const;
+
+  /**
+   * \brief Parse the current command for an output blip
+   * \param[out] duration_ms
+   * \return True if the current message is valid, and parameter is set
+   */
+  bool parse_blip_output_command(uint32_t& duration_ms) const;
+
+  /**
+   * \brief Parse the current command for a status print
+   * \return True if the current message is valid
+   */
+  bool parse_print_status_command() const;
+
+  /**
+   * \brief Parse the current command for a favorites print
+   * \return True if the current message is valid
+   */
+  bool parse_print_favorites_command() const;
 
 protected:
   /// Protected constructor to prevent unallowed uses

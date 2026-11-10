@@ -6,7 +6,7 @@
 #define BSP_PD_POWER_DELIVERY_H
 
 #include <cstdint>
-#include <vector>
+#include <array>
 
 namespace lampda {
 namespace bsp {
@@ -23,6 +23,14 @@ void loop();
 
 /// call once at program end
 void shutdown();
+
+/**
+ * \brief Allow the sink to reset the source, when the source capabilities were missed.
+ * A hard reset makes the source drop VBUS for up to ~2s. Forbid it when the battery cannot power the board (recovery
+ * mode), or this browns it out: the source is then used as a standard 5V port.
+ * Forbidden until allowed. Allowing it later starts the reset of a source waiting for its capabilities.
+ */
+void allow_source_resets(const bool allow);
 
 /// Suspend the execution of the power delivery state machine
 void suspend_pd_state_machine();
@@ -53,25 +61,51 @@ void force_set_to_source_mode(const bool force);
 void allow_otg(const bool);
 
 /**
+ * \brief As a sink, ask the partner for the source role (power role swap), and do not use its power meanwhile
+ * \param[in] wanted false to go back to the normal sink behavior
+ */
+void want_source_role_by_swap(const bool wanted);
+
+/// return true when the PD state machine is attached to a partner, as a sink
+bool is_attached_as_sink();
+
+/// As a ready sink wanting the source role (want_source_role_by_swap), ask for the power role swap again
+void retry_source_role_swap();
+
+/// return true when we are a source, with a contract in place (PS_RDY sent): the sink can use the power
+bool is_source_contract_ready();
+
+/**
  * \brief return true is the system is prepaping to switch to OTG mode
  */
 bool is_switching_to_otg();
+
+/**
+ * \brief return true when we are a source in a hard reset: VBUS must be cut until the end of the recovery time
+ */
+bool is_source_hard_resetting();
 
 /**
  * \brief Define a USB PD PDO type.
  */
 struct PDOTypes
 {
+  /// Indicate if this object contains valid data
+  bool is_valid() const
+  {
+    return voltage_mv >= 3500 && voltage_mv <= 22000 && maxCurrent_mA > 0 && maxCurrent_mA <= 5000;
+  }
+
   /// Voltage of this PDO
-  uint32_t voltage_mv;
+  uint32_t voltage_mv = 0;
   /// Maximum current of this PDO
-  uint32_t maxCurrent_mA;
+  uint32_t maxCurrent_mA = 0;
 };
 
 /**
  * \brief If the charger is PD compatible, return it's capabilities
  */
-std::vector<PDOTypes> get_available_pd();
+std::array<PDOTypes, 5> get_available_pd();
 
 /// Debug power delivery status
 void show_pd_status();

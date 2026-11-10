@@ -6,6 +6,9 @@ batt_V 11.4
 # voltage applied to the USB input
 vbus_V 0.0
 
+# current on the USB input
+vbus_A 1.0
+
 # temperature of the CPU, in degrees C
 cpu_temp 50
 

@@ -13,10 +13,15 @@
 
 namespace simulator {
 
-static const char* fileName = "./simulator/resources/simulation_parameters.txt";
+#ifndef LMBD_SIMULATOR_RESOURCES_DIR
+#error "LMBD_SIMULATOR_RESOURCES_DIR must be defined by CMake"
+#endif
+
+static const char* fileName = LMBD_SIMULATOR_RESOURCES_DIR "/simulation_parameters.txt";
 
 static const char* batteryVoltageKey = "batt_V";
 static const char* vbusVoltageKey = "vbus_V";
+static const char* vbusCurrentKey = "vbus_A";
 static const char* cpuTemperatureKey = "cpu_temp";
 static const char* addedAlgoDelayKey = "algo_del";
 
@@ -54,6 +59,10 @@ inline void read_and_update_parameters()
       {
         mock_electrical::inputVbusVoltage = value;
       }
+      else if (key == vbusCurrentKey)
+      {
+        mock_electrical::inputVbusCurrent = value;
+      }
       else if (key == cpuTemperatureKey)
       {
         mock_registers::cpuTemperature = value;
@@ -62,7 +71,6 @@ inline void read_and_update_parameters()
       {
         mock_registers::addedAlgoDelay = value;
       }
-      // TODO: other parameters
     }
   }
   else

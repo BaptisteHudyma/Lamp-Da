@@ -54,7 +54,10 @@ set(SRC_SYSTEM_BSP
     ${LMBD_ROOT_DIR}/src/system/bsp/pd/usb_pd_policy.c
     ${LMBD_ROOT_DIR}/src/system/bsp/pd/usb_pd_protocol.c
 
+    ${LMBD_ROOT_DIR}/src/system/bsp/ble_services/elk_service.cpp
+
     ${LMBD_ROOT_DIR}/src/system/bsp/balancer.cpp
+    ${LMBD_ROOT_DIR}/src/system/bsp/ble.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/charging_ic.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/imu_wrapper.cpp
     ${LMBD_ROOT_DIR}/src/system/bsp/indicator.cpp
@@ -93,19 +96,22 @@ set(SRC_SYSTEM_GLOBAL
 
 set(SRC_SYSTEM_LOGIC
     ${LMBD_ROOT_DIR}/src/system/logic/alerts.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/battery_blink.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/behavior.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/brightness_handle.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/button_bindings.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/command_line_interface.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs_bluetooth.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/inputs.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/power_handler.cpp
     ${LMBD_ROOT_DIR}/src/system/logic/statistics_handler.cpp
-    ${LMBD_ROOT_DIR}/src/system/logic/sunset_timer.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/sun_timers.cpp
+    ${LMBD_ROOT_DIR}/src/system/logic/user_command_queue.cpp
 )
 
 # The compile chain should have copied the correct HAL here
 set(SIMULATOR_HAL
-    ${LMBD_ROOT_DIR}/src/generated/hal/bluetooth.cpp
+    ${LMBD_ROOT_DIR}/src/generated/hal/ble.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/filesystem.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/gpio.cpp
     ${LMBD_ROOT_DIR}/src/generated/hal/i2c.cpp
@@ -122,17 +128,32 @@ set(SIMULATOR_STATE
     ${LMBD_ROOT_DIR}/simulator/src/simulator_state.cpp
 )
 
+
 # Simulator Targets
+#
+# create_simulator_target(<name> [BASE <lamp_type>] [DEFINES <def1> <def2> ...])
+#   <name>  : prefix of the target, produces the executable "<name>-simulator"
+#   BASE    : lamp type used for LMBD_LAMP_TYPE__<BASE> and src/user/<BASE>_functions.cpp
+#             (defaults to <name>)
+#   DEFINES : extra compile definitions for this variant
 function(create_simulator_target SIM_NAME)
-    string(TOUPPER "${SIM_NAME}" UPPER_SIM_NAME)
+    cmake_parse_arguments(SIM "" "BASE" "DEFINES" ${ARGN})
+
+    if(NOT SIM_BASE)
+        set(SIM_BASE ${SIM_NAME})
+    endif()
+    string(TOUPPER "${SIM_BASE}" UPPER_SIM_BASE)
 
     set(TARGET_NAME ${SIM_NAME}-simulator)
-    add_executable(${TARGET_NAME}
-        ${LMBD_ROOT_DIR}/simulator/src/${TARGET_NAME}.cpp
-    )
-    target_compile_definitions(${TARGET_NAME} PUBLIC LMBD_LAMP_TYPE__${UPPER_SIM_NAME})
+    set(LIB_NAME simulator_${SIM_NAME})
+    set(SIM_DEFINITIONS LMBD_LAMP_TYPE__${UPPER_SIM_BASE} ${SIM_DEFINES})
 
-    add_library(simulator_${SIM_NAME} OBJECT
+    add_executable(${TARGET_NAME}
+        ${LMBD_ROOT_DIR}/simulator/src/simulator.cpp
+    )
+    target_compile_definitions(${TARGET_NAME} PUBLIC ${SIM_DEFINITIONS})
+
+    add_library(${LIB_NAME} OBJECT
         ${SRC_SYSTEM_DEPENDS}
         ${SRC_SYSTEM_UTILS}
         ${SRC_SYSTEM_COMMON}
@@ -144,20 +165,20 @@ function(create_simulator_target SIM_NAME)
         ${SRC_SYSTEM_GLOBAL}
         ${SIMULATOR_HAL}
         ${SIMULATOR_STATE}
-        ${LMBD_ROOT_DIR}/src/user/${SIM_NAME}_functions.cpp
+        ${LMBD_ROOT_DIR}/src/user/${SIM_BASE}_functions.cpp
     )
-    target_compile_definitions(simulator_${SIM_NAME} PUBLIC LMBD_LAMP_TYPE__${UPPER_SIM_NAME})
+    target_compile_definitions(${LIB_NAME} PUBLIC ${SIM_DEFINITIONS})
 
-    target_link_libraries(simulator_${SIM_NAME}
+    target_link_libraries(${LIB_NAME}
         sfml-graphics
         sfml-window
         sfml-audio
         sfml-system
+        etl::etl
     )
 
     target_link_libraries(${TARGET_NAME}
-        simulator_${SIM_NAME}
+        ${LIB_NAME}
         pthread
     )
-
 endfunction()

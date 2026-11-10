@@ -6,7 +6,6 @@
 #define COMPONENT_BUTTON_H
 
 #include <cstdint>
-#include <functional>
 #include "src/system/hal/gpio.h"
 
 namespace lampda {
