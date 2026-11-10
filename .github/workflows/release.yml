@@ -6,11 +6,13 @@ name: Release
 #   2. reads the version from src/user/constants.h (USER_SOFTWARE_VERSION_*)
 #      and fails if the tag v<major>.<minor> already exists
 #   3. builds the firmware of every lamp type in the CI image
-#   4. creates the tag on that commit, and a DRAFT release with the binaries
-#      and the auto-generated list of changes
+#   4. creates a DRAFT release targeting that commit, with the binaries and
+#      the auto-generated list of changes
 # The draft is only visible to maintainers: write the release notes, check
-# the binaries and publish it by hand. To start over, delete the draft
-# release and the tag (git push --delete origin v<major>.<minor>).
+# the binaries and publish it by hand. Publishing creates the tag on the
+# target commit. The workflow cannot create it itself: the "TAGS" ruleset
+# only lets admins create v* tags, and the workflow token is not an admin.
+# To start over, delete the draft release.
 #
 # The binaries are attached to the draft release (gh release download
 # v<major>.<minor>), and also kept as a workflow artifact.
@@ -88,7 +90,12 @@ jobs:
         fi
         tag="v$major.$minor"
         if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" > /dev/null 2>&1; then
-          echo "::error title=Tag exists::$tag already exists: increase the version in src/user/constants.h, or delete the tag"
+          echo "::error title=Tag exists::$tag already exists: increase the version in src/user/constants.h"
+          exit 1
+        fi
+        # a draft release has no tag yet: look for it by name
+        if gh release list --repo "$GITHUB_REPOSITORY" --json tagName --jq '.[].tagName' | grep -qxF "$tag"; then
+          echo "::error title=Release exists::a release for $tag already exists (draft?): delete it to start over"
           exit 1
         fi
         echo "version=${major}_${minor}" >> "$GITHUB_OUTPUT"
@@ -155,7 +162,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [prepare, build]
     permissions:
-      contents: write # tag and draft release
+      contents: write # draft release
 
     steps:
     - uses: actions/download-artifact@v4
@@ -163,19 +170,13 @@ jobs:
         name: firmware-${{ needs.prepare.outputs.tag }}
         path: dist
 
-    - name: tag
-      env:
-        GH_TOKEN: ${{ github.token }}
-        TAG: ${{ needs.prepare.outputs.tag }}
-        SHA: ${{ needs.prepare.outputs.sha }}
-      # lightweight tag, like the previous releases
-      run: gh api "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$TAG" -f "sha=$SHA" > /dev/null
-
+    # the tag is created on publish, on the target commit (see the top comment)
     - name: draft release
       env:
         GH_TOKEN: ${{ github.token }}
         TAG: ${{ needs.prepare.outputs.tag }}
+        SHA: ${{ needs.prepare.outputs.sha }}
       run: |
-        url=$(gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag --draft \
+        url=$(gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --target "$SHA" \
           --title "${TAG#v}" --generate-notes dist/*)
         echo "Draft release: $url" >> "$GITHUB_STEP_SUMMARY"
