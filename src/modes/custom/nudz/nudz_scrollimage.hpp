@@ -25,18 +25,20 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
 
   struct StateTy
   {
-    std::array<float, 1> minSpeed = {-0.5f};    ///< minimum allowed speed
-    std::array<float, 1> maxSpeed = {0.5f};     ///< maximum allowed speed
-    std::array<bool, 1> randomScroll = {false}; ///< random variation of the scroll
-    std::array<uint32_t, 1> xdecal = {0};       ///< start x coordinates
-    std::array<uint32_t, 1> ydecal = {0};       ///< start y coordinates
-    std::array<uint32_t, 1> last_tick = {0};    ///< last called time in microseconds
-    std::array<int8_t, 1> xdirection = {1};     ///< x scroll direction
-    std::array<int8_t, 1> ydirection = {0};     ///< y scroll direction
-    std::array<bool, 1> framesMirror = {false}; ///< frames are mirrored at end of animation
-    std::array<NudzScrollImageMode::FrameSyncMode, 1> syncFrame = {NudzScrollImageMode::Y}; /// frame sync on 1st image
-    std::array<uint32_t, 1> frame = {0};                                                    /// current animation frame
-    std::array<uint32_t, 1> last_frame_tick = {0}; ///< last time of frame change in microseconds
+    typedef std::tuple_size<std::tuple<ImageTypes...>> TI;
+    std::array<float, TI::value> minSpeed = {-0.5f};    ///< minimum allowed speed
+    std::array<float, TI::value> maxSpeed = {0.5f};     ///< maximum allowed speed
+    std::array<bool, TI::value> randomScroll = {false}; ///< random variation of the scroll
+    std::array<uint32_t, TI::value> xdecal = {0};       ///< start x coordinates
+    std::array<uint32_t, TI::value> ydecal = {0};       ///< start y coordinates
+    std::array<uint32_t, TI::value> last_tick = {0};    ///< last called time in microseconds
+    std::array<int8_t, TI::value> xdirection = {1};     ///< x scroll direction
+    std::array<int8_t, TI::value> ydirection = {0};     ///< y scroll direction
+    std::array<bool, TI::value> framesMirror = {false}; ///< frames are mirrored at end of animation
+    std::array<NudzScrollImageMode::FrameSyncMode, TI::value> syncFrame = {
+            NudzScrollImageMode::Y};                       ///< frame sync on 1st image
+    std::array<uint32_t, TI::value> frame = {0};           ///< current animation frame
+    std::array<uint32_t, TI::value> last_frame_tick = {0}; ///< last time of frame change in microseconds
   };
 
   static void on_enter_mode(auto& ctx)
@@ -315,8 +317,8 @@ struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
     std::array<int8_t, 1> xdirection = {1};     ///< x scroll direction
     std::array<int8_t, 1> ydirection = {0};     ///< y scroll direction
     std::array<bool, 1> framesMirror = {false}; ///< frames are mirrores at end of animation
-    std::array<NudzScrollImageMode::FrameSyncMode, 1> syncFrame = {NudzScrollImageMode::Y}; /// frame sync on 1st image
-    std::array<uint32_t, 1> frame = {0};                                                    /// current animation frame
+    std::array<NudzScrollImageMode::FrameSyncMode, 1> syncFrame = {NudzScrollImageMode::Y}; ///< frame sync on 1st image
+    std::array<uint32_t, 1> frame = {0};                                                    ///< current animation frame
     std::array<uint32_t, 1> last_frame_tick = {0};
   };
 };
