@@ -80,7 +80,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     else
       speed = 0.f;
 
-    int32_t frame = 0;
+    uint32_t frame = 0;
 
     uint16_t imWidth = ImageType::width[frame];
     uint16_t imHeight = ImageType::height[frame];
@@ -98,14 +98,16 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
 
       switch (ctx.state.syncFrame[istate])
       {
+        // force uint32_t - overflow is OK here.
         case NudzScrollImageMode::X:
-          frame = istate == 0 ? xdecal : ctx.state.xdecal[0];
+          frame = uint32_t(istate == 0 ? xdecal : ctx.state.xdecal[0]);
           break;
         case NudzScrollImageMode::Y:
-          frame = istate == 0 ? ydecal : ctx.state.ydecal[0];
+          frame = uint32_t(istate == 0 ? ydecal : ctx.state.ydecal[0]);
           break;
         default:
-          frame = ctx.state.frame[istate] + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * speed);
+          frame = uint32_t(ctx.state.frame[istate] +
+                           int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * speed));
       }
       if (ctx.state.frame[istate] != frame)
       {
@@ -129,9 +131,9 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     else // random scroll
     {
       xdecal = int32_t(ctx.state.xdecal[istate]) +
-                int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.xdirection[istate]);
+               int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.xdirection[istate]);
       ydecal = int32_t(ctx.state.ydecal[istate]) +
-                int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.ydirection[istate]);
+               int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.ydirection[istate]);
 
       if (xdecal < 0)
       {
