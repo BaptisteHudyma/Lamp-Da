@@ -128,12 +128,10 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     }
     else // random scroll
     {
-      if (ctx.state.xdirection[istate] != 0)
-        xdecal = int32_t(ctx.state.xdecal[istate]) +
-                 int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.xdirection[istate]);
-      if (ctx.state.ydirection[istate] != 0)
-        ydecal = int32_t(ctx.state.ydecal[istate]) +
-                 int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.ydirection[istate]);
+      xdecal = int32_t(ctx.state.xdecal[istate]) +
+                int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.xdirection[istate]);
+      ydecal = int32_t(ctx.state.ydecal[istate]) +
+                int32_t((ctx.lamp.tick - ctx.state.last_tick[istate]) * speed * ctx.state.ydirection[istate]);
 
       if (xdecal < 0)
       {
