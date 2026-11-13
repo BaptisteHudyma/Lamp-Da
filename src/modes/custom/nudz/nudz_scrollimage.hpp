@@ -80,7 +80,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     else
       speed = 0.f;
 
-    uint32_t frame = 0;
+    int32_t frame = 0;
 
     uint16_t imWidth = ImageType::width[frame];
     uint16_t imHeight = ImageType::height[frame];
