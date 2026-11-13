@@ -23,22 +23,31 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
     Time, ///< sync with time, using speed (same as scroll speed)
   };
 
+  typedef std::tuple_size<std::tuple<ImageTypes...>> TI;
+
+  template<typename T> static constexpr std::array<T, TI::value> fill_array(const T& val)
+  {
+    std::array<T, TI::value> arr {};
+    arr.fill(val);
+    return arr;
+  }
+
+  template<typename T> using A = std::array<T, TI::value>;
+
   struct StateTy
   {
-    typedef std::tuple_size<std::tuple<ImageTypes...>> TI;
-    std::array<float, TI::value> minSpeed = {-0.5f};    ///< minimum allowed speed
-    std::array<float, TI::value> maxSpeed = {0.5f};     ///< maximum allowed speed
-    std::array<bool, TI::value> randomScroll = {false}; ///< random variation of the scroll
-    std::array<uint32_t, TI::value> xdecal = {0};       ///< start x coordinates
-    std::array<uint32_t, TI::value> ydecal = {0};       ///< start y coordinates
-    std::array<uint32_t, TI::value> last_tick = {0};    ///< last called time in microseconds
-    std::array<int8_t, TI::value> xdirection = {1};     ///< x scroll direction
-    std::array<int8_t, TI::value> ydirection = {0};     ///< y scroll direction
-    std::array<bool, TI::value> framesMirror = {false}; ///< frames are mirrored at end of animation
-    std::array<NudzScrollImageMode::FrameSyncMode, TI::value> syncFrame = {
-            NudzScrollImageMode::Y};                       ///< frame sync on 1st image
-    std::array<uint32_t, TI::value> frame = {0};           ///< current animation frame
-    std::array<uint32_t, TI::value> last_frame_tick = {0}; ///< last time of frame change in microseconds
+    A<float> minSpeed = fill_array(-0.5f);           ///< minimum allowed speed
+    A<float> maxSpeed = fill_array(0.5f);            ///< maximum allowed speed
+    A<bool> randomScroll = fill_array(false);        ///< random variation of the scroll
+    A<uint32_t> xdecal = fill_array(uint32_t(0));    ///< start x coordinates
+    A<uint32_t> ydecal = fill_array(uint32_t(0));    ///< start y coordinates
+    A<uint32_t> last_tick = fill_array(uint32_t(0)); ///< last called time in microseconds
+    A<int8_t> xdirection = fill_array(int8_t(1));    ///< x scroll direction
+    A<int8_t> ydirection = fill_array(int8_t(0));    ///< y scroll direction
+    A<bool> framesMirror = fill_array(false);        ///< frames are mirrored at end of animation
+    A<NudzScrollImageMode::FrameSyncMode> syncFrame = fill_array(NudzScrollImageMode::Y); ///< frame sync on 1st image
+    A<uint32_t> frame = fill_array(uint32_t(0));                                          ///< current animation frame
+    A<uint32_t> last_frame_tick = fill_array(uint32_t(0)); ///< last time of frame change in microseconds
   };
 
   static void on_enter_mode(auto& ctx)
@@ -227,7 +236,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
                   ImageType::rgbData[((y + ydecal) % imHeight) * imWidth + (x + xdecal) % imWidth + frameOffset];
           if (ImageType::hasAlpha)
           {
-            float opacity = (color & 0xff) / 255;
+            float opacity = float(color & 0xff) / 255;
             uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(lx, ly));
             color = (uint32_t((color >> 24) * opacity + (prev_color >> 16) * (1.f - opacity)) << 16) |
                     (uint32_t(((color & 0xff0000) >> 16) * opacity + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
@@ -273,7 +282,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           uint32_t color = ImageType::colormap[index + cmap_off];
           if (ImageType::hasAlpha)
           {
-            float opacity = (color & 0xff) / 255;
+            float opacity = float(color & 0xff) / 255;
             uint32_t prev_color = ctx.lamp.getPixelColor(ctx.lamp.fromXYtoStripIndex(lx, ly));
             color = (uint32_t((color >> 24) * opacity + (prev_color >> 16) * (1.f - opacity)) << 16) |
                     (uint32_t(((color & 0xff0000) >> 16) * opacity + ((prev_color & 0xff00) >> 8) * (1.f - opacity))
@@ -308,18 +317,18 @@ struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
 {
   struct StateTy
   {
-    std::array<float, 1> minSpeed = {0.f};      ///< minimum allowed speed
-    std::array<float, 1> maxSpeed = {0.5f};     ///< maximum allowed speed
-    std::array<bool, 1> randomScroll = {false}; ///< random variation of the scroll
-    std::array<uint32_t, 1> xdecal = {0};       ///< start x coordinates
-    std::array<uint32_t, 1> ydecal = {0};       ///< start y coordinates
-    std::array<uint32_t, 1> last_tick = {0};    ///< last called time in microseconds
-    std::array<int8_t, 1> xdirection = {1};     ///< x scroll direction
-    std::array<int8_t, 1> ydirection = {0};     ///< y scroll direction
-    std::array<bool, 1> framesMirror = {false}; ///< frames are mirrores at end of animation
-    std::array<NudzScrollImageMode::FrameSyncMode, 1> syncFrame = {NudzScrollImageMode::Y}; ///< frame sync on 1st image
-    std::array<uint32_t, 1> frame = {0};                                                    ///< current animation frame
-    std::array<uint32_t, 1> last_frame_tick = {0};
+    A<float> minSpeed = {0.f};      ///< minimum allowed speed
+    A<float> maxSpeed = {0.5f};     ///< maximum allowed speed
+    A<bool> randomScroll = {false}; ///< random variation of the scroll
+    A<uint32_t> xdecal = {0};       ///< start x coordinates
+    A<uint32_t> ydecal = {0};       ///< start y coordinates
+    A<uint32_t> last_tick = {0};    ///< last called time in microseconds
+    A<int8_t> xdirection = {1};     ///< x scroll direction
+    A<int8_t> ydirection = {0};     ///< y scroll direction
+    A<bool> framesMirror = {false}; ///< frames are mirrores at end of animation
+    A<NudzScrollImageMode::FrameSyncMode> syncFrame = {NudzScrollImageMode::Y}; ///< frame sync on 1st image
+    A<uint32_t> frame = {0};                                                    ///< current animation frame
+    A<uint32_t> last_frame_tick = {0};
   };
 };
 
