@@ -2,6 +2,25 @@
 
 namespace lampda::modes::custom::nudz {
 
+enum RampModes : uint8_t
+{
+  Detached = 0,   ///< user ramp is not attached (thus, no effect)
+  ImageSpeed = 1, ///< attach user ramp to image speed
+  FrameSpeed = 2, ///< attach user ramp to animation frame speed
+};
+
+inline constexpr RampModes operator|(RampModes lhs, RampModes rhs)
+{
+  using T = std::underlying_type_t<RampModes>;
+  return static_cast<RampModes>(static_cast<T>(lhs) | static_cast<T>(rhs));
+}
+
+inline constexpr RampModes operator&(RampModes lhs, RampModes rhs)
+{
+  using T = std::underlying_type_t<RampModes>;
+  return static_cast<RampModes>(static_cast<T>(lhs) & static_cast<T>(rhs));
+}
+
 /**
  * \brief Display one or several overlaid scrolling images.
  * User ramp changes scroll speed and direction.
@@ -36,15 +55,18 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
 
   struct StateTy
   {
-    A<float> minSpeed = fill_array(-0.5f);           ///< minimum allowed speed
-    A<float> maxSpeed = fill_array(0.5f);            ///< maximum allowed speed
-    A<bool> randomScroll = fill_array(false);        ///< random variation of the scroll
-    A<uint32_t> xdecal = fill_array(uint32_t(0));    ///< start x coordinates
-    A<uint32_t> ydecal = fill_array(uint32_t(0));    ///< start y coordinates
-    A<uint32_t> last_tick = fill_array(uint32_t(0)); ///< last called time in microseconds
-    A<int8_t> xdirection = fill_array(int8_t(1));    ///< x scroll direction
-    A<int8_t> ydirection = fill_array(int8_t(0));    ///< y scroll direction
-    A<bool> framesMirror = fill_array(false);        ///< frames are mirrored at end of animation
+    A<float> minSpeed = fill_array(-0.5f);                       ///< minimum allowed speed
+    A<float> maxSpeed = fill_array(0.5f);                        ///< maximum allowed speed
+    A<float> minFrameSpeed = fill_array(-0.5f);                  ///< minimum allowed freme speed
+    A<float> maxFrameSpeed = fill_array(0.5f);                   ///< maximum allowed frame speed
+    A<RampModes> rampMode = fill_array(ImageSpeed | FrameSpeed); ///< ramp action mode
+    A<bool> randomScroll = fill_array(false);                    ///< random variation of the scroll
+    A<uint32_t> xdecal = fill_array(uint32_t(0));                ///< start x coordinates
+    A<uint32_t> ydecal = fill_array(uint32_t(0));                ///< start y coordinates
+    A<uint32_t> last_tick = fill_array(uint32_t(0));             ///< last called time in microseconds
+    A<int8_t> xdirection = fill_array(int8_t(1));                ///< x scroll direction
+    A<int8_t> ydirection = fill_array(int8_t(0));                ///< y scroll direction
+    A<bool> framesMirror = fill_array(false);                    ///< frames are mirrored at end of animation
     A<NudzScrollImageMode::FrameSyncMode> syncFrame = fill_array(NudzScrollImageMode::Y); ///< frame sync on 1st image
     A<uint32_t> frame = fill_array(uint32_t(0));                                          ///< current animation frame
     A<uint32_t> last_frame_tick = fill_array(uint32_t(0)); ///< last time of frame change in microseconds
@@ -80,7 +102,9 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
   template<typename ImageType> static void loop_image(auto& ctx, const ImageType& image, const uint32_t& istate)
   {
     float spdRange = ctx.state.maxSpeed[istate] - ctx.state.minSpeed[istate];
-    float speed = ctx.state.minSpeed[istate] + (float(ctx.get_active_custom_ramp()) / 255) * spdRange;
+    float speed =
+            ctx.state.minSpeed[istate] +
+            ((ctx.state.rampMode[istate] & ImageSpeed) ? (float(ctx.get_active_custom_ramp()) / 255) : 0) * spdRange;
     // ease stop at 0
     if (speed < -spdRange * 0.1)
       speed += spdRange * 0.1;
@@ -88,6 +112,18 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
       speed -= spdRange * 0.1;
     else
       speed = 0.f;
+
+    float frameSpdRange = ctx.state.maxFrameSpeed[istate] - ctx.state.minFrameSpeed[istate];
+    float frameSpeed = ctx.state.minFrameSpeed[istate] +
+                       ((ctx.state.rampMode[istate] & FrameSpeed) ? (float(ctx.get_active_custom_ramp()) / 255) : 0) *
+                               frameSpdRange;
+    // ease stop at 0
+    if (frameSpeed < -frameSpdRange * 0.1)
+      frameSpeed += frameSpdRange * 0.1;
+    else if (FrameSpeed > frameSpdRange * 0.1)
+      frameSpeed -= frameSpdRange * 0.1;
+    else
+      frameSpeed = 0.f;
 
     uint32_t frame = 0;
 
@@ -116,7 +152,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           break;
         default:
           frame = uint32_t(ctx.state.frame[istate] +
-                           int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * speed));
+                           int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * frameSpeed));
       }
       if (ctx.state.frame[istate] != frame)
       {
@@ -170,7 +206,7 @@ template<typename... ImageTypes> struct NudzScrollImageMode : public BasicMode
           frame = istate == 0 ? ydecal : ctx.state.ydecal[0];
           break;
         default:
-          frame = ctx.state.frame[istate] + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * speed);
+          frame = ctx.state.frame[istate] + int32_t((ctx.lamp.tick - ctx.state.last_frame_tick[istate]) * frameSpeed);
       }
       if (ctx.state.frame[istate] != frame)
       {
@@ -317,15 +353,18 @@ struct NudzViolonsaoulsMode : public NudzScrollImageMode<ViolonsaoulsImageTy>
 {
   struct StateTy
   {
-    A<float> minSpeed = {0.f};      ///< minimum allowed speed
-    A<float> maxSpeed = {0.5f};     ///< maximum allowed speed
-    A<bool> randomScroll = {false}; ///< random variation of the scroll
-    A<uint32_t> xdecal = {0};       ///< start x coordinates
-    A<uint32_t> ydecal = {0};       ///< start y coordinates
-    A<uint32_t> last_tick = {0};    ///< last called time in microseconds
-    A<int8_t> xdirection = {1};     ///< x scroll direction
-    A<int8_t> ydirection = {0};     ///< y scroll direction
-    A<bool> framesMirror = {false}; ///< frames are mirrores at end of animation
+    A<float> minSpeed = {0.f};            ///< minimum allowed speed
+    A<float> maxSpeed = {0.5f};           ///< maximum allowed speed
+    A<float> minFrameSpeed = {0.f};       ///< minimum allowed freme speed
+    A<float> maxFrameSpeed = {0.1f};      ///< maximum allowed frame speed
+    A<RampModes> rampMode = {ImageSpeed}; ///< ramp action mode
+    A<bool> randomScroll = {false};       ///< random variation of the scroll
+    A<uint32_t> xdecal = {0};             ///< start x coordinates
+    A<uint32_t> ydecal = {0};             ///< start y coordinates
+    A<uint32_t> last_tick = {0};          ///< last called time in microseconds
+    A<int8_t> xdirection = {1};           ///< x scroll direction
+    A<int8_t> ydirection = {0};           ///< y scroll direction
+    A<bool> framesMirror = {false};       ///< frames are mirrored at end of animation
     A<NudzScrollImageMode::FrameSyncMode> syncFrame = {NudzScrollImageMode::Y}; ///< frame sync on 1st image
     A<uint32_t> frame = {0};                                                    ///< current animation frame
     A<uint32_t> last_frame_tick = {0};
